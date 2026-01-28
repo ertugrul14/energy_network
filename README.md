@@ -15,7 +15,7 @@ Every time a city says "smart" or a user says "prompt," an invisible network awa
 - A gas plant revs to meet GPU demand
 - CO₂ is dumped—elsewhere
 
-**Ghost Network maps these displacements.**
+**Energy Network maps these displacements.**
 
 This is not about a single prompt. This is about the material geopolitics of AI.
 
