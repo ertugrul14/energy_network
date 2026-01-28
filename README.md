@@ -1,4 +1,4 @@
-# 👻 GHOST NETWORK
+# ENERGY NETWORK
 
 > **The Material Geopolitics of AI**
 > 
