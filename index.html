@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENERGY NETWORK | The Material Geopolitics of AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-icon">◉</div>
+      <h1>ENERGY NETWORK</h1>
+      <p class="tagline">Tracing the invisible infrastructure of AI</p>
+      <div class="loading-bar">
+        <div class="loading-progress"></div>
+      </div>
+      <p class="loading-text">Mapping displaced externalities...</p>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="app">
+    <!-- Header -->
+    <header id="header">
+      <div class="logo">
+        <span class="logo-icon">◉</span>
+        <span class="title">ENERGY NETWORK</span>
+      </div>
+      <nav class="nav-layers">
+        <button class="layer-btn active" data-layer="all">ALL FLOWS</button>
+        <button class="layer-btn" data-layer="electricity">ELECTRICITY</button>
+        <button class="layer-btn" data-layer="water">WATER</button>
+        <button class="layer-btn" data-layer="emissions">EMISSIONS</button>
+        <button class="layer-btn" data-layer="materials">MATERIALS</button>
+      </nav>
+      <button id="info-toggle" class="info-btn">ABOUT</button>
+    </header>
+
+    <!-- Globe Container -->
+    <div id="globe-container"></div>
+
+    <!-- Control Panel -->
+    <aside id="control-panel">
+      <div class="panel-section">
+        <h2>SELECT CITY</h2>
+        <p class="panel-desc">Where the "smart" service is consumed</p>
+        <div class="city-grid">
+          <button class="city-btn" data-city="barcelona">
+            <span class="city-flag">🇪🇸</span>
+            <span class="city-name">Barcelona</span>
+          </button>
+          <button class="city-btn" data-city="lagos">
+            <span class="city-flag">🇳🇬</span>
+            <span class="city-name">Lagos</span>
+          </button>
+          <button class="city-btn" data-city="phoenix">
+            <span class="city-flag">🇺🇸</span>
+            <span class="city-name">Phoenix</span>
+          </button>
+          <button class="city-btn" data-city="dublin">
+            <span class="city-flag">🇮🇪</span>
+            <span class="city-name">Dublin</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h2>SELECT WORKLOAD</h2>
+        <p class="panel-desc">What computation demands the grid</p>
+        <div class="workload-grid">
+          <button class="workload-btn" data-workload="chatbot">
+            <span class="workload-icon">💬</span>
+            <span class="workload-name">AI Chatbot</span>
+            <span class="workload-intensity">LOW</span>
+          </button>
+          <button class="workload-btn" data-workload="image">
+            <span class="workload-icon">🎨</span>
+            <span class="workload-name">Image Generator</span>
+            <span class="workload-intensity">HIGH</span>
+          </button>
+          <button class="workload-btn" data-workload="traffic">
+            <span class="workload-icon">🚦</span>
+            <span class="workload-name">Traffic AI</span>
+            <span class="workload-intensity">MEDIUM</span>
+          </button>
+          <button class="workload-btn" data-workload="biometric">
+            <span class="workload-icon">👁️</span>
+            <span class="workload-name">Biometric Security</span>
+            <span class="workload-intensity">CONTINUOUS</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h2>REDIRECT WORKLOAD</h2>
+        <p class="panel-desc">There is no clean option—only tradeoffs</p>
+        <div class="redirect-options">
+          <label class="redirect-option">
+            <input type="radio" name="datacenter" value="arizona" checked>
+            <span class="option-content">
+              <span class="option-name">Arizona, USA</span>
+              <span class="option-stats">☀️ Solar available | 💧 Water stressed</span>
+            </span>
+          </label>
+          <label class="redirect-option">
+            <input type="radio" name="datacenter" value="finland">
+            <span class="option-content">
+              <span class="option-name">Finland</span>
+              <span class="option-stats">❄️ Cool climate | ⚡ Grid mixed</span>
+            </span>
+          </label>
+          <label class="redirect-option">
+            <input type="radio" name="datacenter" value="singapore">
+            <span class="option-content">
+              <span class="option-name">Singapore</span>
+              <span class="option-stats">🔥 High cooling | 🛢️ Fossil heavy</span>
+            </span>
+          </label>
+          <label class="redirect-option">
+            <input type="radio" name="datacenter" value="ireland">
+            <span class="option-content">
+              <span class="option-name">Ireland</span>
+              <span class="option-stats">🍃 Wind power | 💨 Emissions trade</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <button id="run-simulation" class="run-btn">
+        <span class="btn-icon">▶</span>
+        <span class="btn-text">TRACE ENERGY FLOW</span>
+      </button>
+    </aside>
+
+    <!-- Impact Dashboard -->
+    <aside id="impact-dashboard" class="hidden">
+      <div class="dashboard-header">
+        <h2>EXTERNALITY REPORT</h2>
+        <button id="close-dashboard" class="close-btn">✕</button>
+      </div>
+      
+      <div class="impact-summary">
+        <div class="impact-route">
+          <span class="route-from" id="route-from">Barcelona</span>
+          <span class="route-arrow">→</span>
+          <span class="route-to" id="route-to">Arizona DC</span>
+        </div>
+        <div class="impact-workload" id="impact-workload">AI Chatbot Session</div>
+      </div>
+
+      <div class="impact-grid">
+        <div class="impact-card electricity">
+          <div class="impact-icon">⚡</div>
+          <div class="impact-label">ELECTRICITY</div>
+          <div class="impact-value" id="impact-electricity">0</div>
+          <div class="impact-unit">kWh consumed</div>
+          <div class="impact-source">Grid: 45% fossil, 55% renewable</div>
+        </div>
+
+        <div class="impact-card water">
+          <div class="impact-icon">💧</div>
+          <div class="impact-label">WATER</div>
+          <div class="impact-value" id="impact-water">0</div>
+          <div class="impact-unit">liters withdrawn</div>
+          <div class="impact-source">Source: Colorado River Basin</div>
+        </div>
+
+        <div class="impact-card emissions">
+          <div class="impact-icon">🌫️</div>
+          <div class="impact-label">EMISSIONS</div>
+          <div class="impact-value" id="impact-emissions">0</div>
+          <div class="impact-unit">gCO₂eq released</div>
+          <div class="impact-source">Drifts: Downwind 2,400km</div>
+        </div>
+
+        <div class="impact-card materials">
+          <div class="impact-icon">⛏️</div>
+          <div class="impact-label">LAND & LABOR</div>
+          <div class="impact-value" id="impact-materials">—</div>
+          <div class="impact-unit">embedded</div>
+          <div class="impact-source">Cobalt: DRC | Silicon: China</div>
+        </div>
+      </div>
+
+      <div class="impact-narrative">
+        <p id="narrative-text">
+          Your prompt traveled 9,400 km to a server in the Sonoran Desert. 
+          The electricity came from natural gas plants that burned at 4:23 AM local time. 
+          Water was pulled from an aquifer already 40% depleted. 
+          The CO₂ will drift over the Pacific.
+        </p>
+      </div>
+
+      <div class="stack-view">
+        <h3>THE STACK IN MOTION</h3>
+        <div class="stack-layers">
+          <div class="stack-layer" data-level="body">
+            <span class="layer-icon">🧍</span>
+            <span class="layer-name">BODY</span>
+            <span class="layer-desc">You: the user</span>
+          </div>
+          <div class="stack-layer" data-level="city">
+            <span class="layer-icon">🏙️</span>
+            <span class="layer-name">CITY</span>
+            <span class="layer-desc">Who benefits</span>
+          </div>
+          <div class="stack-layer" data-level="cloud">
+            <span class="layer-icon">☁️</span>
+            <span class="layer-name">CLOUD</span>
+            <span class="layer-desc">Data centers, routing</span>
+          </div>
+          <div class="stack-layer" data-level="earth">
+            <span class="layer-icon">🌍</span>
+            <span class="layer-name">EARTH</span>
+            <span class="layer-desc">Materials, emissions</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal hidden">
+      <div class="modal-content">
+        <button class="modal-close">✕</button>
+        <h1>AI RUNS ON GHOST INFRASTRUCTURE</h1>
+        
+        <div class="theory-section">
+          <h2>What You're Seeing</h2>
+          <p>
+            Every time a city says "smart" or a user says "prompt," an invisible network awakens:
+            A server spins in a faraway desert. A cooling tower pulls from a depleted aquifer. 
+            A gas plant revs to meet GPU demand. CO₂ is dumped—elsewhere.
+          </p>
+          <p><strong>Ghost Network maps these displacements.</strong></p>
+        </div>
+
+        <div class="theory-section">
+          <h2>The Argument</h2>
+          <blockquote>
+            "Every smart system is connected to unsmart places.<br>
+            Every AI decision draws water in a place you've never heard of.<br>
+            Every promise of 'green AI' hides a network of deferred costs.<br>
+            This isn't about reducing. It's about revealing."
+          </blockquote>
+        </div>
+
+        <div class="theory-section">
+          <h2>Theory Grounding</h2>
+          <ul class="theory-list">
+            <li><strong>Bratton's Stack</strong> — Layered governance of AI across Earth, Cloud, City, Body</li>
+            <li><strong>Hyperobjects</strong> — The nonlocality and viscosity of water and CO₂</li>
+            <li><strong>Planetary Boundaries</strong> — Water stress, carbon overshoot</li>
+            <li><strong>Post-Normal Times</strong> — No stable solution space, only complex entanglement</li>
+          </ul>
+        </div>
+
+        <div class="theory-section">
+          <h2>Sources</h2>
+          <ul class="source-list">
+            <li>Koomey, J. (2020) — Data center energy efficiency</li>
+            <li>Li et al. (2025) — Water consumption of AI systems</li>
+            <li>Siddik et al. (2021) — Data center water footprint</li>
+            <li>IEA / IPCC — Global emissions data</li>
+          </ul>
+        </div>
+
+        <div class="theory-section warning">
+          <h2>⚠️ This Project Does Not Solve</h2>
+          <p>
+            Ghost Network exposes asymmetry. It does not offer absolution.<br>
+            There is no "green" prompt. There are only tradeoffs—and choices about who bears them.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Info Popup -->
+    <div id="location-popup" class="hidden">
+      <button class="popup-close">×</button>
+      <div class="popup-header">
+        <span class="popup-type" id="popup-type">CITY</span>
+        <h3 class="popup-title" id="popup-title">Barcelona</h3>
+        <p class="popup-location" id="popup-location">Spain</p>
+      </div>
+      <div class="popup-content">
+        <p class="popup-description" id="popup-description"></p>
+        <div class="popup-stats" id="popup-stats"></div>
+      </div>
+    </div>
+
+    <!-- Floating Legend -->
+    <div id="legend">
+      <div class="legend-item">
+        <span class="legend-line electricity"></span>
+        <span>Electricity flow</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-line water"></span>
+        <span>Water withdrawal</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-line emissions"></span>
+        <span>CO₂ drift</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-line materials"></span>
+        <span>Materials / E-waste</span>
+      </div>
+    </div>
+
+    <!-- Time of Day Control -->
+    <div id="time-control">
+      <label for="time-slider">Time of Day (Local)</label>
+      <input type="range" id="time-slider" min="0" max="23" value="14">
+      <span id="time-display">14:00</span>
+      <p class="time-note">Water use spikes during peak heat</p>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
