@@ -284,6 +284,194 @@ body {
   display: block;
 }
 
+/* Mapbox overrides */
+#globe-container .mapboxgl-canvas {
+  outline: none;
+}
+
+#globe-container .mapboxgl-ctrl-bottom-left,
+#globe-container .mapboxgl-ctrl-bottom-right {
+  display: none;
+}
+
+/* ============================================
+   Mapbox Markers
+   ============================================ */
+
+/* --- City marker --- */
+.mapbox-city-marker {
+  cursor: pointer;
+}
+
+.mapbox-city-marker .marker-inner {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  transition: transform 0.2s ease;
+}
+
+.mapbox-city-marker:hover .marker-inner {
+  transform: scale(1.3);
+}
+
+.mapbox-city-marker .marker-dot.city-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: #00ff88;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+  z-index: 2;
+}
+
+.mapbox-city-marker .marker-pulse.city-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #00ff88;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.4;
+  animation: markerPulse 2s ease-out infinite;
+}
+
+.mapbox-city-marker.active .marker-dot.city-dot {
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.9);
+}
+
+.mapbox-city-marker.active .marker-pulse.city-pulse {
+  width: 30px;
+  height: 30px;
+  opacity: 0.7;
+  border-width: 2px;
+}
+
+.mapbox-city-marker .marker-label,
+.mapbox-dc-marker .marker-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  background: rgba(13, 17, 23, 0.85);
+  padding: 2px 6px;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.mapbox-city-marker:hover .marker-label,
+.mapbox-city-marker.active .marker-label,
+.mapbox-dc-marker:hover .marker-label,
+.mapbox-dc-marker.active .marker-label {
+  opacity: 1;
+}
+
+/* --- Datacenter marker --- */
+.mapbox-dc-marker {
+  cursor: pointer;
+}
+
+.mapbox-dc-marker .marker-inner {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.mapbox-dc-marker:hover .marker-inner {
+  transform: scale(1.3);
+}
+
+.mapbox-dc-marker .marker-diamond {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-radius: 2px;
+  z-index: 2;
+  box-shadow: 0 0 8px rgba(255, 100, 100, 0.5);
+}
+
+.mapbox-dc-marker .marker-pulse.dc-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ff6b6b;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.3;
+  animation: markerPulse 2.5s ease-out infinite;
+}
+
+.mapbox-dc-marker.active .marker-diamond {
+  width: 16px;
+  height: 16px;
+}
+
+.mapbox-dc-marker.active .marker-pulse.dc-pulse {
+  width: 34px;
+  height: 34px;
+  opacity: 0.7;
+  animation: markerPulse 1.5s ease-out infinite;
+}
+
+@keyframes markerPulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+/* --- Flow Endpoint Markers (power plants, mines, etc.) --- */
+.flow-endpoint-marker {
+  pointer-events: none;
+}
+
+.flow-endpoint-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+.flow-endpoint-electricity .flow-endpoint-dot {
+  background: #ffcc00;
+  box-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
+}
+
+.flow-endpoint-water .flow-endpoint-dot {
+  background: #00ccff;
+  box-shadow: 0 0 8px rgba(0, 204, 255, 0.6);
+}
+
+.flow-endpoint-emissions .flow-endpoint-dot {
+  background: #888888;
+  box-shadow: 0 0 8px rgba(136, 136, 136, 0.6);
+}
+
+.flow-endpoint-materials .flow-endpoint-dot {
+  background: #ff8844;
+  box-shadow: 0 0 8px rgba(255, 136, 68, 0.6);
+}
+
 /* ============================================
    Control Panel
    ============================================ */
@@ -486,6 +674,70 @@ body {
 
 .btn-icon {
   font-size: 12px;
+}
+
+/* Consumption Button */
+.consumption-btn {
+  margin-top: var(--spacing-sm);
+  background: transparent;
+  border: 1.5px solid var(--electricity);
+  color: var(--electricity);
+}
+
+.consumption-btn:hover {
+  background: rgba(240, 180, 41, 0.12);
+}
+
+.consumption-btn:active {
+  background: rgba(240, 180, 41, 0.22);
+}
+
+/* ============================================
+   Energy Info Banner (consumption mode)
+   ============================================ */
+
+#energy-banner {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  pointer-events: none;
+}
+
+.energy-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(13, 17, 23, 0.92);
+  border: 1px solid var(--electricity);
+  border-radius: 28px;
+  padding: 8px 20px;
+  backdrop-filter: blur(12px);
+  white-space: nowrap;
+  box-shadow: 0 4px 24px rgba(240, 180, 41, 0.15);
+}
+
+.energy-banner-icon {
+  font-size: 16px;
+}
+
+.energy-banner-text {
+  font-family: var(--font-primary);
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+.energy-banner-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-left: 8px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255,255,255,0.12);
 }
 
 /* ============================================
@@ -832,6 +1084,7 @@ body {
   display: flex;
   flex-direction: row;
   gap: var(--spacing-lg);
+  transition: bottom var(--transition-normal);
 }
 
 .legend-item {
@@ -1059,6 +1312,358 @@ body {
   padding: var(--spacing-md);
   z-index: 50;
   min-width: 200px;
+  transition: bottom var(--transition-normal);
+}
+
+/* Push time control up when scale explorer is open */
+#time-control.shifted-up {
+  bottom: 310px;
+}
+
+/* Push legend up when scale explorer is open */
+#legend.shifted-up {
+  bottom: 310px;
+}
+
+/* ============================================
+   Scale Explorer
+   ============================================ */
+
+#scale-explorer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid var(--border-default);
+  z-index: 80;
+  padding: 4px var(--spacing-md) 4px;
+  transform: translateY(0);
+  transition: transform var(--transition-slow), opacity var(--transition-slow);
+}
+
+#scale-explorer.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scale-header {
+  display: none;
+}
+
+.scale-close-btn {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.scale-close-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+.scale-header-left h2 {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  margin-bottom: 1px;
+}
+
+.scale-subtitle {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.scale-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.energy-thread-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.thread-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--electricity);
+  box-shadow: 0 0 8px var(--electricity-glow);
+  animation: threadPulse 2s ease-in-out infinite;
+}
+
+@keyframes threadPulse {
+  0%, 100% { opacity: 0.4; box-shadow: 0 0 4px var(--electricity-glow); }
+  50% { opacity: 1; box-shadow: 0 0 16px var(--electricity-glow); }
+}
+
+.scale-thread-container {
+  position: relative;
+}
+
+/* The energy thread connecting line */
+.energy-thread-line {
+  display: none;
+}
+
+.energy-thread-line::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 40px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--electricity);
+  box-shadow: 0 0 12px var(--electricity-glow);
+  animation: threadFlow 3s linear infinite;
+}
+
+@keyframes threadFlow {
+  0% { left: 0; opacity: 1; }
+  100% { left: calc(100% - 40px); opacity: 0.3; }
+}
+
+.scale-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.scale-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.scale-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.scale-card.expanded {
+  border-color: var(--accent);
+}
+
+.scale-card-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+}
+
+.scale-icon-wrap {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.scale-icon-wrap.interior { background: rgba(240, 180, 41, 0.15); }
+.scale-icon-wrap.building { background: rgba(248, 81, 73, 0.15); }
+.scale-icon-wrap.city { background: rgba(88, 166, 255, 0.15); }
+.scale-icon-wrap.planetary { background: rgba(163, 113, 247, 0.15); }
+
+.scale-icon {
+  font-size: 11px;
+}
+
+.scale-title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.scale-title-group h3 {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.scale-title-group p {
+  font-size: 8px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.scale-expand-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+  padding: 2px;
+  line-height: 1;
+}
+
+.scale-card.expanded .scale-expand-btn {
+  transform: rotate(180deg);
+}
+
+.scale-card-summary {
+  display: none;
+}
+
+.scale-card.expanded .scale-card-summary {
+  display: flex;
+  gap: 4px;
+  padding: 0 6px 3px;
+}
+
+.scale-metric {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  padding: 2px 4px;
+  text-align: center;
+}
+
+.scale-metric-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.scale-card[data-scale="interior"] .scale-metric-value { color: var(--electricity); }
+.scale-card[data-scale="building"] .scale-metric-value { color: var(--emissions); }
+.scale-card[data-scale="city"] .scale-metric-value { color: var(--water); }
+.scale-card[data-scale="planetary"] .scale-metric-value { color: var(--materials); }
+
+.scale-metric-label {
+  display: block;
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-top: 1px;
+}
+
+.scale-card-detail {
+  padding: 0 6px 4px;
+  border-top: 1px solid var(--border-muted);
+  margin-top: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-normal), opacity var(--transition-normal), padding var(--transition-normal);
+}
+
+.scale-card-detail.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top-color: transparent;
+}
+
+.scale-card-detail:not(.hidden) {
+  max-height: 300px;
+  opacity: 1;
+  padding-top: 4px;
+}
+
+.scale-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.scale-detail-row:last-of-type {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.detail-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.scale-insight {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Consumption info blocks inside scale cards */
+.consumption-info {
+  margin-top: var(--spacing-sm);
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(240, 180, 41, 0.08), rgba(240, 180, 41, 0.03));
+  border: 1px solid rgba(240, 180, 41, 0.2);
+  border-radius: 8px;
+}
+
+.consumption-info.hidden {
+  display: none;
+}
+
+.consumption-info-header {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--electricity);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.consumption-info-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.consumption-info-stat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--electricity);
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 #time-control label {
@@ -1122,6 +1727,10 @@ body {
   #impact-dashboard {
     width: 320px;
   }
+
+  .scale-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
@@ -1137,6 +1746,14 @@ body {
   #impact-dashboard {
     right: var(--spacing-md);
     width: calc(50% - var(--spacing-lg));
+  }
+
+  .scale-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .energy-thread-line {
+    display: none;
   }
 }
 
@@ -1163,5 +1780,14 @@ body {
   #legend,
   #time-control {
     display: none;
+  }
+
+  .scale-cards {
+    grid-template-columns: 1fr;
+  }
+
+  #scale-explorer {
+    max-height: 50vh;
+    overflow-y: auto;
   }
 }

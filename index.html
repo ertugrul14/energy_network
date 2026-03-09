@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
   <link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body>
@@ -135,7 +136,24 @@
         <span class="btn-icon">▶</span>
         <span class="btn-text">TRACE ENERGY FLOW</span>
       </button>
+
+      <button id="run-consumption" class="run-btn consumption-btn">
+        <span class="btn-icon">⚡</span>
+        <span class="btn-text">ENERGY CONSUMPTION</span>
+      </button>
     </aside>
+
+    <!-- Energy Info Banner (shown during consumption mode) -->
+    <div id="energy-banner" class="hidden">
+      <div class="energy-banner-inner">
+        <span class="energy-banner-icon">⚡</span>
+        <span class="energy-banner-text">Click a scale card to see its energy impact on buildings</span>
+        <div class="energy-banner-legend">
+          <span style="color:var(--electricity)">■</span> Powered
+          <span style="color:#555">■</span> Unpowered
+        </div>
+      </div>
+    </div>
 
     <!-- Impact Dashboard -->
     <aside id="impact-dashboard" class="hidden">
@@ -290,6 +308,222 @@
       <div class="popup-content">
         <p class="popup-description" id="popup-description"></p>
         <div class="popup-stats" id="popup-stats"></div>
+      </div>
+    </div>
+
+    <!-- Scale Explorer -->
+    <div id="scale-explorer" class="hidden">
+      <button id="close-scale-explorer" class="scale-close-btn">✕</button>
+      <div class="scale-header">
+        <div class="scale-header-left">
+          <h2>SCALE EXPLORER</h2>
+          <p class="scale-subtitle">One prompt, four scales of impact</p>
+        </div>
+        <div class="scale-header-right">
+          <div class="energy-thread-label">
+            <span class="thread-pulse"></span>
+            <span>Energy thread</span>
+          </div>
+          <button id="close-scale-explorer" class="close-btn">✕</button>
+        </div>
+      </div>
+
+      <div class="scale-thread-container">
+        <div class="energy-thread-line"></div>
+
+        <div class="scale-cards">
+          <!-- Interior Scale -->
+          <div class="scale-card" data-scale="interior">
+            <div class="scale-card-header">
+              <div class="scale-icon-wrap interior">
+                <span class="scale-icon">🖥️</span>
+              </div>
+              <div class="scale-title-group">
+                <h3>INTERIOR</h3>
+                <p>The desk</p>
+              </div>
+              <button class="scale-expand-btn">﹀</button>
+            </div>
+            <div class="scale-card-summary">
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-device-kwh">—</span>
+                <span class="scale-metric-label">Wh at device</span>
+              </div>
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-server-kwh">—</span>
+                <span class="scale-metric-label">Wh at server</span>
+              </div>
+            </div>
+            <div class="scale-card-detail hidden">
+              <div class="scale-detail-row">
+                <span class="detail-label">Laptop power draw</span>
+                <span class="detail-value" id="detail-laptop-watts">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Wi-Fi / Network</span>
+                <span class="detail-value" id="detail-network-watts">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Session duration</span>
+                <span class="detail-value" id="detail-session-duration">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Remote GPU demand</span>
+                <span class="detail-value" id="detail-gpu-demand">—</span>
+              </div>
+              <p class="scale-insight">Your device barely notices—but a server farm spins up thousands of km away.</p>
+              <div class="consumption-info hidden" id="consumption-info-interior">
+                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
+                <p class="consumption-info-text" id="consumption-text-interior"></p>
+                <div class="consumption-info-stat" id="consumption-stat-interior"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Building Scale -->
+          <div class="scale-card" data-scale="building">
+            <div class="scale-card-header">
+              <div class="scale-icon-wrap building">
+                <span class="scale-icon">🏢</span>
+              </div>
+              <div class="scale-title-group">
+                <h3>BUILDING</h3>
+                <p>The data center</p>
+              </div>
+              <button class="scale-expand-btn">﹀</button>
+            </div>
+            <div class="scale-card-summary">
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-compute-kwh">—</span>
+                <span class="scale-metric-label">Wh compute</span>
+              </div>
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-cooling-kwh">—</span>
+                <span class="scale-metric-label">Wh cooling</span>
+              </div>
+            </div>
+            <div class="scale-card-detail hidden">
+              <div class="scale-detail-row">
+                <span class="detail-label">PUE (efficiency)</span>
+                <span class="detail-value" id="detail-pue">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Cooling overhead</span>
+                <span class="detail-value" id="detail-cooling-pct">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Heat penalty</span>
+                <span class="detail-value" id="detail-heat-penalty">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Water for cooling</span>
+                <span class="detail-value" id="detail-cooling-water">—</span>
+              </div>
+              <p class="scale-insight">For every 1 Wh of compute, the building spends extra energy just to not overheat.</p>
+              <div class="consumption-info hidden" id="consumption-info-building">
+                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
+                <p class="consumption-info-text" id="consumption-text-building"></p>
+                <div class="consumption-info-stat" id="consumption-stat-building"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- City Scale -->
+          <div class="scale-card" data-scale="city">
+            <div class="scale-card-header">
+              <div class="scale-icon-wrap city">
+                <span class="scale-icon">🏙️</span>
+              </div>
+              <div class="scale-title-group">
+                <h3>CITY</h3>
+                <p>The grid</p>
+              </div>
+              <button class="scale-expand-btn">﹀</button>
+            </div>
+            <div class="scale-card-summary">
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-grid-carbon">—</span>
+                <span class="scale-metric-label">gCO₂/kWh</span>
+              </div>
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-water-stress">—</span>
+                <span class="scale-metric-label">water stress</span>
+              </div>
+            </div>
+            <div class="scale-card-detail hidden">
+              <div class="scale-detail-row">
+                <span class="detail-label">Grid fossil %</span>
+                <span class="detail-value" id="detail-fossil-pct">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Water source</span>
+                <span class="detail-value" id="detail-water-source">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Aquifer depletion</span>
+                <span class="detail-value" id="detail-aquifer">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Local air impact</span>
+                <span class="detail-value" id="detail-local-air">—</span>
+              </div>
+              <p class="scale-insight">The grid doesn't care if you asked it to write a poem or surveil a crowd—it just burns fuel.</p>
+              <div class="consumption-info hidden" id="consumption-info-city">
+                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
+                <p class="consumption-info-text" id="consumption-text-city"></p>
+                <div class="consumption-info-stat" id="consumption-stat-city"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Planetary Scale -->
+          <div class="scale-card" data-scale="planetary">
+            <div class="scale-card-header">
+              <div class="scale-icon-wrap planetary">
+                <span class="scale-icon">🌍</span>
+              </div>
+              <div class="scale-title-group">
+                <h3>PLANETARY</h3>
+                <p>The displacement</p>
+              </div>
+              <button class="scale-expand-btn">﹀</button>
+            </div>
+            <div class="scale-card-summary">
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-displacement-km">—</span>
+                <span class="scale-metric-label">km displaced</span>
+              </div>
+              <div class="scale-metric">
+                <span class="scale-metric-value" id="scale-co2-drift">—</span>
+                <span class="scale-metric-label">CO₂ drift</span>
+              </div>
+            </div>
+            <div class="scale-card-detail hidden">
+              <div class="scale-detail-row">
+                <span class="detail-label">Materials from</span>
+                <span class="detail-value" id="detail-materials-from">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">E-waste to</span>
+                <span class="detail-value" id="detail-ewaste-to">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Emissions drift</span>
+                <span class="detail-value" id="detail-emissions-drift">—</span>
+              </div>
+              <div class="scale-detail-row">
+                <span class="detail-label">Jurisdictions crossed</span>
+                <span class="detail-value" id="detail-jurisdictions">—</span>
+              </div>
+              <p class="scale-insight">The cost of your prompt is borne by places you've never visited and people who'll never use AI.</p>
+              <div class="consumption-info hidden" id="consumption-info-planetary">
+                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
+                <p class="consumption-info-text" id="consumption-text-planetary"></p>
+                <div class="consumption-info-stat" id="consumption-stat-planetary"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

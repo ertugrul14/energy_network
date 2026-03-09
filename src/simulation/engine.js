@@ -3,7 +3,7 @@
  * Calculates environmental externalities for AI workloads
  */
 
-import { CITIES, DATACENTERS, WORKLOADS, MATERIALS, EWASTE, EMISSIONS_DRIFT, TIME_MODIFIERS, NARRATIVES } from '../data/models.js';
+import { CITIES, DATACENTERS, WORKLOADS, MATERIALS, EWASTE, EMISSIONS_DRIFT, TIME_MODIFIERS, NARRATIVES, INTERIOR_SCALE, BUILDING_SCALE } from '../data/models.js';
 
 export class SimulationEngine {
   constructor() {
@@ -218,6 +218,9 @@ export class SimulationEngine {
 
     const narrative = NARRATIVES.standard(narrativeData);
 
+    // Calculate multi-scale breakdown
+    const scaleBreakdown = this.calculateScaleBreakdown(electricity, water, emissions, materials, distance);
+
     return {
       city: this.currentCity,
       workload: this.currentWorkload,
@@ -230,6 +233,7 @@ export class SimulationEngine {
       materials,
       narrative,
       narrativeData,
+      scaleBreakdown,
 
       // Flow paths for visualization
       flows: this.generateFlows(electricity, water, emissions, materials)
@@ -315,6 +319,96 @@ export class SimulationEngine {
     }
 
     return flows;
+  }
+
+  /**
+   * Calculate a per-scale breakdown of energy impact
+   */
+  calculateScaleBreakdown(electricity, water, emissions, materials, distance) {
+    const dc = this.currentDatacenter;
+    const workload = this.currentWorkload;
+    const device = INTERIOR_SCALE.laptop;
+
+    // --- Interior Scale ---
+    const sessionMinutes = workload.perSession.durationMinutes;
+    const deviceKwh = (device.activeWatts * sessionMinutes) / 60 / 1000;
+    const networkKwh = (device.networkWatts * sessionMinutes) / 60 / 1000;
+    const serverKwh = electricity.baseKwh;
+
+    const gpuType = workload.scaling.gpuType;
+    const gpuSpec = BUILDING_SCALE.gpuPower[gpuType] || BUILDING_SCALE.gpuPower['A100'];
+
+    // --- Building Scale ---
+    const computeKwh = electricity.baseKwh;
+    const pue = electricity.pue;
+    const coolingOverheadKwh = electricity.withOverhead - electricity.baseKwh;
+    const coolingPercent = pue > 1 ? ((pue - 1) / pue) * 100 : 0;
+    const heatPenalty = dc.climate.heatPenalty;
+    const coolingWaterLiters = water ? water.liters : 0;
+
+    // --- City Scale ---
+    const gridCarbonIntensity = dc.energy.carbonIntensity;
+    const fossilPercent = electricity.fossilPercent;
+    const waterSource = water ? water.source.split('/')[0].trim() : 'N/A';
+    const aquiferDepletion = dc.water.aquiferDepletion;
+    const waterStressLevel = dc.water.stressLevel;
+    const localAirImpact = fossilPercent > 50 ? 'Significant' : fossilPercent > 25 ? 'Moderate' : 'Low';
+
+    // --- Planetary Scale ---
+    const displacementKm = Math.round(distance);
+    const emissionsDrift = emissions.drift;
+    const driftDirection = emissionsDrift ? emissionsDrift.direction : 'N/A';
+    const driftDestinations = emissionsDrift ? emissionsDrift.destinations.map(d => d.name) : [];
+    
+    const materialSources = Object.values(materials.materials).map(m => m.source.split('(')[0].trim().split('/')[0].trim());
+    const uniqueMaterialSources = [...new Set(materialSources)];
+    
+    const ewasteDestinations = materials.ewasteDestinations.map(d => d.name.split(',')[0]);
+    
+    // Count jurisdictions: city country + datacenter country + material source countries + ewaste countries
+    const jurisdictionSet = new Set();
+    jurisdictionSet.add(this.currentCity.country);
+    jurisdictionSet.add(dc.location.split(',').pop().trim());
+    uniqueMaterialSources.forEach(s => jurisdictionSet.add(s));
+    ewasteDestinations.forEach(d => jurisdictionSet.add(d));
+    const jurisdictions = jurisdictionSet.size;
+
+    return {
+      interior: {
+        deviceWh: deviceKwh * 1000,
+        serverWh: serverKwh * 1000,
+        networkWh: networkKwh * 1000,
+        laptopWatts: device.activeWatts,
+        networkWatts: device.networkWatts,
+        sessionMinutes,
+        gpuDemand: `${gpuSpec.name} x${workload.scaling.gpusPerQuery || workload.scaling.gpusPerImage || workload.scaling.gpusPerHour}`
+      },
+      building: {
+        computeWh: computeKwh * 1000,
+        coolingWh: coolingOverheadKwh * 1000,
+        pue,
+        coolingPercent: coolingPercent.toFixed(0),
+        heatPenalty: `${((heatPenalty - 1) * 100).toFixed(0)}%`,
+        coolingWaterLiters: coolingWaterLiters.toFixed(1)
+      },
+      city: {
+        gridCarbonIntensity,
+        fossilPercent: Math.round(fossilPercent),
+        waterSource,
+        aquiferDepletion: `${Math.round(aquiferDepletion * 100)}%`,
+        waterStressLevel,
+        localAirImpact
+      },
+      planetary: {
+        displacementKm,
+        co2DriftDirection: driftDirection,
+        driftDestinations,
+        materialSources: uniqueMaterialSources.slice(0, 3).join(', '),
+        ewasteDestination: ewasteDestinations[0] || 'N/A',
+        emissionsDriftKm: emissionsDrift ? emissionsDrift.driftDistanceKm : 0,
+        jurisdictions
+      }
+    };
   }
 
   /**

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "^0.160.0",
+    "mapbox-gl": "^3.4.0",
     "gsap": "^3.12.4"
   },
   "devDependencies": {

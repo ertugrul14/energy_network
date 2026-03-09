@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENERGY NETWORK — Exhibition Screen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/exhibition.css">
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body class="screen-mode">
+
+  <!-- Idle state — shown while waiting for tablet signal -->
+  <div id="screen-idle" class="screen-overlay">
+    <div class="idle-content">
+      <div class="idle-icon pulse">◉</div>
+      <h1>ENERGY NETWORK</h1>
+      <p class="idle-subtitle">Waiting for tablet input…</p>
+      <p class="idle-desc">Pick up the tablet to trace the invisible infrastructure of AI</p>
+    </div>
+  </div>
+
+  <!-- Globe -->
+  <div id="globe-container"></div>
+
+  <!-- Floating info bar (shows current simulation context) -->
+  <div id="screen-info-bar" class="hidden">
+    <div class="info-bar-inner">
+      <div class="info-bar-route">
+        <span class="info-bar-city" id="screen-city">—</span>
+        <span class="info-bar-arrow">→</span>
+        <span class="info-bar-dc" id="screen-dc">—</span>
+      </div>
+      <div class="info-bar-workload" id="screen-workload">—</div>
+    </div>
+  </div>
+
+  <!-- Impact overlay (bottom of screen) -->
+  <div id="screen-impact" class="hidden">
+    <div class="screen-impact-grid">
+      <div class="screen-impact-card">
+        <span class="screen-impact-icon">⚡</span>
+        <span class="screen-impact-value" id="screen-electricity">—</span>
+        <span class="screen-impact-label">kWh</span>
+      </div>
+      <div class="screen-impact-card">
+        <span class="screen-impact-icon">💧</span>
+        <span class="screen-impact-value" id="screen-water">—</span>
+        <span class="screen-impact-label">liters</span>
+      </div>
+      <div class="screen-impact-card">
+        <span class="screen-impact-icon">🌫️</span>
+        <span class="screen-impact-value" id="screen-emissions">—</span>
+        <span class="screen-impact-label">gCO₂</span>
+      </div>
+      <div class="screen-impact-card">
+        <span class="screen-impact-icon">📍</span>
+        <span class="screen-impact-value" id="screen-distance">—</span>
+        <span class="screen-impact-label">km</span>
+      </div>
+    </div>
+    <div class="screen-narrative" id="screen-narrative"></div>
+  </div>
+
+  <!-- Floating legend -->
+  <div id="screen-legend" class="hidden">
+    <div class="legend-item">
+      <span class="legend-line electricity"></span>
+      <span>Electricity</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-line water"></span>
+      <span>Water</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-line emissions"></span>
+      <span>CO₂ drift</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-line materials"></span>
+      <span>Materials</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/exhibition/screen.js"></script>
+</body>
+</html>

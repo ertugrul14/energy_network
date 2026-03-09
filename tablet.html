@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ENERGY NETWORK — Exhibition Tablet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/exhibition.css">
+</head>
+<body>
+
+  <!-- ============================================
+       STEP 0 — LANDING PAGE (Body Scale entry)
+       ============================================ -->
+  <section id="landing" class="page active">
+    <div class="landing-content">
+      <div class="landing-icon pulse">◉</div>
+      <h1>ENERGY NETWORK</h1>
+      <p class="landing-subtitle">Trace the invisible cost of AI</p>
+      <p class="landing-desc">
+        Every AI prompt triggers a chain of energy, water, and emissions
+        across the planet. Hold this tablet and follow the thread.
+      </p>
+      <button id="btn-start" class="cta-btn">
+        <span class="cta-icon">⚡</span>
+        START ENERGY FLOW
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STEP 1 — BODY SCALE (selections + consumption)
+       ============================================ -->
+  <section id="body-scale" class="page">
+    <header class="step-header">
+      <span class="step-tag">STEP 1</span>
+      <h2>BODY SCALE</h2>
+      <p>Your prompt, your device, your energy</p>
+    </header>
+
+    <div class="selection-panel">
+      <!-- City -->
+      <div class="select-group">
+        <label>SELECT CITY</label>
+        <div class="option-grid city-grid" id="city-options">
+          <button class="opt-btn" data-city="barcelona">
+            <span class="opt-flag">🇪🇸</span> Barcelona
+          </button>
+          <button class="opt-btn" data-city="lagos">
+            <span class="opt-flag">🇳🇬</span> Lagos
+          </button>
+          <button class="opt-btn" data-city="phoenix">
+            <span class="opt-flag">🇺🇸</span> Phoenix
+          </button>
+          <button class="opt-btn" data-city="dublin">
+            <span class="opt-flag">🇮🇪</span> Dublin
+          </button>
+        </div>
+      </div>
+
+      <!-- Workload -->
+      <div class="select-group">
+        <label>SELECT AI OPERATION</label>
+        <div class="option-grid workload-grid" id="workload-options">
+          <button class="opt-btn" data-workload="chatbot">
+            <span class="opt-icon">💬</span> AI Chatbot
+          </button>
+          <button class="opt-btn" data-workload="image">
+            <span class="opt-icon">🎨</span> Image Generator
+          </button>
+          <button class="opt-btn" data-workload="traffic">
+            <span class="opt-icon">🚦</span> Traffic AI
+          </button>
+          <button class="opt-btn" data-workload="biometric">
+            <span class="opt-icon">👁️</span> Biometric Security
+          </button>
+        </div>
+      </div>
+
+      <!-- Datacenter -->
+      <div class="select-group">
+        <label>SELECT DATA CENTER</label>
+        <div class="option-grid dc-grid" id="dc-options">
+          <button class="opt-btn" data-dc="arizona">
+            <span class="opt-detail">☀️ Solar / 💧 Water stressed</span>
+            Arizona, USA
+          </button>
+          <button class="opt-btn" data-dc="finland">
+            <span class="opt-detail">❄️ Cool / ⚡ Mixed grid</span>
+            Finland
+          </button>
+          <button class="opt-btn" data-dc="singapore">
+            <span class="opt-detail">🔥 High cooling / 🛢️ Fossil</span>
+            Singapore
+          </button>
+          <button class="opt-btn" data-dc="ireland">
+            <span class="opt-detail">🍃 Wind / 💨 Emissions</span>
+            Ireland
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button id="btn-consumption" class="cta-btn" disabled>
+      <span class="cta-icon">⚡</span>
+      ENERGY CONSUMPTION
+    </button>
+  </section>
+
+  <!-- ============================================
+       STEP 1b — BODY SCALE RESULT 
+       (apartment equivalence + building animation)
+       ============================================ -->
+  <section id="body-result" class="page">
+    <header class="step-header">
+      <span class="step-tag">STEP 1 — RESULT</span>
+      <h2>BODY SCALE</h2>
+      <p>What does your prompt cost?</p>
+    </header>
+
+    <!-- Insight card -->
+    <div class="insight-card" id="body-insight">
+      <div class="insight-header">
+        <span class="insight-icon">⚡</span>
+        <span class="insight-label">YOUR SESSION ENERGY</span>
+      </div>
+      <div class="insight-value" id="body-kwh">0.000</div>
+      <div class="insight-unit">kWh consumed</div>
+    </div>
+
+    <!-- Building animation area -->
+    <div class="building-animation" id="building-animation">
+      <div class="building-visual">
+        <div class="building-structure" id="building-structure">
+          <!-- Floors rendered by JS -->
+        </div>
+        <div class="building-label" id="building-label">Residential Building</div>
+      </div>
+      <div class="building-insight" id="building-insight">
+        <!-- e.g. "This could light an apartment for 12 minutes" -->
+      </div>
+    </div>
+
+    <!-- Equivalences -->
+    <div class="equivalence-list" id="equivalences">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="nav-buttons">
+      <button id="btn-back-body" class="nav-btn secondary">← Back</button>
+      <button id="btn-to-city" class="cta-btn">
+        SIMULATE CONSUMPTION →
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STEP 2 — CITY SCALE 
+       (neighborhood simulation + Arduino trigger)
+       ============================================ -->
+  <section id="city-scale" class="page">
+    <header class="step-header">
+      <span class="step-tag">STEP 2</span>
+      <h2>CITY SCALE</h2>
+      <p>If 40,000 people did the same operation…</p>
+    </header>
+
+    <div class="city-intro" id="city-intro">
+      <div class="city-stat">
+        <span class="city-stat-value" id="city-total-kwh">0</span>
+        <span class="city-stat-label">kWh total energy</span>
+      </div>
+      <p class="city-desc" id="city-desc">
+        A neighborhood of 40,000 people each running one AI session.
+      </p>
+    </div>
+
+    <!-- Building duration cards -->
+    <div class="building-cards" id="building-cards">
+      <!-- Populated by JS: hospital, university, airport, etc. -->
+    </div>
+
+    <!-- Arduino trigger -->
+    <div class="arduino-section">
+      <button id="btn-connect-arduino" class="connect-btn">
+        🔌 CONNECT ARDUINO
+      </button>
+      <p class="arduino-hint">Select a building type, then light up the physical model</p>
+      <button id="btn-simulate" class="cta-btn arduino-btn">
+        <span class="cta-icon">💡</span>
+        LIGHT UP MODEL
+      </button>
+      <div class="led-indicator" id="led-indicator">
+        <div class="led-dot" id="led-dot"></div>
+        <span class="led-label" id="led-label">LED OFF</span>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button id="btn-back-city" class="nav-btn secondary">← Back</button>
+      <button id="btn-restart-city" class="cta-btn restart-btn">
+        <span class="cta-icon">↻</span>
+        RESTART
+      </button>
+      <button id="btn-to-planetary" class="cta-btn">
+        TRACE ENERGY FLOW →
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STEP 3 — PLANETARY SCALE 
+       (sends signal to big screen)
+       ============================================ -->
+  <section id="planetary-scale" class="page">
+    <header class="step-header">
+      <span class="step-tag">STEP 3</span>
+      <h2>PLANETARY SCALE</h2>
+      <p>Look up at the screen</p>
+    </header>
+
+    <div class="planetary-content">
+      <div class="planetary-icon">🌍</div>
+      <p class="planetary-desc">
+        The energy flow simulation is now displayed on the large screen.
+        Watch how your prompt's impact ripples across the planet — 
+        electricity grids, water sources, CO₂ drift, and material supply chains.
+      </p>
+
+      <div class="planetary-stats" id="planetary-stats">
+        <!-- Populated by JS with simulation summary -->
+      </div>
+
+      <div class="planetary-hint">
+        <span class="hint-pulse"></span>
+        The globe on the big screen is showing your energy flow in real time
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button id="btn-back-planetary" class="nav-btn secondary">← Back</button>
+      <button id="btn-restart" class="cta-btn restart-btn">
+        <span class="cta-icon">↻</span>
+        START OVER
+      </button>
+    </div>
+  </section>
+
+  <script type="module" src="/src/exhibition/tablet.js"></script>
+</body>
+</html>

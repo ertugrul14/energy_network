@@ -1,35 +1,34 @@
 /**
  * GHOST NETWORK - Globe Visualization
- * Three.js 3D globe with animated ghost line flows
+ * Mapbox GL JS 3D globe with animated flow arcs and particles
  */
 
-import * as THREE from 'three';
+import mapboxgl from 'mapbox-gl';
 import { gsap } from 'gsap';
+
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+
+// Color palette matching the app theme
+const COLORS = {
+  electricity: '#f0b429',
+  water: '#58a6ff',
+  emissions: '#f85149',
+  materials: '#a371f7',
+  data: '#58a6ff',
+  city: '#00ff88',
+  datacenter: '#ff6b6b'
+};
 
 export class GlobeVisualization {
   constructor(container) {
     this.container = container;
-    this.width = container.clientWidth;
-    this.height = container.clientHeight;
-    
-    // Scene objects
-    this.scene = null;
-    this.camera = null;
-    this.renderer = null;
-    this.globe = null;
-    this.globeGroup = null; // Group to hold globe and all overlays
-    this.atmosphere = null;
-    this.flowLines = [];
-    this.markers = [];
-    this.labels = [];
-    
-    // Animation state
-    this.isAnimating = true;
-    this.rotationSpeed = 0.0005;
-    this.targetRotation = { x: 0, y: 0 };
-    this.isDragging = false;
-    this.previousMousePosition = { x: 0, y: 0 };
-    
+    this.map = null;
+    this.flowSourceIds = [];
+    this.flowLayerIds = [];
+    this.animationFrameId = null;
+    this.particleSources = [];
+    this.particleLayers = [];
+
     // Layer visibility
     this.layerVisibility = {
       electricity: true,
@@ -37,1223 +36,800 @@ export class GlobeVisualization {
       emissions: true,
       materials: true
     };
-    
-    // City highlights
-    this.cityHighlights = {};
-    this.selectedCity = null;
 
-    // Datacenter highlights
-    this.datacenterHighlights = {};
+    // Selected state
+    this.selectedCity = null;
     this.selectedDatacenter = null;
 
-    // Raycaster for click detection
-    this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
-    this.clickableObjects = [];
-    
     // Popup callback
     this.onLocationClick = null;
 
-    // Colors - professional dashboard palette
-    this.colors = {
-      electricity: 0xf0b429,
-      water: 0x58a6ff,
-      emissions: 0xf85149,
-      materials: 0xa371f7,
-      data: 0x58a6ff,
-      globe: 0x21262d,
-      atmosphere: 0x388bfd,
-      marker: 0xe6edf3,
-      datacenter: 0xf85149
-    };
+    // City/DC marker references
+    this.cityMarkers = {};
+    this.datacenterMarkers = {};
+    
+    // Flow endpoint markers (power plants, water sources, etc.)
+    this.flowEndpointMarkers = [];
 
     this.init();
-    this.animate();
   }
 
   init() {
-    // Scene
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0d1117);
+    // Check WebGL support
+    if (!mapboxgl.supported()) {
+      const msg = 'WebGL is not supported or disabled in your browser. Please enable hardware acceleration in browser settings.';
+      console.error(msg);
+      this.container.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0d1117;color:#f0f6fc;text-align:center;padding:40px;font-family:system-ui,sans-serif;">
+          <div>
+            <h2 style="color:#ff6b6b;margin-bottom:16px;">⚠️ WebGL Not Available</h2>
+            <p style="max-width:400px;line-height:1.6;color:#8b949e;">
+              This visualization requires WebGL. Please:
+              <br><br>
+              1. Enable <strong>hardware acceleration</strong> in your browser settings<br>
+              2. Update your graphics drivers<br>
+              3. Try a different browser (Chrome/Firefox/Edge)
+            </p>
+          </div>
+        </div>
+      `;
+      throw new Error(msg);
+    }
 
-    // Camera
-    this.camera = new THREE.PerspectiveCamera(
-      45,
-      this.width / this.height,
-      0.1,
-      1000
-    );
-    this.camera.position.z = 3;
+    mapboxgl.accessToken = MAPBOX_TOKEN;
 
-    // Renderer
-    this.renderer = new THREE.WebGLRenderer({
+    this.map = new mapboxgl.Map({
+      container: this.container,
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: [15, 30],
+      zoom: 1.5,
+      projection: 'globe',
       antialias: true,
-      alpha: true
-    });
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.container.appendChild(this.renderer.domElement);
-
-    // Create globe group (holds globe and all overlays so they rotate together)
-    this.globeGroup = new THREE.Group();
-    this.scene.add(this.globeGroup);
-
-    // Create globe
-    this.createGlobe();
-    this.createAtmosphere();
-    this.createStars();
-
-    // Lighting
-    this.setupLighting();
-
-    // Events
-    this.setupEvents();
-  }
-
-  createGlobe() {
-    // Main globe geometry
-    const geometry = new THREE.SphereGeometry(1, 128, 128);
-    
-    // Load dark style Earth texture
-    const textureLoader = new THREE.TextureLoader();
-    
-    // Use dark earth texture for Mapbox-style appearance
-    const earthTexture = textureLoader.load(
-      'https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg',
-      (texture) => { 
-        console.log('Earth texture loaded');
-        texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-      },
-      undefined,
-      (err) => { 
-        console.log('Earth texture failed, using dark fallback');
-        // Use a simple dark material as ultimate fallback
-        this.globe.material = new THREE.MeshPhongMaterial({
-          color: 0x1a2a3a,
-          emissive: 0x0a1520,
-          shininess: 5
-        });
-      }
-    );
-    
-    // Night lights overlay for urban areas
-    const nightTexture = textureLoader.load(
-      'https://unpkg.com/three-globe@2.31.0/example/img/earth-night.jpg'
-    );
-
-    // Create material with dark earth texture
-    const material = new THREE.MeshPhongMaterial({
-      map: earthTexture,
-      bumpScale: 0.01,
-      specular: new THREE.Color(0x111111),
-      shininess: 3,
-      transparent: false
+      fadeDuration: 0
     });
 
-    this.globe = new THREE.Mesh(geometry, material);
-    this.globeGroup.add(this.globe);
-    
-    // Add subtle night lights layer
-    this.createNightLightsLayer(nightTexture);
-  }
-  
-  /**
-   * Create night lights overlay showing urban areas
-   */
-  createNightLightsLayer(nightTexture) {
-    const geometry = new THREE.SphereGeometry(1.001, 128, 128);
-    const material = new THREE.MeshBasicMaterial({
-      map: nightTexture,
-      transparent: true,
-      opacity: 0.4,
-      blending: THREE.AdditiveBlending
-    });
-    
-    this.nightLightsMesh = new THREE.Mesh(geometry, material);
-    this.globeGroup.add(this.nightLightsMesh);
-  }
-
-  createAtmosphere() {
-    const geometry = new THREE.SphereGeometry(1.02, 64, 64);
-    const material = new THREE.ShaderMaterial({
-      vertexShader: `
-        varying vec3 vNormal;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        void main() {
-          float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
-          gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 0.5;
-        }
-      `,
-      blending: THREE.AdditiveBlending,
-      side: THREE.BackSide,
-      transparent: true
+    // Globe atmosphere
+    this.map.on('style.load', () => {
+      this.map.setFog({
+        color: 'rgb(13, 17, 23)',
+        'high-color': 'rgb(22, 27, 34)',
+        'horizon-blend': 0.04,
+        'space-color': 'rgb(13, 17, 23)',
+        'star-intensity': 0.6
+      });
     });
 
-    this.atmosphere = new THREE.Mesh(geometry, material);
-    this.globeGroup.add(this.atmosphere);
+    // Enable rotation
+    this.map.dragRotate.enable();
+    this.map.touchZoomRotate.enableRotation();
   }
 
-  createStars() {
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 2000;
-    const positions = new Float32Array(starsCount * 3);
+  // =============================================
+  // Public API (same interface as old Three.js globe)
+  // =============================================
 
-    for (let i = 0; i < starsCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 100;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
-    }
-
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-    const starsMaterial = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 0.05,
-      transparent: true,
-      opacity: 0.8
-    });
-
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    this.scene.add(stars);
-  }
-
-  setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-    this.scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(5, 3, 5);
-    this.scene.add(directionalLight);
-  }
-
-  setupEvents() {
-    // Resize
-    window.addEventListener('resize', () => this.onResize());
-
-    // Mouse interaction
-    this.container.addEventListener('mousedown', (e) => this.onMouseDown(e));
-    this.container.addEventListener('mousemove', (e) => this.onMouseMove(e));
-    this.container.addEventListener('mouseup', (e) => this.onMouseUp(e));
-    this.container.addEventListener('mouseleave', () => this.onMouseLeave());
-    this.container.addEventListener('wheel', (e) => this.onWheel(e));
-    this.container.addEventListener('click', (e) => this.onClick(e));
-  }
-
-  onResize() {
-    this.width = this.container.clientWidth;
-    this.height = this.container.clientHeight;
-    
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-    
-    this.renderer.setSize(this.width, this.height);
-  }
-
-  onMouseDown(event) {
-    this.isDragging = true;
-    this.previousMousePosition = {
-      x: event.clientX,
-      y: event.clientY
-    };
-  }
-
-  onMouseMove(event) {
-    if (!this.isDragging) return;
-
-    const deltaX = event.clientX - this.previousMousePosition.x;
-    const deltaY = event.clientY - this.previousMousePosition.y;
-
-    // Track that we've moved (for click detection)
-    this.hasDragged = true;
-
-    // Rotate the entire globeGroup so all overlays rotate together
-    this.globeGroup.rotation.y += deltaX * 0.005;
-    this.globeGroup.rotation.x += deltaY * 0.005;
-
-    // Clamp vertical rotation
-    this.globeGroup.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.globeGroup.rotation.x));
-
-    this.previousMousePosition = {
-      x: event.clientX,
-      y: event.clientY
-    };
-  }
-
-  onMouseUp(event) {
-    this.isDragging = false;
-  }
-
-  onMouseLeave() {
-    this.isDragging = false;
-    this.hasDragged = false;
-  }
-
-  /**
-   * Handle click on globe to detect location markers
-   */
-  onClick(event) {
-    // Ignore if we were dragging
-    if (this.hasDragged) {
-      this.hasDragged = false;
-      return;
-    }
-
-    // Calculate mouse position in normalized device coordinates
-    const rect = this.container.getBoundingClientRect();
-    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    // Update raycaster
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-
-    // Check for intersections with clickable objects
-    const allClickables = [];
-    
-    // Add city click targets (larger invisible areas)
-    Object.entries(this.cityHighlights).forEach(([cityId, highlight]) => {
-      if (highlight.clickTarget) {
-        allClickables.push(highlight.clickTarget);
-      } else if (highlight.disc) {
-        highlight.disc.userData.locationType = 'city';
-        highlight.disc.userData.locationId = cityId;
-        allClickables.push(highlight.disc);
-      }
-    });
-    
-    // Add datacenter click targets (larger invisible areas)
-    Object.entries(this.datacenterHighlights).forEach(([dcId, highlight]) => {
-      if (highlight.clickTarget) {
-        allClickables.push(highlight.clickTarget);
-      } else if (highlight.diamond) {
-        highlight.diamond.userData.locationType = 'datacenter';
-        highlight.diamond.userData.locationId = dcId;
-        allClickables.push(highlight.diamond);
-      }
-    });
-
-    const intersects = this.raycaster.intersectObjects(allClickables, false);
-
-    if (intersects.length > 0) {
-      const clicked = intersects[0].object;
-      const locationType = clicked.userData.locationType;
-      const locationId = clicked.userData.locationId;
-      
-      // Trigger pulse effect on the clicked marker
-      this.pulseLocation(locationType, locationId);
-      
-      if (this.onLocationClick) {
-        // Pass click coordinates for popup positioning
-        this.onLocationClick(locationType, locationId, event.clientX, event.clientY);
-      }
-    }
-  }
-
-  /**
-   * Pulse animation effect on a location marker
-   */
-  pulseLocation(type, id) {
-    if (type === 'city') {
-      const highlight = this.cityHighlights[id];
-      if (highlight && highlight.disc) {
-        // Pulse the disc
-        gsap.to(highlight.disc.scale, {
-          x: 2,
-          y: 2,
-          z: 2,
-          duration: 0.2,
-          ease: 'power2.out',
-          onComplete: () => {
-            gsap.to(highlight.disc.scale, {
-              x: 1.2,
-              y: 1.2,
-              z: 1.2,
-              duration: 0.3,
-              ease: 'elastic.out(1, 0.5)'
-            });
-          }
-        });
-        // Flash the outline
-        gsap.to(highlight.outline.material, {
-          opacity: 1,
-          duration: 0.1,
-          yoyo: true,
-          repeat: 1
-        });
-      }
-    } else if (type === 'datacenter') {
-      const highlight = this.datacenterHighlights[id];
-      if (highlight && highlight.diamond) {
-        // Pulse the diamond
-        gsap.to(highlight.diamond.scale, {
-          x: 2,
-          y: 2,
-          z: 2,
-          duration: 0.2,
-          ease: 'power2.out',
-          onComplete: () => {
-            gsap.to(highlight.diamond.scale, {
-              x: 1.3,
-              y: 1.3,
-              z: 1.3,
-              duration: 0.3,
-              ease: 'elastic.out(1, 0.5)'
-            });
-          }
-        });
-        // Flash the ring
-        gsap.to(highlight.ring.material, {
-          opacity: 0.8,
-          duration: 0.1,
-          yoyo: true,
-          repeat: 1
-        });
-      }
-    }
-  }
-
-  /**
-   * Set callback for location click events
-   */
+  /** Register callback for clicks on city / datacenter markers */
   setLocationClickCallback(callback) {
     this.onLocationClick = callback;
   }
 
-  /**
-   * Create initial location markers for all cities and datacenters
-   */
+  /** Create initial markers for all cities and datacenters */
   createAllLocationMarkers() {
-    // Create city markers
-    const cityBoundaries = this.getCityBoundaries();
-    Object.keys(cityBoundaries).forEach(cityId => {
-      this.createCityHighlight(cityId);
-      // Start with lower opacity
-      const highlight = this.cityHighlights[cityId];
-      if (highlight) {
-        highlight.outline.material.opacity = 0.4;
-        highlight.glowLine.material.opacity = 0.2;
-        highlight.disc.material.opacity = 0.3;
-      }
-    });
+    const cities = this._getCityData();
+    const dcs = this._getDatacenterData();
 
-    // Create datacenter markers
-    const dcLocations = this.getDatacenterLocations();
-    Object.keys(dcLocations).forEach(dcId => {
-      this.createDatacenterHighlight(dcId);
-      // Start with visible state
-      const highlight = this.datacenterHighlights[dcId];
-      if (highlight) {
-        highlight.diamond.material.opacity = 0.5;
-        highlight.ring.material.opacity = 0.2;
-        highlight.pulseRing.material.opacity = 0.1;
-      }
+    Object.entries(cities).forEach(([id, c]) => this._createCityMarker(id, c));
+    Object.entries(dcs).forEach(([id, dc]) => this._createDatacenterMarker(id, dc));
+  }
+
+  /** Fly to a location */
+  focusOnLocation(coords) {
+    this.map.flyTo({
+      center: [coords.lng, coords.lat],
+      duration: 1500,
+      essential: true
     });
   }
 
-  /**
-   * City boundary data (simplified polygons for major cities)
-   */
-  getCityBoundaries() {
-    return {
-      barcelona: {
-        center: { lat: 41.3851, lng: 2.1734 },
-        // Simplified boundary polygon (lat, lng pairs)
-        polygon: [
-          [41.45, 2.05], [41.47, 2.10], [41.47, 2.20], [41.45, 2.25],
-          [41.42, 2.28], [41.38, 2.28], [41.33, 2.25], [41.32, 2.18],
-          [41.32, 2.12], [41.35, 2.05], [41.40, 2.02], [41.45, 2.05]
-        ],
-        color: 0x00ff88
-      },
-      lagos: {
-        center: { lat: 6.5244, lng: 3.3792 },
-        polygon: [
-          [6.65, 3.25], [6.70, 3.35], [6.68, 3.50], [6.60, 3.55],
-          [6.50, 3.55], [6.42, 3.50], [6.38, 3.40], [6.40, 3.28],
-          [6.48, 3.22], [6.58, 3.22], [6.65, 3.25]
-        ],
-        color: 0x00ff88
-      },
-      phoenix: {
-        center: { lat: 33.4484, lng: -112.0740 },
-        polygon: [
-          [33.55, -112.20], [33.58, -112.05], [33.55, -111.92],
-          [33.48, -111.88], [33.38, -111.90], [33.32, -112.00],
-          [33.30, -112.15], [33.35, -112.25], [33.45, -112.28],
-          [33.55, -112.20]
-        ],
-        color: 0x00ff88
-      },
-      dublin: {
-        center: { lat: 53.3498, lng: -6.2603 },
-        polygon: [
-          [53.42, -6.40], [53.43, -6.25], [53.42, -6.10],
-          [53.38, -6.05], [53.32, -6.08], [53.28, -6.18],
-          [53.28, -6.32], [53.32, -6.42], [53.38, -6.45],
-          [53.42, -6.40]
-        ],
-        color: 0x00ff88
-      }
-    };
+  /** Fly to location with zoom (maps old Three.js camera z to Mapbox zoom) */
+  focusOnLocationWithZoom(coords, cameraZ = 3, duration = 1.5) {
+    const zoom = this._cameraZToZoom(cameraZ);
+    this.map.flyTo({
+      center: [coords.lng, coords.lat],
+      zoom,
+      duration: duration * 1000,
+      essential: true
+    });
   }
 
-  /**
-   * Create city highlight ring/outline on the globe
-   */
-  createCityHighlight(cityId) {
-    const boundaries = this.getCityBoundaries();
-    const cityData = boundaries[cityId];
-    
-    if (!cityData) return null;
-
-    // Create a ring around the city
-    const points = [];
-    const radius = 1.005; // Slightly above globe surface
-    
-    // Convert polygon points to 3D positions
-    for (const [lat, lng] of cityData.polygon) {
-      points.push(this.latLngToVector3(lat, lng, radius));
-    }
-    // Close the loop
-    if (points.length > 0) {
-      points.push(points[0].clone());
-    }
-
-    // Create the outline geometry
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    
-    const material = new THREE.LineBasicMaterial({
-      color: cityData.color,
-      linewidth: 2,
-      transparent: true,
-      opacity: 0.9
-    });
-
-    const outline = new THREE.Line(geometry, material);
-    outline.userData = { cityId, type: 'cityHighlight' };
-
-    // Create a pulsing glow effect - larger ring
-    const glowPoints = [];
-    for (const [lat, lng] of cityData.polygon) {
-      glowPoints.push(this.latLngToVector3(lat, lng, radius + 0.002));
-    }
-    if (glowPoints.length > 0) {
-      glowPoints.push(glowPoints[0].clone());
-    }
-    
-    const glowGeometry = new THREE.BufferGeometry().setFromPoints(glowPoints);
-    const glowMaterial = new THREE.LineBasicMaterial({
-      color: cityData.color,
-      transparent: true,
-      opacity: 0.4,
-      linewidth: 4
-    });
-    
-    const glowLine = new THREE.Line(glowGeometry, glowMaterial);
-    glowLine.userData = { cityId, type: 'cityGlow' };
-
-    // Create a filled area indicator (semi-transparent disc at city center)
-    const centerPos = this.latLngToVector3(cityData.center.lat, cityData.center.lng, radius);
-    const discGeometry = new THREE.CircleGeometry(0.03, 32);
-    const discMaterial = new THREE.MeshBasicMaterial({
-      color: cityData.color,
-      transparent: true,
-      opacity: 0.3,
-      side: THREE.DoubleSide
-    });
-    const disc = new THREE.Mesh(discGeometry, discMaterial);
-    disc.position.copy(centerPos);
-    disc.lookAt(0, 0, 0);
-    disc.userData = { cityId, type: 'cityDisc' };
-
-    // Store references
-    this.cityHighlights[cityId] = { outline, glowLine, disc };
-    
-    // Add larger invisible click target
-    const clickTargetGeometry = new THREE.CircleGeometry(0.06, 32);
-    const clickTargetMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
-      transparent: true,
-      opacity: 0,
-      side: THREE.DoubleSide
-    });
-    const clickTarget = new THREE.Mesh(clickTargetGeometry, clickTargetMaterial);
-    clickTarget.position.copy(centerPos);
-    clickTarget.lookAt(0, 0, 0);
-    clickTarget.userData = { cityId, type: 'cityClickTarget', locationType: 'city', locationId: cityId };
-    this.cityHighlights[cityId].clickTarget = clickTarget;
-    this.globeGroup.add(clickTarget);
-    
-    // Add to globe group
-    this.globeGroup.add(outline);
-    this.globeGroup.add(glowLine);
-    this.globeGroup.add(disc);
-
-    return { outline, glowLine, disc };
-  }
-
-  /**
-   * Highlight a city (show its outline)
-   */
+  /** Highlight city marker */
   highlightCity(cityId) {
-    // Remove previous highlight
     if (this.selectedCity && this.selectedCity !== cityId) {
-      this.unhighlightCity(this.selectedCity);
+      this._setCityState(this.selectedCity, false);
     }
-
     this.selectedCity = cityId;
+    this._setCityState(cityId, true);
+  }
 
-    // Create highlight if it doesn't exist
-    if (!this.cityHighlights[cityId]) {
-      this.createCityHighlight(cityId);
+  /** Highlight datacenter marker */
+  highlightDatacenter(dcId) {
+    if (this.selectedDatacenter && this.selectedDatacenter !== dcId) {
+      this._setDCState(this.selectedDatacenter, false);
     }
+    this.selectedDatacenter = dcId;
+    this._setDCState(dcId, true);
+  }
 
-    const highlight = this.cityHighlights[cityId];
-    if (highlight) {
-      // Animate in
-      gsap.to(highlight.outline.material, {
-        opacity: 1,
-        duration: 0.3
-      });
-      gsap.to(highlight.glowLine.material, {
-        opacity: 0.6,
-        duration: 0.3
-      });
-      gsap.to(highlight.disc.material, {
-        opacity: 0.4,
-        duration: 0.3
-      });
-      gsap.to(highlight.disc.scale, {
-        x: 1.2,
-        y: 1.2,
-        z: 1.2,
-        duration: 0.5,
-        ease: 'elastic.out(1, 0.5)'
-      });
+  /** Focus on datacenter and highlight it */
+  focusOnDatacenter(dcId) {
+    const dc = this._getDatacenterData()[dcId];
+    if (dc) {
+      this.focusOnLocation(dc.center);
+      this.highlightDatacenter(dcId);
     }
   }
 
-  /**
-   * Remove city highlight
-   */
-  unhighlightCity(cityId) {
-    const highlight = this.cityHighlights[cityId];
-    if (highlight) {
-      gsap.to(highlight.outline.material, {
-        opacity: 0,
-        duration: 0.3
-      });
-      gsap.to(highlight.glowLine.material, {
-        opacity: 0,
-        duration: 0.3
-      });
-      gsap.to(highlight.disc.material, {
-        opacity: 0,
-        duration: 0.3
-      });
-      gsap.to(highlight.disc.scale, {
-        x: 0.5,
-        y: 0.5,
-        z: 0.5,
-        duration: 0.3
-      });
-    }
-  }
-
-  /**
-   * Clear all city highlights
-   */
-  clearCityHighlights() {
-    for (const cityId of Object.keys(this.cityHighlights)) {
-      this.unhighlightCity(cityId);
-    }
-    this.selectedCity = null;
-  }
-
-  /**
-   * Datacenter location data with visual markers
-   */
-  getDatacenterLocations() {
-    return {
-      arizona: {
-        center: { lat: 33.3942, lng: -111.9261 },
-        name: 'Arizona Hyperscale',
-        color: 0xff4444
-      },
-      finland: {
-        center: { lat: 60.5693, lng: 27.1878 },
-        name: 'Nordic Green DC',
-        color: 0x44ff88
-      },
-      singapore: {
-        center: { lat: 1.3521, lng: 103.8198 },
-        name: 'Equinix SG Hub',
-        color: 0xff8844
-      },
-      ireland: {
-        center: { lat: 53.4055, lng: -6.3725 },
-        name: 'Dublin Cloud Campus',
-        color: 0x4488ff
-      }
-    };
-  }
-
-  /**
-   * Create datacenter highlight marker on the globe
-   */
-  createDatacenterHighlight(datacenterId) {
-    const locations = this.getDatacenterLocations();
-    const dcData = locations[datacenterId];
-    
-    if (!dcData) return null;
-
-    const radius = 1.005;
-    const centerPos = this.latLngToVector3(dcData.center.lat, dcData.center.lng, radius);
-
-    // Create a diamond/rhombus shape for datacenter (different from city circle)
-    const diamondShape = new THREE.Shape();
-    const size = 0.04;
-    diamondShape.moveTo(0, size);
-    diamondShape.lineTo(size * 0.6, 0);
-    diamondShape.lineTo(0, -size);
-    diamondShape.lineTo(-size * 0.6, 0);
-    diamondShape.lineTo(0, size);
-
-    const diamondGeometry = new THREE.ShapeGeometry(diamondShape);
-    const diamondMaterial = new THREE.MeshBasicMaterial({
-      color: dcData.color,
-      transparent: true,
-      opacity: 0.7,
-      side: THREE.DoubleSide
-    });
-    const diamond = new THREE.Mesh(diamondGeometry, diamondMaterial);
-    diamond.position.copy(centerPos);
-    diamond.lookAt(0, 0, 0);
-    diamond.userData = { datacenterId, type: 'datacenterMarker' };
-
-    // Create outer ring for glow effect
-    const ringGeometry = new THREE.RingGeometry(0.045, 0.055, 32);
-    const ringMaterial = new THREE.MeshBasicMaterial({
-      color: dcData.color,
-      transparent: true,
-      opacity: 0.4,
-      side: THREE.DoubleSide
-    });
-    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-    ring.position.copy(centerPos);
-    ring.lookAt(0, 0, 0);
-    ring.userData = { datacenterId, type: 'datacenterRing' };
-
-    // Create pulsing outer ring
-    const pulseRingGeometry = new THREE.RingGeometry(0.06, 0.065, 32);
-    const pulseRingMaterial = new THREE.MeshBasicMaterial({
-      color: dcData.color,
-      transparent: true,
-      opacity: 0.2,
-      side: THREE.DoubleSide
-    });
-    const pulseRing = new THREE.Mesh(pulseRingGeometry, pulseRingMaterial);
-    pulseRing.position.copy(centerPos);
-    pulseRing.lookAt(0, 0, 0);
-    pulseRing.userData = { datacenterId, type: 'datacenterPulse' };
-
-    // Store references
-    this.datacenterHighlights[datacenterId] = { diamond, ring, pulseRing };
-    
-    // Add larger invisible click target
-    const clickTargetGeometry = new THREE.CircleGeometry(0.08, 32);
-    const clickTargetMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
-      transparent: true,
-      opacity: 0,
-      side: THREE.DoubleSide
-    });
-    const clickTarget = new THREE.Mesh(clickTargetGeometry, clickTargetMaterial);
-    clickTarget.position.copy(centerPos);
-    clickTarget.lookAt(0, 0, 0);
-    clickTarget.userData = { datacenterId, type: 'dcClickTarget', locationType: 'datacenter', locationId: datacenterId };
-    this.datacenterHighlights[datacenterId].clickTarget = clickTarget;
-    this.globeGroup.add(clickTarget);
-    
-    // Add to globe group
-    this.globeGroup.add(diamond);
-    this.globeGroup.add(ring);
-    this.globeGroup.add(pulseRing);
-
-    return { diamond, ring, pulseRing };
-  }
-
-  /**
-   * Highlight a datacenter (show its marker)
-   */
-  highlightDatacenter(datacenterId) {
-    // Remove previous highlight
-    if (this.selectedDatacenter && this.selectedDatacenter !== datacenterId) {
-      this.unhighlightDatacenter(this.selectedDatacenter);
-    }
-
-    this.selectedDatacenter = datacenterId;
-
-    // Create highlight if it doesn't exist
-    if (!this.datacenterHighlights[datacenterId]) {
-      this.createDatacenterHighlight(datacenterId);
-    }
-
-    const highlight = this.datacenterHighlights[datacenterId];
-    if (highlight) {
-      // Animate in with pulsing effect
-      gsap.to(highlight.diamond.material, {
-        opacity: 0.9,
-        duration: 0.3
-      });
-      gsap.to(highlight.ring.material, {
-        opacity: 0.6,
-        duration: 0.3
-      });
-      gsap.to(highlight.pulseRing.material, {
-        opacity: 0.4,
-        duration: 0.3
-      });
-      
-      // Scale up effect
-      gsap.to(highlight.diamond.scale, {
-        x: 1.3,
-        y: 1.3,
-        z: 1.3,
-        duration: 0.5,
-        ease: 'elastic.out(1, 0.5)'
-      });
-      
-      // Pulsing animation on the outer ring
-      gsap.to(highlight.pulseRing.scale, {
-        x: 1.5,
-        y: 1.5,
-        z: 1.5,
-        duration: 1,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut'
-      });
-    }
-  }
-
-  /**
-   * Remove datacenter highlight
-   */
-  unhighlightDatacenter(datacenterId) {
-    const highlight = this.datacenterHighlights[datacenterId];
-    if (highlight) {
-      gsap.killTweensOf(highlight.pulseRing.scale);
-      gsap.to(highlight.diamond.material, {
-        opacity: 0.3,
-        duration: 0.3
-      });
-      gsap.to(highlight.ring.material, {
-        opacity: 0.1,
-        duration: 0.3
-      });
-      gsap.to(highlight.pulseRing.material, {
-        opacity: 0,
-        duration: 0.3
-      });
-      gsap.to(highlight.diamond.scale, {
-        x: 0.8,
-        y: 0.8,
-        z: 0.8,
-        duration: 0.3
-      });
-      gsap.to(highlight.pulseRing.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration: 0.3
-      });
-    }
-  }
-
-  /**
-   * Clear all datacenter highlights
-   */
-  clearDatacenterHighlights() {
-    for (const dcId of Object.keys(this.datacenterHighlights)) {
-      this.unhighlightDatacenter(dcId);
-    }
-    this.selectedDatacenter = null;
-  }
-
-  /**
-   * Focus globe on datacenter location
-   */
-  focusOnDatacenter(datacenterId) {
-    const locations = this.getDatacenterLocations();
-    const dcData = locations[datacenterId];
-    if (dcData) {
-      this.focusOnLocation(dcData.center);
-      this.highlightDatacenter(datacenterId);
-    }
-  }
-
-  onWheel(event) {
-    event.preventDefault();
-    const zoomSpeed = 0.001;
-    this.camera.position.z += event.deltaY * zoomSpeed;
-    this.camera.position.z = Math.max(1.5, Math.min(5, this.camera.position.z));
-  }
-
-  /**
-   * Convert lat/lng to 3D position on sphere
-   */
-  latLngToVector3(lat, lng, radius = 1) {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lng + 180) * (Math.PI / 180);
-
-    return new THREE.Vector3(
-      -radius * Math.sin(phi) * Math.cos(theta),
-      radius * Math.cos(phi),
-      radius * Math.sin(phi) * Math.sin(theta)
-    );
-  }
-
-  /**
-   * Create a curved line between two points (ghost line)
-   */
-  createGhostLine(from, to, type, intensity = 1) {
-    const startVec = this.latLngToVector3(from.lat, from.lng);
-    const endVec = this.latLngToVector3(to.lat, to.lng);
-
-    // Calculate arc height based on distance
-    const distance = startVec.distanceTo(endVec);
-    const arcHeight = 0.2 + distance * 0.3;
-
-    // Create control point for quadratic curve
-    const midPoint = new THREE.Vector3()
-      .addVectors(startVec, endVec)
-      .multiplyScalar(0.5)
-      .normalize()
-      .multiplyScalar(1 + arcHeight);
-
-    // Create curve
-    const curve = new THREE.QuadraticBezierCurve3(startVec, midPoint, endVec);
-    const points = curve.getPoints(50);
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    // Color based on type
-    const color = this.colors[type] || this.colors.data;
-
-    // Create dashed line material for ghost effect
-    const material = new THREE.LineDashedMaterial({
-      color,
-      linewidth: 2,
-      dashSize: 0.03,
-      gapSize: 0.02,
-      transparent: true,
-      opacity: intensity * 0.8
-    });
-
-    const line = new THREE.Line(geometry, material);
-    line.computeLineDistances();
-    line.userData = { type, intensity, curve };
-
-    return line;
-  }
-
-  /**
-   * Create animated flowing particles along a path
-   */
-  createFlowParticles(curve, type, count = 20) {
-    const particles = [];
-    const color = this.colors[type] || this.colors.data;
-
-    for (let i = 0; i < count; i++) {
-      const geometry = new THREE.SphereGeometry(0.008, 8, 8);
-      const material = new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0.9
-      });
-      
-      const particle = new THREE.Mesh(geometry, material);
-      particle.userData = {
-        curve,
-        offset: i / count,
-        speed: 0.001 + Math.random() * 0.001,
-        type: type // Store the layer type for filtering
-      };
-      
-      particles.push(particle);
-      this.globeGroup.add(particle); // Add to globeGroup so it rotates with globe
-    }
-
-    return particles;
-  }
-
-  /**
-   * Create location marker
-   */
-  createMarker(coords, label, type = 'city') {
-    const position = this.latLngToVector3(coords.lat, coords.lng, 1.01);
-    
-    // Marker geometry
-    const geometry = new THREE.SphereGeometry(0.015, 16, 16);
-    const color = type === 'city' ? 0x00ff88 : 
-                  type === 'datacenter' ? 0xff6b6b : 
-                  0xffffff;
-    
-    const material = new THREE.MeshBasicMaterial({
-      color,
-      transparent: true,
-      opacity: 0.9
-    });
-    
-    const marker = new THREE.Mesh(geometry, material);
-    marker.position.copy(position);
-    marker.userData = { label, type, coords };
-    
-    // Pulse ring
-    const ringGeometry = new THREE.RingGeometry(0.02, 0.025, 32);
-    const ringMaterial = new THREE.MeshBasicMaterial({
-      color,
-      transparent: true,
-      opacity: 0.6,
-      side: THREE.DoubleSide
-    });
-    
-    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-    ring.position.copy(position);
-    ring.lookAt(new THREE.Vector3(0, 0, 0));
-    marker.userData.ring = ring;
-    
-    // Add to globeGroup so markers rotate with globe
-    this.globeGroup.add(marker);
-    this.globeGroup.add(ring);
-    this.markers.push(marker);
-    
-    return marker;
-  }
-
-  /**
-   * Visualize simulation flows
-   */
-  visualizeFlows(flows) {
-    // Clear existing flows
-    this.clearFlows();
-
-    const allParticles = [];
-
-    for (const flow of flows) {
-      // Check layer visibility
-      if (!this.layerVisibility[flow.type] && flow.type !== 'data') {
-        continue;
-      }
-
-      // Create ghost line
-      const line = this.createGhostLine(flow.from, flow.to, flow.type, flow.intensity);
-      this.flowLines.push(line);
-      this.globeGroup.add(line); // Add to globeGroup so lines rotate with globe
-
-      // Create flowing particles
-      const particles = this.createFlowParticles(line.userData.curve, flow.type);
-      allParticles.push(...particles);
-
-      // Create markers at endpoints
-      this.createMarker(flow.from, flow.label || 'Source', flow.type);
-      this.createMarker(flow.to, flow.label || 'Destination', flow.type);
-    }
-
-    // Store particles for animation
-    this.flowParticles = allParticles;
-
-    // Animate lines appearing
-    this.animateFlowsIn();
-  }
-
-  /**
-   * Animate flows appearing
-   */
-  animateFlowsIn() {
-    for (const line of this.flowLines) {
-      line.material.opacity = 0;
-      gsap.to(line.material, {
-        opacity: line.userData.intensity * 0.8,
-        duration: 1,
-        ease: 'power2.out'
-      });
-    }
-
-    for (const marker of this.markers) {
-      marker.scale.set(0, 0, 0);
-      gsap.to(marker.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration: 0.5,
-        ease: 'back.out(1.7)'
-      });
-      
-      if (marker.userData.ring) {
-        marker.userData.ring.scale.set(0, 0, 0);
-        gsap.to(marker.userData.ring.scale, {
-          x: 1,
-          y: 1,
-          z: 1,
-          duration: 0.5,
-          delay: 0.2,
-          ease: 'back.out(1.7)'
-        });
-      }
-    }
-  }
-
-  /**
-   * Clear all flow visualizations
-   */
-  clearFlows() {
-    // Remove lines
-    for (const line of this.flowLines) {
-      this.globeGroup.remove(line);
-      line.geometry.dispose();
-      line.material.dispose();
-    }
-    this.flowLines = [];
-
-    // Remove particles
-    if (this.flowParticles) {
-      for (const particle of this.flowParticles) {
-        this.globeGroup.remove(particle);
-        particle.geometry.dispose();
-        particle.material.dispose();
-      }
-      this.flowParticles = [];
-    }
-
-    // Remove markers
-    for (const marker of this.markers) {
-      this.globeGroup.remove(marker);
-      marker.geometry.dispose();
-      marker.material.dispose();
-      if (marker.userData.ring) {
-        this.globeGroup.remove(marker.userData.ring);
-        marker.userData.ring.geometry.dispose();
-        marker.userData.ring.material.dispose();
-      }
-    }
-    this.markers = [];
-  }
-
-  /**
-   * Set layer visibility
-   */
+  /** Toggle single layer visibility */
   setLayerVisibility(layer, visible) {
     this.layerVisibility[layer] = visible;
-    console.log('Globe: Setting layer', layer, 'to', visible ? 'visible' : 'hidden');
-
-    // Update existing flow lines
-    for (const line of this.flowLines) {
-      if (line.userData.type === layer) {
-        line.visible = visible;
-        line.material.opacity = visible ? line.userData.intensity * 0.8 : 0;
-      }
-    }
-    
-    // Update particles
-    if (this.flowParticles) {
-      for (const particle of this.flowParticles) {
-        if (particle.userData.type === layer) {
-          particle.visible = visible;
-          particle.material.opacity = visible ? 0.9 : 0;
-        }
-      }
-    }
-    
-    // Update markers
-    for (const marker of this.markers) {
-      if (marker.userData.type === layer) {
-        marker.visible = visible;
-        marker.material.opacity = visible ? 0.9 : 0;
-        if (marker.userData.ring) {
-          marker.userData.ring.visible = visible;
-          marker.userData.ring.material.opacity = visible ? 0.6 : 0;
-        }
-      }
-    }
+    this._syncLayerVisibility();
   }
-  
-  /**
-   * Set all layers visible or hidden
-   */
+
+  /** Set all layers visible/hidden */
   setAllLayersVisibility(visible) {
-    console.log('Globe: Setting all layers to', visible ? 'visible' : 'hidden');
-    const layers = ['electricity', 'water', 'emissions', 'materials'];
-    for (const layer of layers) {
-      this.setLayerVisibility(layer, visible);
-    }
+    ['electricity', 'water', 'emissions', 'materials'].forEach(l => {
+      this.layerVisibility[l] = visible;
+    });
+    this._syncLayerVisibility();
   }
 
+  // =============================================
+  // Energy Consumption – scale-aware 3D buildings
+  // =============================================
+
   /**
-   * Focus camera on a location
+   * Show 3D building extrusions for a specific consumption scale.
+   *
+   * Strategy:
+   *   1. flyTo the reference building at scale-specific zoom/pitch.
+   *   2. Once idle add a dark fill-extrusion base layer (all buildings dark).
+   *   3. Poll queryRenderedFeatures (ALL layers, filtered to sourceLayer
+   *      'building') until buildings appear. This avoids timing issues with
+   *      our custom layer's tiles and also avoids Mapbox filter expressions
+   *      (distance / within) that don't work reliably on fill-extrusion.
+   *   4. Pick the closest building(s) by screen distance, create a GeoJSON
+   *      source containing only those features, and render the lit layer
+   *      from that source. This sidesteps feature-ID availability issues.
+   *
+   * Interior → one flat (top 3 m of closest building)
+   * Building → one full building (fully coloured)
+   * City     → neighbourhood (ratio-based colouring)
+   * Planetary → globe view, no extrusions
    */
-  focusOnLocation(coords) {
-    const targetPosition = this.latLngToVector3(coords.lat, coords.lng);
-    
-    // Calculate rotation to face this point
-    const angle = Math.atan2(targetPosition.x, targetPosition.z);
-    
-    gsap.to(this.globeGroup.rotation, {
-      y: -angle,
-      duration: 1.5,
-      ease: 'power2.inOut'
+  showBuildingEnergy(scale, refCoords, energyRatio) {
+    this.hideBuildingEnergy();
+
+    const lng = refCoords.lng;
+    const lat = refCoords.lat;
+    const ref = [lng, lat];
+    const clamp = Math.max(0, Math.min(1, energyRatio));
+    const powered   = COLORS.electricity; // #f0b429
+    const unpowered = '#1a1e26';
+
+    this._energyRef = ref;
+    this._energyScale = scale;
+
+    // Camera per scale
+    const cameras = {
+      interior:  { zoom: 18.8, pitch: 62, bearing: 25,  duration: 2000 },
+      building:  { zoom: 17.2, pitch: 60, bearing: -12, duration: 1800 },
+      city:      { zoom: 15.0, pitch: 50, bearing: -17, duration: 2000 },
+      planetary: { zoom: 1.8,  pitch: 0,  bearing: 0,   duration: 2400 }
+    };
+    const cam = cameras[scale] || cameras.city;
+
+    this.map.flyTo({
+      center: ref,
+      zoom: cam.zoom,
+      pitch: cam.pitch,
+      bearing: cam.bearing,
+      duration: cam.duration,
+      essential: true
+    });
+
+    if (scale === 'planetary') return;
+
+    // Shared height expressions (reads properties from GeoJSON source)
+    const heightExpr = ['coalesce', ['to-number', ['get', 'height']], 5];
+    const minHeightExpr = ['coalesce', ['to-number', ['get', 'min_height']], 0];
+
+    // After flyTo + tile load, add the dark layer and start polling
+    this.map.once('idle', () => {
+      if (this._energyScale !== scale) return;
+
+      // Dark base layer — all buildings rendered dark
+      if (!this.map.getLayer('energy-buildings-dark')) {
+        this.map.addLayer({
+          id: 'energy-buildings-dark',
+          source: 'composite',
+          'source-layer': 'building',
+          type: 'fill-extrusion',
+          minzoom: 13,
+          paint: {
+            'fill-extrusion-color': unpowered,
+            'fill-extrusion-height': heightExpr,
+            'fill-extrusion-base': minHeightExpr,
+            'fill-extrusion-opacity': 0.75
+          }
+        });
+      }
+
+      // Begin polling for rendered buildings
+      this._pollForBuildings(scale, ref, clamp, powered, heightExpr, minHeightExpr, 0);
     });
   }
 
   /**
-   * Animation loop
+   * Poll queryRenderedFeatures until building features appear, then create
+   * a GeoJSON lit layer with the target buildings.
    */
-  animate() {
-    if (!this.isAnimating) return;
-    
-    requestAnimationFrame(() => this.animate());
+  _pollForBuildings(scale, ref, clamp, powered, heightExpr, minHeightExpr, attempt) {
+    if (this._energyScale !== scale) return;          // stale
+    if (this.map.getLayer('energy-buildings-lit')) return; // already done
 
-    // Slow auto-rotation when not dragging
-    if (!this.isDragging) {
-      this.globeGroup.rotation.y += this.rotationSpeed;
-    }
+    const MAX_ATTEMPTS = 25;
+    const RETRY_MS = 250;
 
-    // Animate flowing particles
-    if (this.flowParticles) {
-      for (const particle of this.flowParticles) {
-        const { curve, offset, speed } = particle.userData;
-        particle.userData.offset = (offset + speed) % 1;
-        
-        const point = curve.getPoint(particle.userData.offset);
-        particle.position.copy(point);
+    const center = this.map.project(ref);
+    // Generous pixel radii to account for varying building sizes
+    const pxRadius = scale === 'interior' ? 200
+                   : scale === 'building' ? 200
+                   : 400;
+
+    const bbox = [
+      [center.x - pxRadius, center.y - pxRadius],
+      [center.x + pxRadius, center.y + pxRadius]
+    ];
+
+    // Query ALL rendered layers — includes the base style's 'building' fill
+    // layer which is available even before our custom fill-extrusion renders
+    const allFeatures = this.map.queryRenderedFeatures(bbox);
+    const features = allFeatures.filter(f => f.sourceLayer === 'building');
+
+    if (features.length === 0) {
+      if (attempt < MAX_ATTEMPTS) {
+        setTimeout(() => this._pollForBuildings(
+          scale, ref, clamp, powered, heightExpr, minHeightExpr, attempt + 1
+        ), RETRY_MS);
+      } else {
+        console.warn('[GlobeViz] No buildings found after', MAX_ATTEMPTS, 'attempts near', ref);
       }
+      return;
     }
 
-    // Animate marker pulse rings
-    const time = Date.now() * 0.001;
-    for (const marker of this.markers) {
-      if (marker.userData.ring) {
-        const scale = 1 + Math.sin(time * 2) * 0.2;
-        marker.userData.ring.scale.set(scale, scale, scale);
-        marker.userData.ring.material.opacity = 0.6 - Math.sin(time * 2) * 0.3;
+    console.log(`[GlobeViz] Found ${features.length} building features (attempt ${attempt})`);
+
+    // Deduplicate by geometry hash (feature IDs may be undefined)
+    const seen = new Map();
+    for (const f of features) {
+      const key = f.id != null
+        ? `id:${f.id}`
+        : JSON.stringify(f.geometry.coordinates[0]?.slice(0, 3));
+      if (seen.has(key)) continue;
+
+      const centroid = this._featureCentroid(f.geometry);
+      const fp = this.map.project(centroid);
+      const dist = Math.hypot(fp.x - center.x, fp.y - center.y);
+      seen.set(key, { feature: f, dist });
+    }
+
+    const buildings = Array.from(seen.values()).sort((a, b) => a.dist - b.dist);
+
+    if (buildings.length === 0) {
+      if (attempt < MAX_ATTEMPTS) {
+        setTimeout(() => this._pollForBuildings(
+          scale, ref, clamp, powered, heightExpr, minHeightExpr, attempt + 1
+        ), RETRY_MS);
       }
+      return;
     }
 
-    this.renderer.render(this.scene, this.camera);
+    // Pick target buildings
+    let targets;
+    if (scale === 'interior' || scale === 'building') {
+      targets = [buildings[0]];
+    } else {
+      const numLit = Math.max(1, Math.round(buildings.length * clamp));
+      targets = buildings.slice(0, numLit);
+    }
+
+    // Build clean GeoJSON features (only geometry + properties)
+    const litFeatures = targets.map(b => ({
+      type: 'Feature',
+      geometry: b.feature.geometry,
+      properties: b.feature.properties || {}
+    }));
+
+    // Create a GeoJSON source containing only the target buildings
+    if (this.map.getSource('energy-lit-source')) {
+      this.map.getSource('energy-lit-source').setData({
+        type: 'FeatureCollection', features: litFeatures
+      });
+    } else {
+      this.map.addSource('energy-lit-source', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: litFeatures }
+      });
+    }
+
+    // Lit layer paint
+    const opacity = scale === 'interior' ? 0.95 : scale === 'building' ? 0.92 : 0.88;
+
+    if (scale === 'interior') {
+      // One flat — only the top 3 m of the closest building
+      this.map.addLayer({
+        id: 'energy-buildings-lit',
+        source: 'energy-lit-source',
+        type: 'fill-extrusion',
+        paint: {
+          'fill-extrusion-color': powered,
+          'fill-extrusion-height': heightExpr,
+          'fill-extrusion-base': ['-', heightExpr, 3],
+          'fill-extrusion-opacity': opacity
+        }
+      });
+    } else {
+      // Building or City — full-height colouring
+      this.map.addLayer({
+        id: 'energy-buildings-lit',
+        source: 'energy-lit-source',
+        type: 'fill-extrusion',
+        paint: {
+          'fill-extrusion-color': powered,
+          'fill-extrusion-height': heightExpr,
+          'fill-extrusion-base': minHeightExpr,
+          'fill-extrusion-opacity': opacity
+        }
+      });
+    }
   }
 
-  /**
-   * Cleanup
-   */
-  dispose() {
-    this.isAnimating = false;
+  /** Approximate centroid of a GeoJSON geometry */
+  _featureCentroid(geometry) {
+    if (!geometry) return [0, 0];
+    const ring = geometry.type === 'Polygon'
+      ? geometry.coordinates[0]
+      : geometry.type === 'MultiPolygon'
+        ? geometry.coordinates[0][0]
+        : null;
+    if (!ring || ring.length === 0) return [0, 0];
+    let lngSum = 0, latSum = 0;
+    for (const [x, y] of ring) { lngSum += x; latSum += y; }
+    return [lngSum / ring.length, latSum / ring.length];
+  }
+
+  /** Remove all energy building layers and GeoJSON source */
+  hideBuildingEnergy() {
+    this._energyScale = null;
+    ['energy-buildings-lit', 'energy-buildings-dark', 'energy-buildings'].forEach(id => {
+      if (this.map && this.map.getLayer(id)) this.map.removeLayer(id);
+    });
+    if (this.map && this.map.getSource('energy-lit-source')) {
+      this.map.removeSource('energy-lit-source');
+    }
+  }
+
+  /** Render simulation flow arcs on the globe */
+  visualizeFlows(flows) {
     this.clearFlows();
-    this.renderer.dispose();
-    this.container.removeChild(this.renderer.domElement);
+
+    // Validate flows (log only errors)
+    flows.forEach((flow, i) => {
+      const fromValid = flow.from && typeof flow.from.lat === 'number' && typeof flow.from.lng === 'number';
+      const toValid = flow.to && typeof flow.to.lat === 'number' && typeof flow.to.lng === 'number';
+      if (!fromValid || !toValid) {
+        console.error(`Flow ${i} [${flow.type}] invalid coords:`, flow);
+      }
+    });
+
+    // Create small endpoint markers for flow sources/destinations
+    this._createFlowEndpointMarkers(flows);
+
+    // Wait for map to be loaded before adding sources/layers
+    if (!this.map.isStyleLoaded()) {
+      this.map.once('styledata', () => {
+        this._renderFlows(flows);
+        this._startParticles(flows);
+      });
+    } else {
+      this._renderFlows(flows);
+      this._startParticles(flows);
+    }
+  }
+
+  /** Create small markers at flow endpoints (power plants, mines, etc.) */
+  _createFlowEndpointMarkers(flows) {
+    // Collect unique coordinates that aren't city/datacenter locations
+    const cityCoords = Object.values(this._getCityData()).map(c => `${c.center.lat},${c.center.lng}`);
+    const dcCoords = Object.values(this._getDatacenterData()).map(dc => `${dc.center.lat},${dc.center.lng}`);
+    const knownLocations = new Set([...cityCoords, ...dcCoords]);
+
+    const endpoints = new Map(); // key -> { coords, type, label }
+
+    flows.forEach(flow => {
+      if (!flow.from || !flow.to) return;
+
+      // Check 'from' coordinate
+      const fromKey = `${flow.from.lat},${flow.from.lng}`;
+      if (!knownLocations.has(fromKey) && !endpoints.has(fromKey)) {
+        endpoints.set(fromKey, {
+          coords: flow.from,
+          type: flow.type,
+          label: flow.label || flow.type
+        });
+      }
+
+      // Check 'to' coordinate
+      const toKey = `${flow.to.lat},${flow.to.lng}`;
+      if (!knownLocations.has(toKey) && !endpoints.has(toKey)) {
+        endpoints.set(toKey, {
+          coords: flow.to,
+          type: flow.type,
+          label: flow.label || flow.type
+        });
+      }
+    });
+
+    // Create small markers for each endpoint
+    endpoints.forEach(({ coords, type, label }) => {
+      const el = document.createElement('div');
+      el.className = `flow-endpoint-marker flow-endpoint-${type}`;
+      el.innerHTML = `<div class="flow-endpoint-dot"></div>`;
+      el.title = label;
+
+      const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([coords.lng, coords.lat])
+        .addTo(this.map);
+
+      this.flowEndpointMarkers.push(marker);
+    });
+  }
+
+  /** Remove all flows */
+  clearFlows() {
+    this._stopParticles();
+
+    // Remove particle layers and sources
+    this.particleLayers.forEach(id => {
+      if (this.map.getLayer(id)) this.map.removeLayer(id);
+    });
+    this.particleSources.forEach(({ srcId }) => {
+      if (this.map.getSource(srcId)) this.map.removeSource(srcId);
+    });
+    this.particleLayers = [];
+    this.particleSources = [];
+
+    // Remove flow layers and sources
+    this.flowLayerIds.forEach(id => {
+      if (this.map.getLayer(id)) this.map.removeLayer(id);
+    });
+    // Deduplicate source ids before removing
+    const uniqueSources = [...new Set(this.flowSourceIds)];
+    uniqueSources.forEach(id => {
+      if (this.map.getSource(id)) this.map.removeSource(id);
+    });
+    this.flowLayerIds = [];
+    this.flowSourceIds = [];
+
+    // Remove flow endpoint markers
+    this.flowEndpointMarkers.forEach(m => m.remove());
+    this.flowEndpointMarkers = [];
+  }
+
+  /** Cleanup */
+  dispose() {
+    this.clearFlows();
+    this.hideBuildingEnergy();
+    Object.values(this.cityMarkers).forEach(({ marker }) => marker.remove());
+    Object.values(this.datacenterMarkers).forEach(({ marker }) => marker.remove());
+    if (this.map) { this.map.remove(); this.map = null; }
+  }
+
+  // =============================================
+  // Internals
+  // =============================================
+
+  // --- Data ---
+
+  _getCityData() {
+    return {
+      barcelona: { center: { lat: 41.3851, lng: 2.1734 }, name: 'Barcelona' },
+      lagos:     { center: { lat: 6.5244,  lng: 3.3792 }, name: 'Lagos' },
+      phoenix:   { center: { lat: 33.4484, lng: -112.074 }, name: 'Phoenix' },
+      dublin:    { center: { lat: 53.3498, lng: -6.2603 }, name: 'Dublin' }
+    };
+  }
+
+  _getDatacenterData() {
+    return {
+      arizona:   { center: { lat: 33.3942, lng: -111.9261 }, name: 'Arizona Hyperscale', color: '#ff4444' },
+      finland:   { center: { lat: 60.5693, lng: 27.1878 },   name: 'Nordic Green DC',   color: '#44ff88' },
+      singapore: { center: { lat: 1.3521,  lng: 103.8198 },  name: 'Equinix SG Hub',    color: '#ff8844' },
+      ireland:   { center: { lat: 53.4055, lng: -6.3725 },   name: 'Dublin Cloud Campus', color: '#4488ff' }
+    };
+  }
+
+  // --- Zoom mapping ---
+
+  _cameraZToZoom(z) {
+    // Three.js z 1.5–5 → Mapbox zoom ~6 down to ~1
+    const zoom = 9.5 - z * 2.1;
+    return Math.max(0.5, Math.min(8, zoom));
+  }
+
+  // --- City markers ---
+
+  _createCityMarker(id, city) {
+    const el = document.createElement('div');
+    el.className = 'mapbox-city-marker';
+    el.innerHTML = `
+      <div class="marker-inner">
+        <div class="marker-pulse city-pulse"></div>
+        <div class="marker-dot city-dot"></div>
+        <span class="marker-label">${city.name}</span>
+      </div>
+    `;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.onLocationClick) this.onLocationClick('city', id, e.clientX, e.clientY);
+    });
+
+    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([city.center.lng, city.center.lat])
+      .addTo(this.map);
+
+    this.cityMarkers[id] = { marker, el };
+  }
+
+  _createDatacenterMarker(id, dc) {
+    const el = document.createElement('div');
+    el.className = 'mapbox-dc-marker';
+    el.innerHTML = `
+      <div class="marker-inner">
+        <div class="marker-pulse dc-pulse" style="border-color:${dc.color}; box-shadow: 0 0 12px ${dc.color}40"></div>
+        <div class="marker-diamond" style="background:${dc.color}"></div>
+        <span class="marker-label">${dc.name}</span>
+      </div>
+    `;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.onLocationClick) this.onLocationClick('datacenter', id, e.clientX, e.clientY);
+    });
+
+    const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([dc.center.lng, dc.center.lat])
+      .addTo(this.map);
+
+    this.datacenterMarkers[id] = { marker, el };
+  }
+
+  _setCityState(id, active) {
+    const entry = this.cityMarkers[id];
+    if (!entry) return;
+    entry.el.classList.toggle('active', active);
+  }
+
+  _setDCState(id, active) {
+    const entry = this.datacenterMarkers[id];
+    if (!entry) return;
+    entry.el.classList.toggle('active', active);
+  }
+
+  // --- Great-circle arc ---
+
+  /**
+   * Generate a great-circle arc between two {lat, lng} points.
+   * Uses proper spherical interpolation (slerp) so the line follows
+   * the Earth's curvature and endpoints sit exactly on the surface.
+   */
+  _greatCircleArc(from, to, steps = 80) {
+    const toRad = d => d * Math.PI / 180;
+    const toDeg = r => r * 180 / Math.PI;
+
+    const lat1 = toRad(from.lat), lng1 = toRad(from.lng);
+    const lat2 = toRad(to.lat),   lng2 = toRad(to.lng);
+
+    // Central angle (haversine)
+    const dLat = lat2 - lat1;
+    const dLng = lng2 - lng1;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+    const centralAngle = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    // Peak altitude — proportional to distance, but reasonable for short and long arcs
+    const distKm = centralAngle * 6371;
+    // For very short distances (<500km), use lower altitude to avoid weird looking arcs
+    const peakAlt = distKm < 500 
+      ? Math.max(distKm * 20, 5000)  // 5-10km for short arcs
+      : Math.min(Math.max(distKm * 40, 20000), 300000);  // 20-300km for long arcs
+
+    const coords = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+
+      // Spherical interpolation (ensures endpoints land exactly on surface)
+      if (centralAngle < 0.0001) {
+        // Near-zero distance — linear fallback
+        coords.push([
+          from.lng + (to.lng - from.lng) * t,
+          from.lat + (to.lat - from.lat) * t,
+          0
+        ]);
+        continue;
+      }
+      const A = Math.sin((1 - t) * centralAngle) / Math.sin(centralAngle);
+      const B = Math.sin(t * centralAngle)       / Math.sin(centralAngle);
+
+      const x = A * Math.cos(lat1) * Math.cos(lng1) + B * Math.cos(lat2) * Math.cos(lng2);
+      const y = A * Math.cos(lat1) * Math.sin(lng1) + B * Math.cos(lat2) * Math.sin(lng2);
+      const z = A * Math.sin(lat1)                   + B * Math.sin(lat2);
+
+      const lat = toDeg(Math.atan2(z, Math.sqrt(x * x + y * y)));
+      const lng = toDeg(Math.atan2(y, x));
+
+      // Parabolic altitude — 0 at endpoints, peak at midpoint
+      const alt = peakAlt * 4 * t * (1 - t);
+      coords.push([lng, lat, alt]);
+    }
+    return coords;
+  }
+
+  // --- Flow arcs ---
+
+  _renderFlows(flows) {
+    const byType = {};
+
+    flows.forEach(flow => {
+      // Validate coordinates
+      const fromValid = flow.from && typeof flow.from.lat === 'number' && typeof flow.from.lng === 'number';
+      const toValid = flow.to && typeof flow.to.lat === 'number' && typeof flow.to.lng === 'number';
+      if (!fromValid || !toValid) {
+        console.error('Skipping flow with invalid coords:', flow);
+        return;
+      }
+
+      const type = flow.type === 'data' ? 'data' : flow.type;
+      if (!byType[type]) byType[type] = [];
+      const arc = this._greatCircleArc(flow.from, flow.to);
+      byType[type].push({
+        type: 'Feature',
+        properties: { type, intensity: flow.intensity || 0.5, label: flow.label || '' },
+        geometry: { type: 'LineString', coordinates: arc }
+      });
+    });
+
+    Object.entries(byType).forEach(([type, features]) => {
+      const srcId = `flow-src-${type}`;
+      const lineId = `flow-line-${type}`;
+      const glowId = `flow-glow-${type}`;
+      const color = COLORS[type] || COLORS.data;
+      const vis = (type === 'data' || this.layerVisibility[type]) ? 'visible' : 'none';
+
+      // Source
+      if (this.map.getSource(srcId)) {
+        this.map.getSource(srcId).setData({ type: 'FeatureCollection', features });
+      } else {
+        this.map.addSource(srcId, {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features }
+        });
+        this.flowSourceIds.push(srcId);
+      }
+
+      // Glow layer
+      if (!this.map.getLayer(glowId)) {
+        this.map.addLayer({
+          id: glowId, type: 'line', source: srcId,
+          layout: { visibility: vis },
+          paint: { 'line-color': color, 'line-width': 6, 'line-opacity': 0.15, 'line-blur': 6 }
+        });
+        this.flowLayerIds.push(glowId);
+      }
+
+      // Core line
+      if (!this.map.getLayer(lineId)) {
+        this.map.addLayer({
+          id: lineId, type: 'line', source: srcId,
+          layout: { visibility: vis },
+          paint: { 'line-color': color, 'line-width': 2, 'line-opacity': 0.8, 'line-dasharray': [2, 1.5] }
+        });
+        this.flowLayerIds.push(lineId);
+      }
+    });
+  }
+
+  // --- Particles ---
+
+  _startParticles(flows) {
+    this._stopParticles();
+
+    const byType = {};
+    flows.forEach(flow => {
+      // Validate coordinates
+      const fromValid = flow.from && typeof flow.from.lat === 'number' && typeof flow.from.lng === 'number';
+      const toValid = flow.to && typeof flow.to.lat === 'number' && typeof flow.to.lng === 'number';
+      if (!fromValid || !toValid) return;
+
+      const type = flow.type === 'data' ? 'data' : flow.type;
+      if (!byType[type]) byType[type] = [];
+      const arc = this._greatCircleArc(flow.from, flow.to);
+      const count = Math.max(3, Math.min(8, Math.round((flow.intensity || 0.5) * 8)));
+      for (let i = 0; i < count; i++) {
+        byType[type].push({ arc, offset: i / count, speed: 0.003 + Math.random() * 0.003 });
+      }
+    });
+
+    Object.entries(byType).forEach(([type, particles]) => {
+      const srcId = `ptcl-src-${type}`;
+      const layerId = `ptcl-layer-${type}`;
+      const color = COLORS[type] || COLORS.data;
+      const vis = (type === 'data' || this.layerVisibility[type]) ? 'visible' : 'none';
+
+      const features = particles.map(p => {
+        const idx = Math.floor(p.offset * (p.arc.length - 1));
+        return { type: 'Feature', geometry: { type: 'Point', coordinates: p.arc[idx] }, properties: {} };
+      });
+
+      if (this.map.getSource(srcId)) {
+        this.map.getSource(srcId).setData({ type: 'FeatureCollection', features });
+      } else {
+        this.map.addSource(srcId, { type: 'geojson', data: { type: 'FeatureCollection', features } });
+      }
+
+      if (!this.map.getLayer(layerId)) {
+        this.map.addLayer({
+          id: layerId, type: 'circle', source: srcId,
+          layout: { visibility: vis },
+          paint: { 'circle-radius': 4, 'circle-color': color, 'circle-opacity': 0.9, 'circle-blur': 0.4 }
+        });
+      }
+
+      this.particleSources.push({ srcId, particles, type });
+      this.particleLayers.push(layerId);
+    });
+
+    // Animation loop
+    const tick = () => {
+      this.particleSources.forEach(({ srcId, particles }) => {
+        const features = particles.map(p => {
+          p.offset = (p.offset + p.speed) % 1;
+          const idx = Math.min(Math.floor(p.offset * (p.arc.length - 1)), p.arc.length - 1);
+          return { type: 'Feature', geometry: { type: 'Point', coordinates: p.arc[idx] }, properties: {} };
+        });
+        const src = this.map.getSource(srcId);
+        if (src) src.setData({ type: 'FeatureCollection', features });
+      });
+      this.animationFrameId = requestAnimationFrame(tick);
+    };
+    this.animationFrameId = requestAnimationFrame(tick);
+  }
+
+  _stopParticles() {
+    if (this.animationFrameId) { cancelAnimationFrame(this.animationFrameId); this.animationFrameId = null; }
+  }
+
+  // --- Visibility sync ---
+
+  _syncLayerVisibility() {
+    [...this.flowLayerIds, ...this.particleLayers].forEach(id => {
+      // Extract type from layer id (e.g. "flow-line-electricity" → "electricity")
+      const parts = id.split('-');
+      const type = parts[parts.length - 1];
+      if (type === 'data') return;
+      const vis = this.layerVisibility[type] ? 'visible' : 'none';
+      if (this.map.getLayer(id)) this.map.setLayoutProperty(id, 'visibility', vis);
+    });
   }
 }

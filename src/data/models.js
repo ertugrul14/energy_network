@@ -481,6 +481,90 @@ export const TIME_MODIFIERS = {
 // NARRATIVE TEMPLATES
 // ============================================
 
+// ============================================
+// INTERIOR SCALE DATA - Device-level energy
+// ============================================
+
+export const INTERIOR_SCALE = {
+  laptop: {
+    name: 'Laptop',
+    idleWatts: 15,
+    activeWatts: 45,
+    networkWatts: 3, // Wi-Fi
+    embodiedKgCO2: 350 // Lifecycle embodied carbon
+  },
+  phone: {
+    name: 'Smartphone',
+    idleWatts: 1,
+    activeWatts: 5,
+    networkWatts: 1.5, // Cellular
+    embodiedKgCO2: 70
+  }
+};
+
+// ============================================
+// BUILDING SCALE DATA - Data center overhead
+// ============================================
+
+export const BUILDING_SCALE = {
+  // Breakdown of PUE components (typical)
+  pueBreakdown: {
+    compute: 1.0,     // Base IT load
+    cooling: 0.15,    // HVAC, chillers
+    lighting: 0.02,   // Facility lighting
+    ups: 0.06,        // UPS losses
+    distribution: 0.02 // Power distribution
+  },
+  // GPU specs per workload type
+  gpuPower: {
+    A100: { tdpWatts: 400, name: 'NVIDIA A100' },
+    T4: { tdpWatts: 70, name: 'NVIDIA T4' },
+    H100: { tdpWatts: 700, name: 'NVIDIA H100' }
+  }
+};
+
+// ============================================
+// ENERGY REFERENCE DATA - Human-readable comparisons
+// ============================================
+
+export const ENERGY_REFERENCE = {
+  // Average apartment electricity consumption per hour (kWh)
+  // Source: IEA household consumption data (approximate)
+  apartment: {
+    barcelona: { kWhPerHour: 0.35, label: 'Barcelona apartment' },
+    lagos:     { kWhPerHour: 0.12, label: 'Lagos apartment' },
+    phoenix:   { kWhPerHour: 0.55, label: 'Phoenix apartment' },
+    dublin:    { kWhPerHour: 0.40, label: 'Dublin apartment' },
+    default:   { kWhPerHour: 0.40, label: 'typical apartment' }
+  },
+  // Reference building in each city centre (real coordinates with 3D buildings in Mapbox)
+  referenceBuilding: {
+    barcelona: { lat: 41.3870, lng: 2.1700, name: 'Eixample District' },
+    lagos:     { lat: 6.4550,  lng: 3.4231, name: 'Victoria Island' },
+    phoenix:   { lat: 33.4485, lng: -112.0773, name: 'Downtown Phoenix' },
+    dublin:    { lat: 53.3440, lng: -6.2675, name: 'Grand Canal Dock' }
+  },
+  // Average apartments per city block / neighborhood
+  neighborhoodSize: {
+    barcelona: 120,
+    lagos: 80,
+    phoenix: 60,
+    dublin: 90,
+    default: 80
+  },
+  // Everyday equivalences (energy in kWh for comparison)
+  equivalences: [
+    { label: 'LED bulb for 1 hour',       kWh: 0.010 },
+    { label: 'smartphone full charge',     kWh: 0.012 },
+    { label: 'laptop for 1 hour',          kWh: 0.050 },
+    { label: 'electric kettle boil',       kWh: 0.100 },
+    { label: 'washing machine cycle',      kWh: 1.000 },
+    { label: 'EV driven 1 km',            kWh: 0.150 },
+    { label: 'AC unit for 1 hour',        kWh: 1.500 },
+    { label: 'hot shower (5 min)',         kWh: 2.500 }
+  ]
+};
+
 export const NARRATIVES = {
   standard: (data) => `
     Your request traveled ${data.distanceKm.toLocaleString()} km to a server in ${data.datacenterLocation}. 
