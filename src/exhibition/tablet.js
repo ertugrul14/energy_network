@@ -6,7 +6,7 @@
 
 import { simulationEngine } from '../simulation/engine.js';
 import { CITIES, DATACENTERS, WORKLOADS, ENERGY_REFERENCE } from '../data/models.js';
-import { BUILDING_TYPES, NEIGHBORHOOD_POPULATION } from './models.js';
+import { BUILDING_TYPES, NEIGHBORHOOD_POPULATION, SCENARIO_COMPONENTS } from './models.js';
 import { arduino } from './arduino.js';
 
 // BroadcastChannel for tablet ↔ screen communication
@@ -18,6 +18,7 @@ class TabletController {
     this.selectedWorkload = null;
     this.selectedDatacenter = null;
     this.simulationResults = null;
+    this.selectedScenarioComponents = new Set();
 
     this.init();
   }
@@ -28,6 +29,7 @@ class TabletController {
     this.bindBodyResult();
     this.bindCityScale();
     this.bindPlanetaryScale();
+    this.bindScenario();
 
     // Listen for LED events to update UI indicator
     window.addEventListener('arduino:light', (e) => {
@@ -293,6 +295,7 @@ class TabletController {
     this.selectedWorkload = null;
     this.selectedDatacenter = null;
     this.simulationResults = null;
+    this.selectedScenarioComponents.clear();
     document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-consumption').disabled = true;
     channel.postMessage({ type: 'idle' });
@@ -359,8 +362,293 @@ class TabletController {
       channel.postMessage({ type: 'idle' });
     });
 
+    document.getElementById('btn-create-scenario').addEventListener('click', () => {
+      this.populateScenario();
+      this.showPage('scenario');
+    });
+
     document.getElementById('btn-restart').addEventListener('click', () => {
       this.restart();
+    });
+  }
+
+  // ─── STEP 4: Scenario ─────────────────────────────
+
+  populateScenario() {
+    this.selectedScenarioComponents.clear();
+    const container = document.getElementById('scenario-components');
+    const components = Object.values(SCENARIO_COMPONENTS);
+
+    container.innerHTML = components.map(c => `
+      <div class="scenario-card" data-component="${c.id}">
+        <div class="scenario-card-icon">${c.icon}</div>
+        <div class="scenario-card-info">
+          <h3>${c.name}</h3>
+          <p class="scenario-card-desc">${c.description}</p>
+        </div>
+        <div class="scenario-card-toggle">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        </div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.scenario-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.component;
+        if (this.selectedScenarioComponents.has(id)) {
+          this.selectedScenarioComponents.delete(id);
+          card.classList.remove('active');
+        } else {
+          this.selectedScenarioComponents.add(id);
+          card.classList.add('active');
+        }
+        this.updateScenarioPreview();
+      });
+    });
+
+    // Reset summary
+    document.getElementById('scenario-summary').classList.add('hidden');
+    document.getElementById('btn-apply-scenario').disabled = true;
+  }
+
+  updateScenarioPreview() {
+    const hasSelection = this.selectedScenarioComponents.size > 0;
+    document.getElementById('btn-apply-scenario').disabled = !hasSelection;
+
+    const summaryEl = document.getElementById('scenario-summary');
+    const deltasEl = document.getElementById('scenario-deltas');
+
+    if (!hasSelection) {
+      summaryEl.classList.add('hidden');
+      return;
+    }
+
+    summaryEl.classList.remove('hidden');
+    const scenario = this.calculateScenario();
+
+    const original = this.simulationResults;
+    const dKwh = ((scenario.electricity.withOverhead - original.electricity.withOverhead) / original.electricity.withOverhead * 100);
+    const dWater = ((scenario.water.liters - original.water.liters) / original.water.liters * 100);
+    const dCO2 = ((scenario.emissions.grams - original.emissions.grams) / original.emissions.grams * 100);
+    const dDist = ((scenario.distance - original.distance) / original.distance * 100);
+
+    const formatDelta = (val) => {
+      const sign = val > 0 ? '+' : '';
+      return `${sign}${Math.round(val)}%`;
+    };
+    const deltaClass = (val) => val < 0 ? 'delta-good' : val > 0 ? 'delta-bad' : 'delta-neutral';
+
+    deltasEl.innerHTML = `
+      <div class="scenario-delta ${deltaClass(dKwh)}">
+        <span class="delta-icon">⚡</span>
+        <span class="delta-value">${formatDelta(dKwh)}</span>
+        <span class="delta-label">Energy</span>
+      </div>
+      <div class="scenario-delta ${deltaClass(dWater)}">
+        <span class="delta-icon">💧</span>
+        <span class="delta-value">${formatDelta(dWater)}</span>
+        <span class="delta-label">Water</span>
+      </div>
+      <div class="scenario-delta ${deltaClass(dCO2)}">
+        <span class="delta-icon">🌫️</span>
+        <span class="delta-value">${formatDelta(dCO2)}</span>
+        <span class="delta-label">CO₂</span>
+      </div>
+      <div class="scenario-delta ${deltaClass(dDist)}">
+        <span class="delta-icon">📍</span>
+        <span class="delta-value">${formatDelta(dDist)}</span>
+        <span class="delta-label">Distance</span>
+      </div>
+    `;
+  }
+
+  calculateScenario() {
+    // Build combined modifiers from selected components
+    let distMultiplier = 1.0;
+    let pueMultiplier = 1.0;
+    let carbonOffset = 0;
+    let waterMultiplier = 1.0;
+
+    for (const id of this.selectedScenarioComponents) {
+      const comp = SCENARIO_COMPONENTS[id];
+      if (!comp) continue;
+      const e = comp.effects;
+      distMultiplier *= e.distanceMultiplier;
+      pueMultiplier *= e.pueMultiplier;
+      carbonOffset += e.carbonIntensityOffset;
+      waterMultiplier *= e.waterMultiplier;
+    }
+
+    const original = this.simulationResults;
+    const dc = original.datacenter;
+
+    // Modified distance
+    const newDistance = original.distance * distMultiplier;
+
+    // Modified electricity: recalculate with modified PUE
+    const baseKwh = original.electricity.baseKwh;
+    const newPue = dc.energy.pue * pueMultiplier;
+    const withPue = baseKwh * newPue;
+    const withHeat = withPue * dc.climate.heatPenalty;
+    const hourMod = original.electricity.withOverhead / (original.electricity.baseKwh * dc.energy.pue * dc.climate.heatPenalty);
+    const newKwh = withHeat * hourMod;
+
+    // Modified carbon intensity (clamped to minimum 20)
+    const newCarbonIntensity = Math.max(20, dc.energy.carbonIntensity + carbonOffset);
+    const newCO2 = newKwh * newCarbonIntensity * (original.emissions.grams / (original.electricity.withOverhead * original.emissions.baseCarbonIntensity));
+
+    // Modified water
+    const newWaterLiters = original.water.liters * waterMultiplier * pueMultiplier;
+
+    // Generate modified flows
+    const scenarioFlows = this.generateScenarioFlows(original, distMultiplier);
+
+    return {
+      distance: newDistance,
+      electricity: {
+        baseKwh,
+        withOverhead: newKwh,
+        pue: newPue,
+        sources: original.electricity.sources
+      },
+      water: { liters: newWaterLiters },
+      emissions: { grams: newCO2, baseCarbonIntensity: newCarbonIntensity },
+      flows: scenarioFlows,
+      components: [...this.selectedScenarioComponents]
+    };
+  }
+
+  generateScenarioFlows(original, distMultiplier) {
+    const flows = [];
+    const hasLocalDC = this.selectedScenarioComponents.has('localDatacenter');
+    const city = original.city;
+    const dc = original.datacenter;
+
+    // If local datacenter: data flow stays in city
+    if (hasLocalDC) {
+      // Short local data path
+      flows.push({
+        type: 'data',
+        from: city.coords,
+        to: { lat: city.coords.lat + 0.05, lng: city.coords.lng + 0.05 },
+        label: 'Local Request',
+        intensity: 1
+      });
+      // Local electricity sources (simplified)
+      flows.push({
+        type: 'electricity',
+        from: { lat: city.coords.lat + 0.2, lng: city.coords.lng - 0.3 },
+        to: { lat: city.coords.lat + 0.05, lng: city.coords.lng + 0.05 },
+        label: 'Local Grid',
+        intensity: 0.8
+      });
+    } else {
+      // Same data path as original
+      flows.push({
+        type: 'data',
+        from: city.coords,
+        to: dc.coords,
+        label: 'Request',
+        intensity: 1
+      });
+      // Original electricity sources
+      for (const source of original.electricity.sources) {
+        flows.push({
+          type: 'electricity',
+          from: source.coords,
+          to: dc.coords,
+          label: source.name,
+          intensity: 0.5
+        });
+      }
+    }
+
+    const dcTarget = hasLocalDC
+      ? { lat: city.coords.lat + 0.05, lng: city.coords.lng + 0.05 }
+      : dc.coords;
+
+    // Added renewables show as new electricity flows
+    if (this.selectedScenarioComponents.has('solarFarm')) {
+      flows.push({
+        type: 'electricity',
+        from: { lat: dcTarget.lat - 0.5, lng: dcTarget.lng + 0.4 },
+        to: dcTarget,
+        label: 'Solar Farm',
+        intensity: 0.7
+      });
+    }
+    if (this.selectedScenarioComponents.has('windFarm')) {
+      flows.push({
+        type: 'electricity',
+        from: { lat: dcTarget.lat + 0.6, lng: dcTarget.lng - 0.5 },
+        to: dcTarget,
+        label: 'Wind Farm',
+        intensity: 0.6
+      });
+    }
+    if (this.selectedScenarioComponents.has('nuclearPlant')) {
+      flows.push({
+        type: 'electricity',
+        from: { lat: dcTarget.lat + 1.0, lng: dcTarget.lng + 1.0 },
+        to: dcTarget,
+        label: 'Nuclear Plant',
+        intensity: 0.9
+      });
+    }
+
+    // Water — only if original had water
+    if (original.water.liters > 0) {
+      const waterTarget = hasLocalDC ? dcTarget : dc.coords;
+      if (this.selectedScenarioComponents.has('coolingLake')) {
+        flows.push({
+          type: 'water',
+          from: { lat: waterTarget.lat - 0.3, lng: waterTarget.lng + 0.2 },
+          to: waterTarget,
+          label: 'Cooling Lake',
+          intensity: 0.4
+        });
+      } else {
+        flows.push({
+          type: 'water',
+          from: original.water.sourceCoords,
+          to: waterTarget,
+          label: original.water.source,
+          intensity: 0.5
+        });
+      }
+    }
+
+    // Emissions — reduced if renewables added
+    if (original.emissions.drift) {
+      for (const dest of original.emissions.drift.destinations) {
+        flows.push({
+          type: 'emissions',
+          from: dcTarget,
+          to: dest.coords,
+          label: `CO₂ drift to ${dest.name}`,
+          intensity: 0.3 // Visually thinner to show reduction
+        });
+      }
+    }
+
+    return flows;
+  }
+
+  bindScenario() {
+    document.getElementById('btn-back-scenario').addEventListener('click', () => {
+      this.showPage('planetary-scale');
+    });
+
+    document.getElementById('btn-apply-scenario').addEventListener('click', () => {
+      const scenario = this.calculateScenario();
+      channel.postMessage({
+        type: 'scenario-flow',
+        city: this.selectedCity,
+        workload: this.selectedWorkload,
+        datacenter: this.selectedDatacenter,
+        hour: new Date().getHours(),
+        scenario
+      });
     });
   }
 }

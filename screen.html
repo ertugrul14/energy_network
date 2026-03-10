@@ -85,6 +85,71 @@
     </div>
   </div>
 
+  <!-- Scenario comparison overlay -->
+  <div id="screen-comparison" class="hidden">
+    <div class="comparison-header">
+      <h2>SCENARIO COMPARISON</h2>
+      <p id="comparison-subtitle">Your urban interventions changed the energy flow</p>
+    </div>
+    <div class="comparison-grid">
+      <div class="comparison-column original-col">
+        <h3>CURRENT</h3>
+        <div class="comparison-metric">
+          <span class="comparison-icon">⚡</span>
+          <span class="comparison-value" id="cmp-orig-kwh">—</span>
+          <span class="comparison-unit">kWh</span>
+        </div>
+        <div class="comparison-metric">
+          <span class="comparison-icon">💧</span>
+          <span class="comparison-value" id="cmp-orig-water">—</span>
+          <span class="comparison-unit">liters</span>
+        </div>
+        <div class="comparison-metric">
+          <span class="comparison-icon">🌫️</span>
+          <span class="comparison-value" id="cmp-orig-co2">—</span>
+          <span class="comparison-unit">gCO₂</span>
+        </div>
+        <div class="comparison-metric">
+          <span class="comparison-icon">📍</span>
+          <span class="comparison-value" id="cmp-orig-dist">—</span>
+          <span class="comparison-unit">km</span>
+        </div>
+      </div>
+      <div class="comparison-deltas">
+        <div class="comparison-delta" id="cmp-delta-kwh">—</div>
+        <div class="comparison-delta" id="cmp-delta-water">—</div>
+        <div class="comparison-delta" id="cmp-delta-co2">—</div>
+        <div class="comparison-delta" id="cmp-delta-dist">—</div>
+      </div>
+      <div class="comparison-column scenario-col">
+        <h3>SCENARIO</h3>
+        <div class="comparison-metric">
+          <span class="comparison-icon">⚡</span>
+          <span class="comparison-value" id="cmp-scen-kwh">—</span>
+          <span class="comparison-unit">kWh</span>
+        </div>
+        <div class="comparison-metric">
+          <span class="comparison-icon">💧</span>
+          <span class="comparison-value" id="cmp-scen-water">—</span>
+          <span class="comparison-unit">liters</span>
+        </div>
+        <div class="comparison-metric">
+          <span class="comparison-icon">🌫️</span>
+          <span class="comparison-value" id="cmp-scen-co2">—</span>
+          <span class="comparison-unit">gCO₂</span>
+        </div>
+        <div class="comparison-metric">
+          <span class="comparison-icon">📍</span>
+          <span class="comparison-value" id="cmp-scen-dist">—</span>
+          <span class="comparison-unit">km</span>
+        </div>
+      </div>
+    </div>
+    <div class="comparison-components" id="comparison-components">
+      <!-- Shows which components were added -->
+    </div>
+  </div>
+
   <script type="module" src="/src/exhibition/screen.js"></script>
 </body>
 </html>

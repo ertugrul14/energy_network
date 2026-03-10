@@ -983,3 +983,304 @@ body.screen-mode #globe-container {
 .legend-line.water { background: var(--water); }
 .legend-line.emissions { background: var(--emissions); }
 .legend-line.materials { background: var(--materials); }
+
+/* ============================================
+   SCENARIO PAGE (tablet)
+   ============================================ */
+
+.scenario-intro {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-md);
+}
+
+.scenario-components {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.scenario-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.scenario-card:hover {
+  border-color: var(--accent);
+}
+
+.scenario-card.active {
+  border-color: var(--success);
+  background: rgba(63, 185, 80, 0.06);
+}
+
+.scenario-card-icon {
+  font-size: 28px;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.scenario-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.scenario-card-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.scenario-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.scenario-card-toggle {
+  flex-shrink: 0;
+}
+
+.toggle-track {
+  width: 36px;
+  height: 20px;
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.scenario-card.active .toggle-track {
+  background: var(--success);
+}
+
+.toggle-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform var(--transition-fast);
+}
+
+.scenario-card.active .toggle-thumb {
+  transform: translateX(16px);
+}
+
+/* Scenario summary (preview on tablet) */
+.scenario-summary {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.scenario-summary.hidden {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.scenario-summary-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.scenario-deltas {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.scenario-delta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.delta-icon {
+  font-size: 18px;
+}
+
+.delta-value {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.delta-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.delta-good .delta-value { color: var(--success); }
+.delta-bad .delta-value { color: var(--warning); }
+.delta-neutral .delta-value { color: var(--text-secondary); }
+
+.scenario-btn {
+  background: linear-gradient(135deg, var(--accent), #2e7dd1);
+}
+
+/* ============================================
+   SCENARIO COMPARISON (big screen)
+   ============================================ */
+
+#screen-comparison {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: 90%;
+  max-width: 900px;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#screen-comparison.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.comparison-header {
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.comparison-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 4px;
+}
+
+.comparison-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--spacing-md);
+  align-items: start;
+}
+
+.comparison-column h3 {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.original-col { opacity: 0.6; }
+
+.comparison-metric {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 6px 0;
+}
+
+.comparison-icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+}
+
+.comparison-value {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.comparison-unit {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.comparison-deltas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding-top: 28px;
+  gap: 6px;
+}
+
+.comparison-delta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  min-width: 60px;
+  text-align: center;
+  line-height: 24px;
+}
+
+.comparison-delta.delta-good {
+  color: var(--success);
+  background: rgba(63, 185, 80, 0.1);
+}
+
+.comparison-delta.delta-bad {
+  color: var(--warning);
+  background: rgba(248, 81, 73, 0.1);
+}
+
+.comparison-delta.delta-neutral {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+}
+
+.comparison-components {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-default);
+}
+
+.comparison-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}

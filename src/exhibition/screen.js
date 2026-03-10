@@ -7,6 +7,7 @@
 import { GlobeVisualization } from '../visualization/globe.js';
 import { simulationEngine } from '../simulation/engine.js';
 import { CITIES, DATACENTERS, WORKLOADS } from '../data/models.js';
+import { SCENARIO_COMPONENTS } from './models.js';
 
 // BroadcastChannel for tablet ↔ screen communication
 const channel = new BroadcastChannel('ghost-network-exhibition');
@@ -15,6 +16,7 @@ class ScreenController {
   constructor() {
     this.globe = null;
     this.isShowingFlows = false;
+    this.currentResults = null;  // Store original simulation results
     this.init();
   }
 
@@ -48,6 +50,10 @@ class ScreenController {
         this.runVisualization(msg);
         break;
 
+      case 'scenario-flow':
+        this.runScenarioVisualization(msg);
+        break;
+
       case 'idle':
         this.showIdle();
         break;
@@ -59,11 +65,15 @@ class ScreenController {
     const infoBar = document.getElementById('screen-info-bar');
     const impact = document.getElementById('screen-impact');
     const legend = document.getElementById('screen-legend');
+    const comparison = document.getElementById('screen-comparison');
 
     idle.classList.remove('hidden');
     infoBar.classList.add('hidden');
     impact.classList.add('hidden');
     legend.classList.add('hidden');
+    comparison.classList.add('hidden');
+
+    this.currentResults = null;
 
     if (this.isShowingFlows) {
       this.globe.clearFlows();
@@ -86,9 +96,11 @@ class ScreenController {
 
     try {
       const results = simulationEngine.runSimulation();
+      this.currentResults = results;
 
-      // Hide idle overlay
+      // Hide idle overlay and comparison
       document.getElementById('screen-idle').classList.add('hidden');
+      document.getElementById('screen-comparison').classList.add('hidden');
 
       // Show info bar
       const infoBar = document.getElementById('screen-info-bar');
@@ -119,6 +131,75 @@ class ScreenController {
     } catch (err) {
       console.error('[Screen] Visualization error:', err);
     }
+  }
+
+  runScenarioVisualization({ city, workload, datacenter, hour, scenario }) {
+    try {
+      // If we don't have original results, run original simulation first
+      if (!this.currentResults) {
+        simulationEngine.configure({ city, workload, datacenter, hour });
+        this.currentResults = simulationEngine.runSimulation();
+      }
+
+      const original = this.currentResults;
+
+      // Clear existing flows and render scenario flows
+      this.globe.clearFlows();
+      this.globe.visualizeFlows(scenario.flows);
+      this.isShowingFlows = true;
+
+      // Hide the original impact overlay, show comparison
+      document.getElementById('screen-impact').classList.add('hidden');
+
+      // Populate comparison panel
+      const cmp = document.getElementById('screen-comparison');
+
+      // Original values
+      document.getElementById('cmp-orig-kwh').textContent = original.electricity.withOverhead.toFixed(3);
+      document.getElementById('cmp-orig-water').textContent = original.water.liters.toFixed(1);
+      document.getElementById('cmp-orig-co2').textContent = original.emissions.grams.toFixed(0);
+      document.getElementById('cmp-orig-dist').textContent = Math.round(original.distance).toLocaleString();
+
+      // Scenario values
+      document.getElementById('cmp-scen-kwh').textContent = scenario.electricity.withOverhead.toFixed(3);
+      document.getElementById('cmp-scen-water').textContent = scenario.water.liters.toFixed(1);
+      document.getElementById('cmp-scen-co2').textContent = scenario.emissions.grams.toFixed(0);
+      document.getElementById('cmp-scen-dist').textContent = Math.round(scenario.distance).toLocaleString();
+
+      // Deltas
+      this._setDelta('cmp-delta-kwh', original.electricity.withOverhead, scenario.electricity.withOverhead,  'kWh');
+      this._setDelta('cmp-delta-water', original.water.liters, scenario.water.liters, 'L');
+      this._setDelta('cmp-delta-co2', original.emissions.grams, scenario.emissions.grams, 'g');
+      this._setDelta('cmp-delta-dist', original.distance, scenario.distance, 'km');
+
+      // Components list
+      const compEl = document.getElementById('comparison-components');
+      compEl.innerHTML = scenario.components
+        .map(id => SCENARIO_COMPONENTS[id])
+        .filter(Boolean)
+        .map(c => `<span class="comparison-chip">${c.icon} ${c.name}</span>`)
+        .join('');
+
+      cmp.classList.remove('hidden');
+
+      // Focus globe on the city if local datacenter, otherwise datacenter
+      if (scenario.components.includes('localDatacenter')) {
+        const cityData = CITIES[city];
+        if (cityData) this.globe.focusOnLocation(cityData.coords);
+      }
+
+    } catch (err) {
+      console.error('[Screen] Scenario visualization error:', err);
+    }
+  }
+
+  _setDelta(elId, original, scenario, unit) {
+    const el = document.getElementById(elId);
+    const diff = scenario - original;
+    const pct = original !== 0 ? (diff / original * 100) : 0;
+    const sign = diff > 0 ? '+' : '';
+    el.textContent = `${sign}${Math.round(pct)}%`;
+    el.className = 'comparison-delta ' + (diff < 0 ? 'delta-good' : diff > 0 ? 'delta-bad' : 'delta-neutral');
   }
 }
 

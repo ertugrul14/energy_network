@@ -241,9 +241,49 @@
 
     <div class="nav-buttons">
       <button id="btn-back-planetary" class="nav-btn secondary">← Back</button>
+      <button id="btn-create-scenario" class="cta-btn scenario-btn">
+        <span class="cta-icon">🏗️</span>
+        CREATE SCENARIO
+      </button>
       <button id="btn-restart" class="cta-btn restart-btn">
         <span class="cta-icon">↻</span>
         START OVER
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STEP 4 — SCENARIO
+       (speculative urban intervention)
+       ============================================ -->
+  <section id="scenario" class="page">
+    <header class="step-header">
+      <span class="step-tag">STEP 4</span>
+      <h2>REDESIGN YOUR CITY</h2>
+      <p>What if you could reshape the infrastructure?</p>
+    </header>
+
+    <p class="scenario-intro">
+      Add urban components to your city and see how they change 
+      the energy flow, water use, and carbon emissions of your AI request.
+    </p>
+
+    <div class="scenario-components" id="scenario-components">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="scenario-summary hidden" id="scenario-summary">
+      <h3 class="scenario-summary-title">SCENARIO IMPACT</h3>
+      <div class="scenario-deltas" id="scenario-deltas">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button id="btn-back-scenario" class="nav-btn secondary">← Back</button>
+      <button id="btn-apply-scenario" class="cta-btn" disabled>
+        <span class="cta-icon">🌍</span>
+        APPLY SCENARIO TO GLOBE
       </button>
     </div>
   </section>
