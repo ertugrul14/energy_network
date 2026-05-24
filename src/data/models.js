@@ -15,38 +15,46 @@ export const CITIES = {
     flag: '🇪🇸',
     coords: { lat: 41.3851, lng: 2.1734 },
     population: 1620000,
-    context: 'European tech hub with growing smart city initiatives',
+    internetPenetration: 0.93,
+    aiAdoption: 0.25,
+    context: 'Typical AI consumer city — users generate digital demand but large computation occurs elsewhere',
     defaultDatacenter: 'ireland'
   },
-  lagos: {
-    id: 'lagos',
-    name: 'Lagos',
-    country: 'Nigeria',
-    flag: '🇳🇬',
-    coords: { lat: 6.5244, lng: 3.3792 },
-    population: 15400000,
-    context: 'Africa\'s largest city, emerging digital economy with infrastructure gaps',
-    defaultDatacenter: 'singapore'
+  riyadh: {
+    id: 'riyadh',
+    name: 'Riyadh',
+    country: 'Saudi Arabia',
+    flag: '🇸🇦',
+    coords: { lat: 24.7136, lng: 46.6753 },
+    population: 7500000,
+    internetPenetration: 0.98,
+    aiAdoption: 0.22,
+    context: 'Rapidly scaling AI infrastructure under extreme environmental conditions — strong government-backed expansion',
+    defaultDatacenter: 'riyadh_dc'
   },
-  phoenix: {
-    id: 'phoenix',
-    name: 'Phoenix',
-    country: 'USA',
-    flag: '🇺🇸',
-    coords: { lat: 33.4484, lng: -112.0740 },
-    population: 1680000,
-    context: 'Desert metropolis with extreme heat and water scarcity',
-    defaultDatacenter: 'arizona'
+  singapore: {
+    id: 'singapore',
+    name: 'Singapore',
+    country: 'Singapore',
+    flag: '🇸🇬',
+    coords: { lat: 1.3521, lng: 103.8198 },
+    population: 5920000,
+    internetPenetration: 0.96,
+    aiAdoption: 0.30,
+    context: 'One of the densest data-center hubs in the world — heavy infrastructure concentration and energy pressure',
+    defaultDatacenter: 'singapore_dc'
   },
-  dublin: {
-    id: 'dublin',
-    name: 'Dublin',
-    country: 'Ireland',
-    flag: '🇮🇪',
-    coords: { lat: 53.3498, lng: -6.2603 },
-    population: 544000,
-    context: 'Major European data center hub due to tax incentives and climate',
-    defaultDatacenter: 'ireland'
+  nairobi: {
+    id: 'nairobi',
+    name: 'Nairobi',
+    country: 'Kenya',
+    flag: '🇰🇪',
+    coords: { lat: -1.2921, lng: 36.8219 },
+    population: 4740000,
+    internetPenetration: 0.85,
+    aiAdoption: 0.15,
+    context: 'Emerging digital gateway for East Africa — future expansion of AI infrastructure in emerging regions',
+    defaultDatacenter: 'singapore_dc'
   }
 };
 
@@ -55,47 +63,48 @@ export const CITIES = {
 // ============================================
 
 export const DATACENTERS = {
-  arizona: {
-    id: 'arizona',
-    name: 'Arizona Hyperscale',
-    location: 'Phoenix, Arizona',
-    coords: { lat: 33.3942, lng: -111.9261 },
+  amsterdam: {
+    id: 'amsterdam',
+    name: 'Amsterdam Cloud Region',
+    location: 'Amsterdam, Netherlands',
+    coords: { lat: 52.3676, lng: 4.9041 },
     operator: 'Generic Cloud Provider',
     
     // Energy profile
     energy: {
       gridMix: {
-        natural_gas: 0.35,
-        coal: 0.10,
-        nuclear: 0.28,
-        solar: 0.15,
-        wind: 0.07,
+        natural_gas: 0.42,
+        wind: 0.20,
+        solar: 0.08,
+        nuclear: 0.03,
+        biomass: 0.10,
+        coal: 0.12,
         hydro: 0.05
       },
-      pue: 1.25, // Power Usage Effectiveness
-      carbonIntensity: 385, // gCO2/kWh
+      pue: 1.15, // Power Usage Effectiveness
+      carbonIntensity: 328, // gCO2/kWh (Netherlands grid)
       sources: [
-        { name: 'Palo Verde Nuclear', coords: { lat: 33.3886, lng: -112.8615 }, type: 'nuclear' },
-        { name: 'Gila River Gas Plant', coords: { lat: 33.0589, lng: -112.6854 }, type: 'gas' },
-        { name: 'Solana Solar', coords: { lat: 32.9297, lng: -112.9798 }, type: 'solar' }
+        { name: 'Borssele Nuclear', coords: { lat: 51.4308, lng: 3.7178 }, type: 'nuclear' },
+        { name: 'Eemshaven Gas Plant', coords: { lat: 53.4386, lng: 6.8344 }, type: 'gas' },
+        { name: 'Gemini Offshore Wind', coords: { lat: 54.0372, lng: 5.9619 }, type: 'wind' }
       ]
     },
     
     // Water profile
     water: {
-      source: 'Colorado River Basin / Central Arizona Project',
-      sourceCoords: { lat: 36.0161, lng: -114.7377 }, // Lake Mead
-      stressLevel: 'extreme', // Based on WRI Aqueduct
-      wue: 1.8, // Water Usage Effectiveness (L/kWh)
-      aquiferDepletion: 0.42, // 42% depleted
-      annualWithdrawal: 2500000000 // liters
+      source: 'North Sea Canal / Municipal supply',
+      sourceCoords: { lat: 52.4168, lng: 4.7836 },
+      stressLevel: 'moderate',
+      wue: 1.0, // L/kWh
+      aquiferDepletion: 0.10,
+      annualWithdrawal: 600000000
     },
     
     // Climate context
     climate: {
-      avgTemp: 35, // Celsius in summer
-      coolingDays: 280,
-      heatPenalty: 1.4 // Extra energy for cooling
+      avgTemp: 11,
+      coolingDays: 90,
+      heatPenalty: 1.0
     }
   },
   
@@ -140,8 +149,8 @@ export const DATACENTERS = {
     }
   },
   
-  singapore: {
-    id: 'singapore',
+  singapore_dc: {
+    id: 'singapore_dc',
     name: 'Equinix SG Hub',
     location: 'Singapore',
     coords: { lat: 1.3521, lng: 103.8198 },
@@ -174,6 +183,88 @@ export const DATACENTERS = {
       avgTemp: 31,
       coolingDays: 365,
       heatPenalty: 1.55
+    }
+  },
+  
+  riyadh_dc: {
+    id: 'riyadh_dc',
+    name: 'Riyadh Cloud Region',
+    location: 'Riyadh, Saudi Arabia',
+    coords: { lat: 24.7136, lng: 46.6753 },
+    operator: 'Generic Cloud Provider',
+
+    energy: {
+      gridMix: {
+        natural_gas: 0.57,
+        oil: 0.38,
+        solar: 0.04,
+        wind: 0.01
+      },
+      pue: 1.45,
+      carbonIntensity: 520,
+      sources: [
+        { name: 'Riyadh PP Gas Plant', coords: { lat: 24.55, lng: 46.85 }, type: 'gas' },
+        { name: 'Saudi Aramco Oil', coords: { lat: 25.38, lng: 49.98 }, type: 'oil' },
+        { name: 'Sakaka Solar Park', coords: { lat: 29.97, lng: 40.20 }, type: 'solar' }
+      ]
+    },
+
+    water: {
+      source: 'Desalinated seawater (Red Sea / Arabian Gulf)',
+      sourceCoords: { lat: 21.54, lng: 39.17 },
+      stressLevel: 'extreme',
+      wue: 2.8,
+      aquiferDepletion: 0.85,
+      annualWithdrawal: 2200000000
+    },
+
+    climate: {
+      avgTemp: 35,
+      coolingDays: 365,
+      heatPenalty: 1.70
+    }
+  },
+
+  frankfurt: {
+    id: 'frankfurt',
+    name: 'Frankfurt Cloud Region',
+    location: 'Frankfurt, Germany',
+    coords: { lat: 50.1109, lng: 8.6821 },
+    operator: 'Generic Cloud Provider',
+    
+    energy: {
+      gridMix: {
+        wind: 0.22,
+        solar: 0.10,
+        natural_gas: 0.15,
+        coal: 0.24,
+        nuclear: 0.06,
+        biomass: 0.08,
+        hydro: 0.04,
+        lignite: 0.11
+      },
+      pue: 1.20,
+      carbonIntensity: 350,
+      sources: [
+        { name: 'North Sea Wind Parks', coords: { lat: 54.5, lng: 7.0 }, type: 'wind' },
+        { name: 'Irsching Gas Plant', coords: { lat: 48.7962, lng: 11.5567 }, type: 'gas' },
+        { name: 'Schwarze Pumpe Coal', coords: { lat: 51.5350, lng: 14.3564 }, type: 'coal' }
+      ]
+    },
+    
+    water: {
+      source: 'River Main / Hessian reservoirs',
+      sourceCoords: { lat: 50.0873, lng: 8.5997 },
+      stressLevel: 'moderate',
+      wue: 0.9,
+      aquiferDepletion: 0.12,
+      annualWithdrawal: 500000000
+    },
+    
+    climate: {
+      avgTemp: 11,
+      coolingDays: 100,
+      heatPenalty: 1.05
     }
   },
   
@@ -225,88 +316,245 @@ export const DATACENTERS = {
 export const WORKLOADS = {
   chatbot: {
     id: 'chatbot',
-    name: 'AI Chatbot',
+    name: 'Chat with AI',
     icon: '💬',
-    description: 'Large language model inference for conversational AI',
+    description: 'One prompt to an OpenAI model like ChatGPT',
     intensity: 'low',
-    
-    // Per-session metrics (based on Patterson 2022, Luccioni 2023)
-    perSession: {
-      queries: 25, // Queries per typical session
-      tokensPerQuery: 500,
-      kwhPerQuery: 0.0029, // ~2.9 Wh per query
-      durationMinutes: 15
+
+    perOperation: {
+      kwhPerOperation: 0.0029,
+      label: '1 chat prompt'
     },
-    
-    // Scaling factors
+
     scaling: {
-      modelSize: 'large', // GPT-4 class
+      modelSize: 'large',
       gpuType: 'A100',
-      gpusPerQuery: 8
+      gpusPerOperation: 8
+    },
+
+    cityRouting: {
+      barcelona: {
+        platform: 'ChatGPT',
+        operator: 'OpenAI via Microsoft Azure',
+        min: {
+          datacenter: 'Stockholm',
+          country: 'Sweden',
+          kWh: 0.00035,
+          co2_g: 0.008,
+          water_mL: 0.06,
+          distance_km: 2500
+        },
+        max: {
+          datacenter: 'Frankfurt',
+          country: 'Germany',
+          kWh: 0.0024,
+          co2_g: 0.840,
+          water_mL: 0.72,
+          distance_km: 1500
+        }
+      }
     }
   },
   
-  image: {
-    id: 'image',
-    name: 'Image Generator',
-    icon: '🎨',
-    description: 'Diffusion model for AI image synthesis',
-    intensity: 'high',
-    
-    perSession: {
-      images: 10,
-      stepsPerImage: 50,
-      resolution: '1024x1024',
-      kwhPerImage: 0.029, // ~29 Wh per image (Luccioni 2023)
-      durationMinutes: 20
+  realTimeTranslation: {
+    id: 'realTimeTranslation',
+    name: 'Real-Time Translation',
+    icon: '🌐',
+    description: 'Speech recognition + computer vision + NLP for live translation',
+    intensity: 'medium',
+
+    perOperation: {
+      kwhPerOperation: 0.0050,
+      label: '1 live translation (30 seconds of speech)'
     },
-    
+
+    scaling: {
+      modelSize: 'large',
+      gpuType: 'A100',
+      gpusPerOperation: 4
+    },
+
+    cityRouting: {
+      barcelona: {
+        platform: 'Google Translate',
+        operator: 'Google (owned campus network)',
+        min: {
+          datacenter: 'Belgium',
+          country: 'Belgium',
+          kWh: 0.00109,
+          co2_g: 0.148,
+          water_mL: 0.24,
+          distance_km: 1100
+        },
+        max: {
+          datacenter: 'Germany',
+          country: 'Germany',
+          kWh: 0.011,
+          co2_g: 4.08,
+          water_mL: 3.30,
+          distance_km: 1500
+        }
+      }
+    }
+  },
+  
+  pdfSummarize: {
+    id: 'pdfSummarize',
+    name: 'Summarize a PDF',
+    icon: '📄',
+    description: 'Analyze and summarize one document using AI',
+    intensity: 'high',
+
+    perOperation: {
+      kwhPerOperation: 0.012,
+      label: '1 PDF summary (20 pages)'
+    },
+
     scaling: {
       modelSize: 'xl',
       gpuType: 'A100',
-      gpusPerImage: 1
+      gpusPerOperation: 8
+    },
+
+    cityRouting: {
+      barcelona: {
+        platform: 'Claude',
+        operator: 'Anthropic via Amazon Web Services',
+        min: {
+          datacenter: 'Paris',
+          country: 'France',
+          kWh: 0.00224,
+          co2_g: 0.049,
+          water_mL: 0.67,
+          distance_km: 1000
+        },
+        max: {
+          datacenter: 'Frankfurt',
+          country: 'Germany',
+          kWh: 0.0224,
+          co2_g: 8.31,
+          water_mL: 7.84,
+          distance_km: 1500
+        }
+      }
     }
   },
   
-  traffic: {
-    id: 'traffic',
-    name: 'Traffic AI',
-    icon: '🚦',
-    description: 'Real-time urban traffic optimization system',
-    intensity: 'medium',
-    
-    perSession: {
-      sensors: 500, // Sensors in network
-      predictionsPerHour: 12000,
-      kwhPerHour: 2.5,
-      durationMinutes: 60 // 1 hour of operation
+  backgroundRemoval: {
+    id: 'backgroundRemoval',
+    name: 'Remove Background',
+    icon: '✂️',
+    description: 'Remove the background from one photo using AI',
+    intensity: 'low',
+
+    perOperation: {
+      kwhPerOperation: 0.0023,
+      label: '1 photo background removal'
     },
-    
+
     scaling: {
       modelSize: 'medium',
       gpuType: 'T4',
-      gpusPerHour: 4
+      gpusPerOperation: 1
+    },
+
+    cityRouting: {
+      barcelona: {
+        platform: 'Adobe Express',
+        operator: 'Adobe Firefly via Amazon Web Services',
+        min: {
+          datacenter: 'Oregon',
+          country: 'USA',
+          kWh: 0.00057,
+          co2_g: 0.114,
+          water_mL: 0.17,
+          distance_km: 9400
+        },
+        max: {
+          datacenter: 'Virginia',
+          country: 'USA',
+          kWh: 0.0057,
+          co2_g: 1.98,
+          water_mL: 2.28,
+          distance_km: 6800
+        }
+      }
     }
   },
-  
-  biometric: {
-    id: 'biometric',
-    name: 'Biometric Security',
-    icon: '👁️',
-    description: 'Facial recognition and surveillance processing',
-    intensity: 'continuous',
-    
-    perSession: {
-      cameras: 100,
-      facesPerMinute: 1000,
-      kwhPerHour: 8.5,
-      durationMinutes: 60 // Represents 1 hour of continuous operation
+
+  imageGeneration: {
+    id: 'imageGeneration',
+    name: 'Generate Image',
+    icon: '🎨',
+    description: 'Generate one image from a text prompt using a diffusion model',
+    intensity: 'medium',
+
+    perOperation: {
+      kwhPerOperation: 0.0070,
+      label: '1 image generation (512×512)'
     },
-    
+
     scaling: {
-      modelSize: 'edge-optimized',
-      gpuType: 'T4',
-      gpusPerHour: 12
+      modelSize: 'large',
+      gpuType: 'A100',
+      gpusPerOperation: 4
+    }
+  },
+
+  videoGeneration: {
+    id: 'videoGeneration',
+    name: 'Generate Video',
+    icon: '🎬',
+    description: 'Generate a short AI video clip from a text prompt',
+    intensity: 'extreme',
+
+    perOperation: {
+      kwhPerOperation: 0.050,
+      label: '1 video clip (5 seconds)'
+    },
+
+    scaling: {
+      modelSize: 'xl',
+      gpuType: 'H100',
+      gpusPerOperation: 16
+    }
+  },
+
+  voiceClone: {
+    id: 'voiceClone',
+    name: 'Clone a Voice',
+    icon: '🎙️',
+    description: 'Clone a voice from a short audio sample and generate speech',
+    intensity: 'medium',
+
+    perOperation: {
+      kwhPerOperation: 0.0085,
+      label: '1 voice clone + 30s speech'
+    },
+
+    scaling: {
+      modelSize: 'large',
+      gpuType: 'A100',
+      gpusPerOperation: 2
+    }
+  },
+
+  codeAssist: {
+    id: 'codeAssist',
+    name: 'Code with AI',
+    icon: '👨‍💻',
+    description: 'AI-assisted code generation and completion',
+    intensity: 'medium',
+
+    perOperation: {
+      kwhPerOperation: 0.0040,
+      label: '1 code completion request'
+    },
+
+    scaling: {
+      modelSize: 'large',
+      gpuType: 'A100',
+      gpusPerOperation: 4
     }
   }
 };
@@ -410,13 +658,13 @@ export const EWASTE = {
 // ============================================
 
 export const EMISSIONS_DRIFT = {
-  arizona: {
-    direction: 'west-northwest',
+  amsterdam: {
+    direction: 'east',
     destinations: [
-      { name: 'California', coords: { lat: 36.7783, lng: -119.4179 } },
-      { name: 'Pacific Ocean', coords: { lat: 32.0, lng: -130.0 } }
+      { name: 'Germany', coords: { lat: 51.1657, lng: 10.4515 } },
+      { name: 'North Sea', coords: { lat: 56.0, lng: 3.0 } }
     ],
-    driftDistanceKm: 2400
+    driftDistanceKm: 1200
   },
   
   finland: {
@@ -428,13 +676,31 @@ export const EMISSIONS_DRIFT = {
     driftDistanceKm: 3200
   },
   
-  singapore: {
+  singapore_dc: {
     direction: 'north',
     destinations: [
       { name: 'South China Sea', coords: { lat: 15.0, lng: 110.0 } },
       { name: 'Vietnam Coast', coords: { lat: 16.0544, lng: 108.2022 } }
     ],
     driftDistanceKm: 1800
+  },
+  
+  riyadh_dc: {
+    direction: 'east',
+    destinations: [
+      { name: 'Arabian Gulf', coords: { lat: 26.0, lng: 51.0 } },
+      { name: 'Indian Ocean', coords: { lat: 18.0, lng: 60.0 } }
+    ],
+    driftDistanceKm: 2000
+  },
+
+  frankfurt: {
+    direction: 'east-northeast',
+    destinations: [
+      { name: 'Poland', coords: { lat: 51.9194, lng: 19.1451 } },
+      { name: 'Baltic States', coords: { lat: 56.8796, lng: 24.6032 } }
+    ],
+    driftDistanceKm: 1600
   },
   
   ireland: {
@@ -532,24 +798,24 @@ export const ENERGY_REFERENCE = {
   // Source: IEA household consumption data (approximate)
   apartment: {
     barcelona: { kWhPerHour: 0.35, label: 'Barcelona apartment' },
-    lagos:     { kWhPerHour: 0.12, label: 'Lagos apartment' },
-    phoenix:   { kWhPerHour: 0.55, label: 'Phoenix apartment' },
-    dublin:    { kWhPerHour: 0.40, label: 'Dublin apartment' },
-    default:   { kWhPerHour: 0.40, label: 'typical apartment' }
+    riyadh:    { kWhPerHour: 0.55, label: 'Riyadh apartment' },
+    singapore: { kWhPerHour: 0.45, label: 'Singapore apartment' },
+    nairobi:   { kWhPerHour: 0.10, label: 'Nairobi apartment' },
+    default:   { kWhPerHour: 0.35, label: 'typical apartment' }
   },
   // Reference building in each city centre (real coordinates with 3D buildings in Mapbox)
   referenceBuilding: {
     barcelona: { lat: 41.3870, lng: 2.1700, name: 'Eixample District' },
-    lagos:     { lat: 6.4550,  lng: 3.4231, name: 'Victoria Island' },
-    phoenix:   { lat: 33.4485, lng: -112.0773, name: 'Downtown Phoenix' },
-    dublin:    { lat: 53.3440, lng: -6.2675, name: 'Grand Canal Dock' }
+    riyadh:    { lat: 24.7136, lng: 46.6753, name: 'Al Olaya District' },
+    singapore: { lat: 1.2830, lng: 103.8513, name: 'Marina Bay' },
+    nairobi:   { lat: -1.2864, lng: 36.8172, name: 'Westlands' }
   },
   // Average apartments per city block / neighborhood
   neighborhoodSize: {
     barcelona: 120,
-    lagos: 80,
-    phoenix: 60,
-    dublin: 90,
+    riyadh: 100,
+    singapore: 150,
+    nairobi: 60,
     default: 80
   },
   // Everyday equivalences (energy in kWh for comparison)
@@ -569,14 +835,14 @@ export const NARRATIVES = {
   standard: (data) => `
     Your request traveled ${data.distanceKm.toLocaleString()} km to a server in ${data.datacenterLocation}. 
     The electricity came from a grid that is ${Math.round(data.fossilPercent)}% fossil-fueled. 
-    ${data.waterLiters > 0 ? `${data.waterLiters.toFixed(1)} liters of water were consumed for cooling.` : 'Seawater cooling was used.'} 
+    ${data.waterLiters > 0 ? `${data.waterLiters.toFixed(1)} liters of water were used for cooling.` : 'Seawater cooling was used.'}
     ${data.co2Grams.toFixed(0)}g of CO₂ was released—it will drift ${data.emissionsDrift.direction} toward ${data.emissionsDrift.destinations[0].name}.
   `,
   
   waterStress: (data) => `
     The ${data.datacenterName} draws water from ${data.waterSource}, an aquifer that is already ${Math.round(data.aquiferDepletion * 100)}% depleted. 
     This single session withdrew ${data.waterLiters.toFixed(1)} liters. 
-    By the time you finish reading this, the data center has consumed another ${(data.waterLitersPerSecond * 5).toFixed(0)} liters.
+    By the time you finish reading this, the data center has used another ${(data.waterLitersPerSecond * 5).toFixed(0)} liters.
   `,
   
   emissions: (data) => `

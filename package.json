@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "gsap": "^3.12.4",
     "mapbox-gl": "^3.4.0",
-    "gsap": "^3.12.4"
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "vite": "^5.0.10"

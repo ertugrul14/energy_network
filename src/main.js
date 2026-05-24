@@ -116,9 +116,9 @@ class DemoController {
     this.app = app;
     this.demoScenarios = [
       { city: 'barcelona', workload: 'chatbot', datacenter: 'ireland', hour: 10 },
-      { city: 'phoenix', workload: 'image', datacenter: 'arizona', hour: 15 },
-      { city: 'lagos', workload: 'biometric', datacenter: 'singapore', hour: 8 },
-      { city: 'dublin', workload: 'traffic', datacenter: 'finland', hour: 18 }
+      { city: 'singapore', workload: 'pdfSummarize', datacenter: 'singapore_dc', hour: 15 },
+      { city: 'nairobi', workload: 'backgroundRemoval', datacenter: 'amsterdam', hour: 8 },
+      { city: 'riyadh', workload: 'realTimeTranslation', datacenter: 'riyadh_dc', hour: 18 }
     ];
     this.currentScenario = 0;
   }

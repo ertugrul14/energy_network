@@ -544,18 +544,20 @@ export class GlobeVisualization {
   _getCityData() {
     return {
       barcelona: { center: { lat: 41.3851, lng: 2.1734 }, name: 'Barcelona' },
-      lagos:     { center: { lat: 6.5244,  lng: 3.3792 }, name: 'Lagos' },
-      phoenix:   { center: { lat: 33.4484, lng: -112.074 }, name: 'Phoenix' },
-      dublin:    { center: { lat: 53.3498, lng: -6.2603 }, name: 'Dublin' }
+      riyadh:    { center: { lat: 24.7136, lng: 46.6753 }, name: 'Riyadh' },
+      singapore: { center: { lat: 1.3521,  lng: 103.8198 }, name: 'Singapore' },
+      nairobi:   { center: { lat: -1.2921, lng: 36.8219 }, name: 'Nairobi' }
     };
   }
 
   _getDatacenterData() {
     return {
-      arizona:   { center: { lat: 33.3942, lng: -111.9261 }, name: 'Arizona Hyperscale', color: '#ff4444' },
-      finland:   { center: { lat: 60.5693, lng: 27.1878 },   name: 'Nordic Green DC',   color: '#44ff88' },
-      singapore: { center: { lat: 1.3521,  lng: 103.8198 },  name: 'Equinix SG Hub',    color: '#ff8844' },
-      ireland:   { center: { lat: 53.4055, lng: -6.3725 },   name: 'Dublin Cloud Campus', color: '#4488ff' }
+      amsterdam:    { center: { lat: 52.3676, lng: 4.9041 },  name: 'Amsterdam Cloud Region', color: '#44aaff' },
+      finland:      { center: { lat: 60.5693, lng: 27.1878 },  name: 'Nordic Green DC',       color: '#44ff88' },
+      singapore_dc: { center: { lat: 1.3521,  lng: 103.8198 }, name: 'Equinix SG Hub',        color: '#ff8844' },
+      riyadh_dc:    { center: { lat: 24.7136, lng: 46.6753 },  name: 'Riyadh Cloud Region',   color: '#ff5544' },
+      frankfurt:    { center: { lat: 50.1109, lng: 8.6821 },   name: 'Frankfurt Cloud Region', color: '#ffaa44' },
+      ireland:      { center: { lat: 53.4055, lng: -6.3725 },  name: 'Dublin Cloud Campus',   color: '#4488ff' }
     };
   }
 

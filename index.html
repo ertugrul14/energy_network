@@ -55,17 +55,17 @@
             <span class="city-flag">🇪🇸</span>
             <span class="city-name">Barcelona</span>
           </button>
-          <button class="city-btn" data-city="lagos">
-            <span class="city-flag">🇳🇬</span>
-            <span class="city-name">Lagos</span>
+          <button class="city-btn" data-city="riyadh">
+            <span class="city-flag">🇸🇦</span>
+            <span class="city-name">Riyadh</span>
           </button>
-          <button class="city-btn" data-city="phoenix">
-            <span class="city-flag">🇺🇸</span>
-            <span class="city-name">Phoenix</span>
+          <button class="city-btn" data-city="singapore">
+            <span class="city-flag">🇸🇬</span>
+            <span class="city-name">Singapore</span>
           </button>
-          <button class="city-btn" data-city="dublin">
-            <span class="city-flag">🇮🇪</span>
-            <span class="city-name">Dublin</span>
+          <button class="city-btn" data-city="nairobi">
+            <span class="city-flag">🇰🇪</span>
+            <span class="city-name">Nairobi</span>
           </button>
         </div>
       </div>
@@ -79,20 +79,20 @@
             <span class="workload-name">AI Chatbot</span>
             <span class="workload-intensity">LOW</span>
           </button>
-          <button class="workload-btn" data-workload="image">
-            <span class="workload-icon">🎨</span>
-            <span class="workload-name">Image Generator</span>
-            <span class="workload-intensity">HIGH</span>
-          </button>
-          <button class="workload-btn" data-workload="traffic">
-            <span class="workload-icon">🚦</span>
-            <span class="workload-name">Traffic AI</span>
+          <button class="workload-btn" data-workload="realTimeTranslation">
+            <span class="workload-icon">🌐</span>
+            <span class="workload-name">Real-Time Translation</span>
             <span class="workload-intensity">MEDIUM</span>
           </button>
-          <button class="workload-btn" data-workload="biometric">
-            <span class="workload-icon">👁️</span>
-            <span class="workload-name">Biometric Security</span>
-            <span class="workload-intensity">CONTINUOUS</span>
+          <button class="workload-btn" data-workload="pdfSummarize">
+            <span class="workload-icon">📄</span>
+            <span class="workload-name">PDF Summarizer</span>
+            <span class="workload-intensity">HIGH</span>
+          </button>
+          <button class="workload-btn" data-workload="backgroundRemoval">
+            <span class="workload-icon">✂️</span>
+            <span class="workload-name">Background Remover</span>
+            <span class="workload-intensity">LOW</span>
           </button>
         </div>
       </div>
@@ -102,31 +102,38 @@
         <p class="panel-desc">There is no clean option—only tradeoffs</p>
         <div class="redirect-options">
           <label class="redirect-option">
-            <input type="radio" name="datacenter" value="arizona" checked>
+            <input type="radio" name="datacenter" value="amsterdam" checked>
             <span class="option-content">
-              <span class="option-name">Arizona, USA</span>
-              <span class="option-stats">☀️ Solar available | 💧 Water stressed</span>
+              <span class="option-name">Amsterdam, NL</span>
+              <span class="option-stats">🌬️ Wind + Gas | 💧 Moderate stress</span>
             </span>
           </label>
           <label class="redirect-option">
             <input type="radio" name="datacenter" value="finland">
             <span class="option-content">
               <span class="option-name">Finland</span>
-              <span class="option-stats">❄️ Cool climate | ⚡ Grid mixed</span>
+              <span class="option-stats">❄️ Cool climate | ⚡ Nuclear + Hydro</span>
             </span>
           </label>
           <label class="redirect-option">
-            <input type="radio" name="datacenter" value="singapore">
+            <input type="radio" name="datacenter" value="singapore_dc">
             <span class="option-content">
               <span class="option-name">Singapore</span>
               <span class="option-stats">🔥 High cooling | 🛢️ Fossil heavy</span>
             </span>
           </label>
           <label class="redirect-option">
+            <input type="radio" name="datacenter" value="frankfurt">
+            <span class="option-content">
+              <span class="option-name">Frankfurt, DE</span>
+              <span class="option-stats">⚡ Coal + Wind | 🏭 Mixed grid</span>
+            </span>
+          </label>
+          <label class="redirect-option">
             <input type="radio" name="datacenter" value="ireland">
             <span class="option-content">
               <span class="option-name">Ireland</span>
-              <span class="option-stats">🍃 Wind power | 💨 Emissions trade</span>
+              <span class="option-stats">🍃 Wind power | 💨 Gas heavy</span>
             </span>
           </label>
         </div>
@@ -166,7 +173,7 @@
         <div class="impact-route">
           <span class="route-from" id="route-from">Barcelona</span>
           <span class="route-arrow">→</span>
-          <span class="route-to" id="route-to">Arizona DC</span>
+          <span class="route-to" id="route-to">Amsterdam DC</span>
         </div>
         <div class="impact-workload" id="impact-workload">AI Chatbot Session</div>
       </div>

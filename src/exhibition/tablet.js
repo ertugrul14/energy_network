@@ -8,6 +8,8 @@ import { simulationEngine } from '../simulation/engine.js';
 import { CITIES, DATACENTERS, WORKLOADS, ENERGY_REFERENCE } from '../data/models.js';
 import { BUILDING_TYPES, NEIGHBORHOOD_POPULATION, SCENARIO_COMPONENTS } from './models.js';
 import { arduino } from './arduino.js';
+import { i18n } from '../i18n/i18n.js';
+import { initLandingWorld } from './landing-world.js';
 
 // BroadcastChannel for tablet ↔ screen communication
 const channel = new BroadcastChannel('ghost-network-exhibition');
@@ -19,21 +21,48 @@ class TabletController {
     this.selectedDatacenter = null;
     this.simulationResults = null;
     this.selectedScenarioComponents = new Set();
+    this.onboardStepIndex = 0;
 
     this.init();
   }
 
   init() {
+    this._destroyLandingWorld = initLandingWorld('landing-world-canvas');
     this.bindLanding();
+    this.bindOnboarding();
     this.bindBodyScale();
     this.bindBodyResult();
     this.bindCityScale();
     this.bindPlanetaryScale();
     this.bindScenario();
+    this.bindLangSwitcher();
 
-    // Listen for LED events to update UI indicator
+    i18n.applyToDOM();
+
     window.addEventListener('arduino:light', (e) => {
       this.updateLedIndicator(e.detail.level);
+    });
+  }
+
+  bindLangSwitcher() {
+    const switcher = document.getElementById('lang-switcher');
+    if (!switcher) return;
+
+    this._updateLangButtons();
+
+    switcher.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        i18n.setLang(btn.dataset.lang);
+        this._updateLangButtons();
+        // Notify screen of language change
+        channel.postMessage({ type: 'lang-change', lang: btn.dataset.lang });
+      });
+    });
+  }
+
+  _updateLangButtons() {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === i18n.currentLang);
     });
   }
 
@@ -49,10 +78,110 @@ class TabletController {
 
   bindLanding() {
     document.getElementById('btn-start').addEventListener('click', () => {
-      this.showPage('body-scale');
-      // Tell screen we've started
-      channel.postMessage({ type: 'started' });
+      if (this._destroyLandingWorld) { this._destroyLandingWorld(); this._destroyLandingWorld = null; }
+      this.showPage('onboard-purpose');
+      this.animatePurposeText();
+      // Stop lang button pulse
+      document.getElementById('lang-switcher').classList.remove('onboarding-lang');
     });
+  }
+
+  // ─── ONBOARDING ───────────────────────────────────
+
+  bindOnboarding() {
+    document.getElementById('btn-learn-how').addEventListener('click', () => {
+      this.showPage('onboard-steps');
+      this.onboardStepIndex = 0;
+      this.populateOnboardSteps();
+      this.revealNextOnboardStep();
+    });
+
+    document.getElementById('btn-onboard-next').addEventListener('click', () => {
+      this.revealNextOnboardStep();
+    });
+  }
+
+  animatePurposeText() {
+    const el = document.getElementById('onboard-purpose-text');
+    const text = i18n.t('onboard_purpose');
+    const words = text.split(' ');
+    el.innerHTML = words.map(w => `<span class="word">${w}</span>`).join(' ');
+
+    const wordEls = el.querySelectorAll('.word');
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < wordEls.length) {
+        wordEls[i].classList.add('visible');
+        i++;
+      } else {
+        clearInterval(interval);
+        const btn = document.getElementById('btn-learn-how');
+        btn.classList.remove('hidden');
+        btn.classList.add('visible');
+      }
+    }, 80);
+  }
+
+  populateOnboardSteps() {
+    const steps = [
+      { icon: '🏙️', titleKey: 'onboard_step1_title', descKey: 'onboard_step1_desc' },
+      { icon: '💡', titleKey: 'onboard_step3_title', descKey: 'onboard_step3_desc' },
+      { icon: '🌍', titleKey: 'onboard_step4_title', descKey: 'onboard_step4_desc' },
+    ];
+
+    const container = document.getElementById('onboard-steps-container');
+    container.innerHTML = steps.map((s, idx) => `
+      <div class="onboard-step-box" data-step="${idx}">
+        <div class="onboard-step-box-icon">${s.icon}</div>
+        <div class="onboard-step-box-content">
+          <div class="onboard-step-box-title" data-text="${i18n.t(s.titleKey)}"></div>
+          <div class="onboard-step-box-desc" data-text="${i18n.t(s.descKey)}"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  typewriteElement(el, delay = 0) {
+    const text = el.dataset.text;
+    el.innerHTML = '';
+    const chars = [...text];
+    chars.forEach((char, i) => {
+      if (char === ' ') {
+        el.appendChild(document.createTextNode(' '));
+      } else {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = char;
+        span.style.animationDelay = `${delay + i * 30}ms`;
+        el.appendChild(span);
+      }
+    });
+  }
+
+  revealNextOnboardStep() {
+    const boxes = document.querySelectorAll('#onboard-steps-container .onboard-step-box');
+    const totalSteps = boxes.length;
+
+    if (this.onboardStepIndex < totalSteps) {
+      const box = boxes[this.onboardStepIndex];
+      box.classList.add('visible');
+
+      const title = box.querySelector('.onboard-step-box-title');
+      const desc = box.querySelector('.onboard-step-box-desc');
+      this.typewriteElement(title, 200);
+      const titleLen = (title.dataset.text || '').length;
+      this.typewriteElement(desc, 200 + titleLen * 30 + 150);
+
+      this.onboardStepIndex++;
+
+      if (this.onboardStepIndex >= totalSteps) {
+        const btnText = document.getElementById('btn-onboard-next-text');
+        btnText.textContent = i18n.t('btn_begin');
+      }
+    } else {
+      this.showPage('body-scale');
+      channel.postMessage({ type: 'started' });
+    }
   }
 
   // ─── STEP 1: Body Scale ───────────────────────────
@@ -67,10 +196,9 @@ class TabletController {
         btn.classList.add('active');
         this.selectedCity = btn.dataset.city;
 
-        // Auto-select default datacenter
         const city = CITIES[this.selectedCity];
         if (city?.defaultDatacenter) {
-          this.selectDatacenter(city.defaultDatacenter);
+          this.selectedDatacenter = city.defaultDatacenter;
         }
 
         this.checkConsumptionReady(consumptionBtn);
@@ -87,31 +215,14 @@ class TabletController {
       });
     });
 
-    // Datacenter buttons
-    document.querySelectorAll('#dc-options .opt-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#dc-options .opt-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.selectedDatacenter = btn.dataset.dc;
-        this.checkConsumptionReady(consumptionBtn);
-      });
-    });
-
     // Consumption button
     consumptionBtn.addEventListener('click', () => {
       this.runBodySimulation();
     });
   }
 
-  selectDatacenter(id) {
-    document.querySelectorAll('#dc-options .opt-btn').forEach(b => b.classList.remove('active'));
-    const target = document.querySelector(`#dc-options .opt-btn[data-dc="${id}"]`);
-    if (target) target.classList.add('active');
-    this.selectedDatacenter = id;
-  }
-
   checkConsumptionReady(btn) {
-    btn.disabled = !(this.selectedCity && this.selectedWorkload && this.selectedDatacenter);
+    btn.disabled = !(this.selectedCity && this.selectedWorkload);
   }
 
   runBodySimulation() {
@@ -124,8 +235,9 @@ class TabletController {
 
     try {
       this.simulationResults = simulationEngine.runSimulation();
-      this.populateBodyResult();
+      this.prepareBodyResult();
       this.showPage('body-result');
+      this.animateBodyResultSequence();
     } catch (err) {
       console.error('Simulation error:', err);
     }
@@ -133,66 +245,254 @@ class TabletController {
 
   // ─── STEP 1b: Body Result ─────────────────────────
 
-  populateBodyResult() {
+  _getObjectModels() {
+    return {
+      'LED bulb for 1 hour': `<div class="equiv-3d-object obj-led">
+        <div class="obj-face front"></div><div class="obj-face back"></div>
+        <div class="obj-face left"></div><div class="obj-face right"></div>
+        <div class="obj-face top"></div><div class="obj-face bottom"></div>
+      </div>`,
+      'smartphone full charge': `<div class="equiv-3d-object obj-phone">
+        <div class="obj-face front"></div><div class="obj-face back"></div>
+        <div class="obj-face left"></div><div class="obj-face right"></div>
+        <div class="obj-face top"></div><div class="obj-face bottom"></div>
+      </div>`,
+      'laptop for 1 hour': `<div class="equiv-3d-object obj-laptop">
+        <div class="obj-face base front"></div><div class="obj-face base back"></div>
+        <div class="obj-face base left"></div><div class="obj-face base right"></div>
+        <div class="obj-face base top"></div>
+        <div class="obj-face screen front"></div><div class="obj-face screen back"></div>
+      </div>`,
+      'electric kettle boil': `<div class="equiv-3d-object obj-kettle">
+        <div class="obj-face front"></div><div class="obj-face back"></div>
+        <div class="obj-face left"></div><div class="obj-face right"></div>
+        <div class="obj-face top"></div><div class="obj-face bottom"></div>
+        <div class="handle"></div>
+      </div>`,
+      'washing machine cycle': `<div class="equiv-3d-object obj-washer">
+        <div class="obj-face front"></div><div class="obj-face back"></div>
+        <div class="obj-face left"></div><div class="obj-face right"></div>
+        <div class="obj-face top"></div><div class="obj-face bottom"></div>
+      </div>`,
+      'EV driven 1 km': `<div class="equiv-3d-object obj-ev">
+        <div class="obj-face body-main"></div><div class="obj-face body-back"></div>
+        <div class="obj-face body-top"></div>
+        <div class="obj-face cabin"></div><div class="obj-face cabin-back"></div>
+        <div class="wheel fl"></div><div class="wheel fr"></div>
+        <div class="wheel bl"></div><div class="wheel br"></div>
+      </div>`,
+      'AC unit for 1 hour': `<div class="equiv-3d-object obj-ac">
+        <div class="obj-face front"></div><div class="obj-face back"></div>
+        <div class="obj-face left"></div><div class="obj-face right"></div>
+        <div class="obj-face top"></div><div class="obj-face bottom"></div>
+      </div>`,
+      'hot shower (5 min)': `<div class="equiv-3d-object obj-shower">
+        <div class="pipe"></div>
+        <div class="head"></div>
+        <div class="drops">
+          <div class="drop"></div><div class="drop"></div>
+          <div class="drop"></div><div class="drop"></div>
+        </div>
+      </div>`
+    };
+  }
+
+  _buildInsightText(aptRef, aptHours) {
+    const aptMinutes = Math.round(aptHours * 60);
+    const aptSeconds = Math.round(aptHours * 3600);
+    if (aptMinutes >= 60) {
+      const h = Math.floor(aptMinutes / 60);
+      const m = aptMinutes % 60;
+      return `THIS 1 OPERATION COULD POWER A ${aptRef.label.toUpperCase()} FOR ${h} HOUR${h > 1 ? 'S' : ''}${m > 0 ? ` ${m} MIN` : ''}`;
+    } else if (aptMinutes > 0) {
+      return `THIS 1 OPERATION COULD POWER A ${aptRef.label.toUpperCase()} FOR ${aptMinutes} MINUTE${aptMinutes !== 1 ? 'S' : ''}`;
+    } else if (aptSeconds > 0) {
+      return `THIS 1 OPERATION COULD POWER A ${aptRef.label.toUpperCase()} FOR ${aptSeconds} SECOND${aptSeconds !== 1 ? 'S' : ''}`;
+    }
+    return `THIS IS A TINY FRACTION OF 1 ${aptRef.label.toUpperCase()}`;
+  }
+
+  prepareBodyResult() {
     const results = this.simulationResults;
     const cityId = this.selectedCity;
     const aptRef = ENERGY_REFERENCE.apartment[cityId] || ENERGY_REFERENCE.apartment.default;
     const totalKwh = results.electricity.withOverhead;
+    const aptHours = totalKwh / aptRef.kWhPerHour;
 
-    // Headline kWh
+    // Set kWh value (hidden until animation reveals it)
     document.getElementById('body-kwh').textContent = totalKwh.toFixed(4);
 
-    // Apartment equivalence
-    const aptHours = totalKwh / aptRef.kWhPerHour;
-    const aptMinutes = Math.round(aptHours * 60);
+    // Build insight text
+    this._insightText = this._buildInsightText(aptRef, aptHours);
 
-    // Building animation
-    const structure = document.getElementById('building-structure');
-    const totalFloors = 8;
-    const litFloors = Math.max(1, Math.min(totalFloors, Math.ceil(aptHours * totalFloors)));
+    // Build the 3D building
+    const buildingEl = document.getElementById('hero-building');
+    const totalWindows = 40;
+    const litCount = Math.max(1, Math.min(totalWindows, Math.round(aptHours * totalWindows)));
+    const litSet = new Set();
+    while (litSet.size < litCount) litSet.add(Math.floor(Math.random() * totalWindows));
 
-    structure.innerHTML = '';
-    for (let i = totalFloors; i >= 1; i--) {
-      const floor = document.createElement('div');
-      floor.className = 'building-floor' + (i <= litFloors ? ' lit' : '');
-      // Add windows
-      for (let w = 0; w < 4; w++) {
-        const win = document.createElement('div');
-        win.className = 'building-window' + (i <= litFloors ? ' lit' : '');
-        floor.appendChild(win);
+    let windowIdx = 0;
+    const makeWindows = () => {
+      let html = '<div class="bld-windows">';
+      for (let w = 0; w < 20; w++) {
+        html += `<div class="bld-win${litSet.has(windowIdx) ? ' lit' : ''}"></div>`;
+        windowIdx++;
       }
-      structure.appendChild(floor);
-    }
+      html += '</div>';
+      return html;
+    };
 
-    document.getElementById('building-label').textContent = aptRef.label;
+    buildingEl.innerHTML = `
+      <div class="bld-face front">${makeWindows()}</div>
+      <div class="bld-face back">${makeWindows()}</div>
+      <div class="bld-face left"></div>
+      <div class="bld-face right"></div>
+      <div class="bld-face top"></div>
+      <div class="bld-face bottom"></div>
+    `;
 
-    const insightEl = document.getElementById('building-insight');
-    if (aptMinutes >= 60) {
-      const h = Math.floor(aptMinutes / 60);
-      const m = aptMinutes % 60;
-      insightEl.textContent = `This could light a ${aptRef.label} for ${h} hour${h > 1 ? 's' : ''}${m > 0 ? ` ${m} min` : ''}`;
-    } else if (aptMinutes > 0) {
-      insightEl.textContent = `This could light a ${aptRef.label} for ${aptMinutes} minute${aptMinutes !== 1 ? 's' : ''}`;
-    } else {
-      insightEl.textContent = `This is barely a flicker in one ${aptRef.label}`;
-    }
-
-    // Equivalences
+    // Build equivalence cards (all start hidden)
     const equivList = document.getElementById('equivalences');
     const equivalences = ENERGY_REFERENCE.equivalences;
-    const kwhToWh = totalKwh * 1000;
+    const objectModels = this._getObjectModels();
 
     equivList.innerHTML = equivalences
-      .filter(eq => kwhToWh / (eq.kWh * 1000) >= 0.01)
+      .filter(eq => totalKwh / eq.kWh >= 0.01)
       .slice(0, 4)
-      .map(eq => {
+      .map((eq, i) => {
         const ratio = totalKwh / eq.kWh;
-        const display = ratio >= 1 ? `${ratio.toFixed(1)}×` : `${(ratio * 100).toFixed(0)}% of`;
-        return `<div class="equiv-item">
-          <span class="equiv-value">${display}</span>
-          <span class="equiv-label">${eq.label}</span>
+        const display = ratio >= 1 ? `${ratio.toFixed(1)}×` : `${(ratio * 100).toFixed(0)}%`;
+        const model = objectModels[eq.label] || objectModels['LED bulb for 1 hour'];
+        const extraStyle = i % 2 === 1 ? 'animation-direction: reverse;' : '';
+        const modelWithStyle = model.replace('class="equiv-3d-object', `style="${extraStyle}" class="equiv-3d-object`);
+        return `<div class="equiv-3d-card anim-hidden">
+          <div class="equiv-3d-scene">${modelWithStyle}</div>
+          <span class="equiv-3d-value">${display}</span>
+          <span class="equiv-3d-label">${eq.label}</span>
         </div>`;
       }).join('');
+
+    // Reset animation states
+    document.getElementById('result-building-wrap').classList.add('anim-hidden');
+    document.getElementById('result-building-wrap').classList.remove('anim-visible');
+    document.getElementById('result-energy-wrap').classList.add('anim-hidden');
+    document.getElementById('result-energy-wrap').classList.remove('anim-visible');
+    document.getElementById('result-intro-overlay').classList.remove('visible');
+    document.getElementById('result-announce').classList.remove('visible');
+    document.querySelector('.result-header').classList.add('anim-hidden');
+    document.querySelector('.result-header').classList.remove('anim-visible');
+    document.querySelector('.body-result-nav').classList.add('anim-hidden');
+    document.querySelector('.body-result-nav').classList.remove('anim-visible');
+
+    this.populateCalcBreakdown();
+  }
+
+  animateBodyResultSequence() {
+    const STEP = 2000;
+    const totalKwh = this.simulationResults.electricity.withOverhead;
+
+    // Clear any previous animation timers
+    if (this._bodyAnimTimers) this._bodyAnimTimers.forEach(t => clearTimeout(t));
+    this._bodyAnimTimers = [];
+    const later = (fn, ms) => { const t = setTimeout(fn, ms); this._bodyAnimTimers.push(t); };
+
+    const introOverlay = document.getElementById('result-intro-overlay');
+    const introText = document.getElementById('result-intro-text');
+    const announce = document.getElementById('result-announce');
+    const announceText = document.getElementById('result-announce-text');
+    const buildingWrap = document.getElementById('result-building-wrap');
+    const energyWrap = document.getElementById('result-energy-wrap');
+    const header = document.querySelector('.result-header');
+    const nav = document.querySelector('.body-result-nav');
+
+    let t = 0;
+
+    // ── 1: Big centered text
+    introText.textContent = `THE ENERGY USED WITH THIS SINGLE OPERATION IS ${totalKwh.toFixed(4)} KWH`;
+    introOverlay.classList.add('visible');
+
+    // ── 2: Fade intro
+    t += STEP;
+    later(() => {
+      introOverlay.classList.remove('visible');
+    }, t);
+
+    // ── 3: Header + energy column
+    t += STEP;
+    later(() => {
+      header.classList.remove('anim-hidden');
+      header.classList.add('anim-visible');
+      energyWrap.classList.remove('anim-hidden');
+      energyWrap.classList.add('anim-visible');
+    }, t);
+
+    // ── 4: Building + announce text
+    t += STEP;
+    later(() => {
+      buildingWrap.classList.remove('anim-hidden');
+      buildingWrap.classList.add('anim-visible');
+      announceText.textContent = this._insightText;
+      announce.classList.add('visible');
+    }, t);
+
+    // ── 5–8: Equivalence models one by one
+    const cards = document.querySelectorAll('#equivalences .equiv-3d-card');
+    cards.forEach((card) => {
+      t += STEP;
+      later(() => {
+        card.classList.remove('anim-hidden');
+        card.classList.add('anim-visible');
+      }, t);
+    });
+
+    // ── Finally: nav buttons
+    t += STEP;
+    later(() => {
+      nav.classList.remove('anim-hidden');
+      nav.classList.add('anim-visible');
+    }, t);
+  }
+
+  populateCalcBreakdown() {
+    const r = this.simulationResults;
+    const e = r.electricity;
+    const workload = WORKLOADS[this.selectedWorkload];
+    const dc = DATACENTERS[this.selectedDatacenter];
+    const hour = new Date().getHours();
+    const hourMod = e.withOverhead / (e.baseKwh * e.pue * e.heatPenalty) || 1;
+
+    const baseFormula = `1 × ${workload.perOperation.kwhPerOperation} kWh (${workload.perOperation.label})`;
+
+    const breakdown = document.getElementById('calc-breakdown');
+    breakdown.innerHTML = `
+      <div class="calc-step">
+        <div class="calc-step-label">STEP 1 — BASE ENERGY (1 OPERATION)</div>
+        <div class="calc-step-formula">${baseFormula}</div>
+        <div class="calc-step-result">= ${e.baseKwh.toFixed(6)} kWh</div>
+      </div>
+      <div class="calc-step">
+        <div class="calc-step-label">STEP 2 — DATACENTER OVERHEAD (PUE)</div>
+        <div class="calc-step-formula">${e.baseKwh.toFixed(6)} × ${e.pue} (PUE)</div>
+        <div class="calc-step-result">= ${(e.baseKwh * e.pue).toFixed(6)} kWh</div>
+        <div class="calc-step-note">COOLING, NETWORKING, AND INFRASTRUCTURE AT ${dc.name.toUpperCase()}</div>
+      </div>
+      <div class="calc-step">
+        <div class="calc-step-label">STEP 3 — CLIMATE HEAT PENALTY</div>
+        <div class="calc-step-formula">${(e.baseKwh * e.pue).toFixed(6)} × ${e.heatPenalty} (HEAT)</div>
+        <div class="calc-step-result">= ${(e.baseKwh * e.pue * e.heatPenalty).toFixed(6)} kWh</div>
+        <div class="calc-step-note">HOT CLIMATES NEED MORE COOLING ENERGY</div>
+      </div>
+      <div class="calc-step">
+        <div class="calc-step-label">STEP 4 — TIME OF DAY</div>
+        <div class="calc-step-formula">${(e.baseKwh * e.pue * e.heatPenalty).toFixed(6)} × ${hourMod.toFixed(3)} (HOUR ${hour})</div>
+        <div class="calc-step-result">= ${e.withOverhead.toFixed(6)} kWh</div>
+      </div>
+      <div class="calc-step" style="border-left-color: var(--emissions);">
+        <div class="calc-step-label">TOTAL FOR 1 OPERATION</div>
+        <div class="calc-step-result" style="font-size: 22px;">${e.withOverhead.toFixed(4)} kWh</div>
+      </div>
+    `;
   }
 
   bindBodyResult() {
@@ -204,41 +504,61 @@ class TabletController {
       this.populateCityScale();
       this.showPage('city-scale');
     });
+
+    // Calculation popup
+    const popup = document.getElementById('calc-popup');
+    document.getElementById('btn-calc-info').addEventListener('click', () => {
+      popup.classList.remove('hidden');
+    });
+    document.getElementById('calc-popup-close').addEventListener('click', () => {
+      popup.classList.add('hidden');
+    });
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) popup.classList.add('hidden');
+    });
   }
 
   // ─── STEP 2: City Scale ───────────────────────────
 
   populateCityScale() {
     const results = this.simulationResults;
-    const perSessionKwh = results.electricity.withOverhead;
-    const totalKwh = perSessionKwh * NEIGHBORHOOD_POPULATION;
-
-    document.getElementById('city-total-kwh').textContent = Math.round(totalKwh).toLocaleString();
-
+    const city = CITIES[this.selectedCity];
     const workload = WORKLOADS[this.selectedWorkload];
-    document.getElementById('city-desc').textContent =
-      `If 40,000 people each ran one ${workload.name} session, they'd consume ${Math.round(totalKwh).toLocaleString()} kWh. Select a building to see its brightness on the physical model.`;
+    const perOperationKwh = results.electricity.withOverhead;
 
-    // Building brightness cards
+    // Show single operation cost
+    document.getElementById('single-op-kwh').textContent = perOperationKwh.toFixed(4);
+
+    // Neighborhood scaling: 40,000 people × 1 operation each
+    const totalKwh = perOperationKwh * NEIGHBORHOOD_POPULATION;
+
+    document.getElementById('city-total-kwh').textContent = totalKwh.toFixed(1);
+
+    document.getElementById('city-desc').textContent =
+      `IF ALL 40,000 PEOPLE IN THIS NEIGHBORHOOD EACH DO 1 "${workload.name.toUpperCase()}" — THIS IS THE TOTAL ENERGY USED.`;
+
+    // Building duration cards — calculate how long each building could run
     const buildings = Object.values(BUILDING_TYPES).sort((a, b) => a.order - b.order);
     const cardsContainer = document.getElementById('building-cards');
 
-    cardsContainer.innerHTML = buildings.map(b => `
+    cardsContainer.innerHTML = buildings.map(b => {
+      const hoursCanRun = totalKwh / b.avgPowerKw;
+      const durationText = this.formatDuration(hoursCanRun);
+
+      return `
       <div class="building-card" data-building="${b.id}" data-pwm="${b.pwm}">
         <div class="building-card-icon">${b.icon}</div>
         <div class="building-card-info">
-          <h3>${b.name}</h3>
-          <p class="building-card-desc">${b.description}</p>
+          <h3>${b.name.toUpperCase()}</h3>
           <div class="building-card-result">
-            <span class="building-card-duration">${b.brightnessLabel}</span>
-            <span class="building-card-context">Brightness ${b.pwm}/255</span>
+            <span class="building-card-duration">${durationText}</span>
           </div>
         </div>
         <div class="building-card-bar">
-          <div class="building-card-fill" style="width: ${(b.pwm / 255) * 100}%"></div>
+          <div class="building-card-fill" style="width: ${Math.min(100, (hoursCanRun / 24) * 100)}%"></div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     // Make building cards clickable → send brightness to Arduino
     cardsContainer.querySelectorAll('.building-card').forEach(card => {
@@ -249,6 +569,21 @@ class TabletController {
         arduino.sendBrightness(pwm);
       });
     });
+  }
+
+  formatDuration(hours) {
+    if (hours >= 24) {
+      const days = Math.floor(hours / 24);
+      const h = Math.round(hours % 24);
+      return h > 0 ? `${days} DAY${days > 1 ? 'S' : ''} ${h} HOURS` : `${days} DAY${days > 1 ? 'S' : ''}`;
+    } else if (hours >= 1) {
+      const h = Math.floor(hours);
+      const m = Math.round((hours - h) * 60);
+      return m > 0 ? `${h} HOUR${h > 1 ? 'S' : ''} ${m} MIN` : `${h} HOUR${h > 1 ? 'S' : ''}`;
+    } else {
+      const m = Math.round(hours * 60);
+      return m > 0 ? `${m} MINUTES` : 'LESS THAN 1 MINUTE';
+    }
   }
 
   bindCityScale() {
@@ -296,8 +631,12 @@ class TabletController {
     this.selectedDatacenter = null;
     this.simulationResults = null;
     this.selectedScenarioComponents.clear();
+    this.onboardStepIndex = 0;
     document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-consumption').disabled = true;
+    document.getElementById('lang-switcher').classList.add('onboarding-lang');
+    document.getElementById('btn-learn-how').classList.add('hidden');
+    document.getElementById('btn-learn-how').classList.remove('visible');
     channel.postMessage({ type: 'idle' });
     this.showPage('landing');
   }
@@ -336,19 +675,19 @@ class TabletController {
     statsEl.innerHTML = `
       <div class="planetary-stat">
         <span class="planetary-stat-value">${results.electricity.withOverhead.toFixed(3)}</span>
-        <span class="planetary-stat-label">kWh consumed</span>
+        <span class="planetary-stat-label">${i18n.t('stat_kwh')}</span>
       </div>
       <div class="planetary-stat">
         <span class="planetary-stat-value">${results.water.liters.toFixed(1)}</span>
-        <span class="planetary-stat-label">liters of water</span>
+        <span class="planetary-stat-label">${i18n.t('stat_water')}</span>
       </div>
       <div class="planetary-stat">
         <span class="planetary-stat-value">${results.emissions.grams.toFixed(0)}</span>
-        <span class="planetary-stat-label">gCO₂ emitted</span>
+        <span class="planetary-stat-label">${i18n.t('stat_co2')}</span>
       </div>
       <div class="planetary-stat">
         <span class="planetary-stat-value">${Math.round(results.distance).toLocaleString()}</span>
-        <span class="planetary-stat-label">km displaced</span>
+        <span class="planetary-stat-label">${i18n.t('stat_distance')}</span>
       </div>
     `;
 

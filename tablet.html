@@ -11,23 +11,54 @@
 </head>
 <body>
 
+  <!-- Language switcher -->
+  <div class="lang-switcher onboarding-lang" id="lang-switcher">
+    <button class="lang-btn lang-btn-pulse" data-lang="en">EN</button>
+    <button class="lang-btn lang-btn-pulse" data-lang="ca">CA</button>
+    <button class="lang-btn lang-btn-pulse" data-lang="es">ES</button>
+  </div>
+
   <!-- ============================================
-       STEP 0 — LANDING PAGE (Body Scale entry)
+       ONBOARDING — LANDING
        ============================================ -->
   <section id="landing" class="page active">
+    <div class="landing-globe-half">
+      <canvas id="landing-world-canvas" class="landing-world-canvas"></canvas>
+    </div>
     <div class="landing-content">
       <div class="landing-icon pulse">◉</div>
-      <h1>ENERGY NETWORK</h1>
-      <p class="landing-subtitle">Trace the invisible cost of AI</p>
-      <p class="landing-desc">
-        Every AI prompt triggers a chain of energy, water, and emissions
-        across the planet. Hold this tablet and follow the thread.
-      </p>
-      <button id="btn-start" class="cta-btn">
+      <h1 data-i18n="landing_title">ENERGY NETWORK</h1>
+      <p class="landing-tagline">See the Real Cost of<br>Every AI Prompt</p>
+      <p class="landing-subtitle" data-i18n="landing_subtitle">Trace the invisible cost of AI</p>
+      <button id="btn-start" class="cta-btn onboard-start-btn">
         <span class="cta-icon">⚡</span>
-        START ENERGY FLOW
+        <span data-i18n="btn_start">START</span>
       </button>
     </div>
+  </section>
+
+  <!-- ============================================
+       ONBOARDING — PURPOSE
+       ============================================ -->
+  <section id="onboard-purpose" class="page">
+    <div class="onboard-purpose-content">
+      <p class="onboard-purpose-text" id="onboard-purpose-text" data-i18n="onboard_purpose"></p>
+      <button id="btn-learn-how" class="cta-btn onboard-learn-btn hidden">
+        <span data-i18n="btn_learn_how">LEARN HOW TO DO</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ONBOARDING — STEPS
+       ============================================ -->
+  <section id="onboard-steps" class="page">
+    <div class="onboard-steps-container" id="onboard-steps-container">
+      <!-- Boxes populated by JS -->
+    </div>
+    <button id="btn-onboard-next" class="onboard-next-btn">
+      <span id="btn-onboard-next-text" data-i18n="btn_next">NEXT</span>
+    </button>
   </section>
 
   <!-- ============================================
@@ -35,69 +66,78 @@
        ============================================ -->
   <section id="body-scale" class="page">
     <header class="step-header">
-      <span class="step-tag">STEP 1</span>
-      <h2>BODY SCALE</h2>
-      <p>Your prompt, your device, your energy</p>
+      <span class="step-tag" data-i18n="step1_tag">STEP 1</span>
+      <h2 data-i18n="step1_title">BODY SCALE</h2>
+      <p data-i18n="step1_desc">Your prompt, your device, your energy</p>
     </header>
 
     <div class="selection-panel">
       <!-- City -->
       <div class="select-group">
-        <label>SELECT CITY</label>
-        <div class="option-grid city-grid" id="city-options">
+        <label data-i18n="label_city">SELECT CITY</label>
+        <div class="option-grid city-select-grid" id="city-options">
           <button class="opt-btn" data-city="barcelona">
-            <span class="opt-flag">🇪🇸</span> Barcelona
+            <span class="opt-flag">🇪🇸</span> BARCELONA
           </button>
-          <button class="opt-btn" data-city="lagos">
-            <span class="opt-flag">🇳🇬</span> Lagos
+          <button class="opt-btn" data-city="riyadh">
+            <span class="opt-flag">🇸🇦</span> RIYADH
           </button>
-          <button class="opt-btn" data-city="phoenix">
-            <span class="opt-flag">🇺🇸</span> Phoenix
+          <button class="opt-btn" data-city="singapore">
+            <span class="opt-flag">🇸🇬</span> SINGAPORE
           </button>
-          <button class="opt-btn" data-city="dublin">
-            <span class="opt-flag">🇮🇪</span> Dublin
+          <button class="opt-btn" data-city="nairobi">
+            <span class="opt-flag">🇰🇪</span> NAIROBI
           </button>
         </div>
       </div>
 
       <!-- Workload -->
-      <div class="select-group">
-        <label>SELECT AI OPERATION</label>
+      <div class="select-group workload-group">
+        <label data-i18n="label_workload">SELECT AI OPERATION</label>
         <div class="option-grid workload-grid" id="workload-options">
           <button class="opt-btn" data-workload="chatbot">
-            <span class="opt-icon">💬</span> AI Chatbot
+            <span class="opt-icon">💬</span>
+            <span class="opt-label">CHAT WITH AI</span>
+            <span class="opt-brand" aria-label="ChatGPT">
+              <span class="opt-brand-mark" aria-hidden="true"></span>
+              <span class="opt-brand-text">ChatGPT</span>
+            </span>
           </button>
-          <button class="opt-btn" data-workload="image">
-            <span class="opt-icon">🎨</span> Image Generator
+          <button class="opt-btn" data-workload="imageGeneration">
+            <span class="opt-icon">🎨</span> GENERATE IMAGE
           </button>
-          <button class="opt-btn" data-workload="traffic">
-            <span class="opt-icon">🚦</span> Traffic AI
+          <button class="opt-btn" data-workload="realTimeTranslation">
+            <span class="opt-icon">🌐</span>
+            <span class="opt-label">REAL-TIME TRANSLATION</span>
+            <span class="opt-brand" aria-label="Google Translate">
+              <span class="opt-brand-mark" aria-hidden="true"></span>
+              <span class="opt-brand-text">Google Translate</span>
+            </span>
           </button>
-          <button class="opt-btn" data-workload="biometric">
-            <span class="opt-icon">👁️</span> Biometric Security
+          <button class="opt-btn" data-workload="videoGeneration">
+            <span class="opt-icon">🎬</span> GENERATE VIDEO
           </button>
-        </div>
-      </div>
-
-      <!-- Datacenter -->
-      <div class="select-group">
-        <label>SELECT DATA CENTER</label>
-        <div class="option-grid dc-grid" id="dc-options">
-          <button class="opt-btn" data-dc="arizona">
-            <span class="opt-detail">☀️ Solar / 💧 Water stressed</span>
-            Arizona, USA
+          <button class="opt-btn" data-workload="pdfSummarize">
+            <span class="opt-icon">📄</span>
+            <span class="opt-label">SUMMARIZE A PDF</span>
+            <span class="opt-brand" aria-label="Claude">
+              <span class="opt-brand-mark" aria-hidden="true"></span>
+              <span class="opt-brand-text">Claude</span>
+            </span>
           </button>
-          <button class="opt-btn" data-dc="finland">
-            <span class="opt-detail">❄️ Cool / ⚡ Mixed grid</span>
-            Finland
+          <button class="opt-btn" data-workload="voiceClone">
+            <span class="opt-icon">🎙️</span> CLONE A VOICE
           </button>
-          <button class="opt-btn" data-dc="singapore">
-            <span class="opt-detail">🔥 High cooling / 🛢️ Fossil</span>
-            Singapore
+          <button class="opt-btn" data-workload="backgroundRemoval">
+            <span class="opt-icon">✂️</span>
+            <span class="opt-label">REMOVE BACKGROUND</span>
+            <span class="opt-brand" aria-label="Adobe Express">
+              <span class="opt-brand-mark" aria-hidden="true"></span>
+              <span class="opt-brand-text">Adobe Express</span>
+            </span>
           </button>
-          <button class="opt-btn" data-dc="ireland">
-            <span class="opt-detail">🍃 Wind / 💨 Emissions</span>
-            Ireland
+          <button class="opt-btn" data-workload="codeAssist">
+            <span class="opt-icon">👨‍💻</span> CODE WITH AI
           </button>
         </div>
       </div>
@@ -105,7 +145,7 @@
 
     <button id="btn-consumption" class="cta-btn" disabled>
       <span class="cta-icon">⚡</span>
-      ENERGY CONSUMPTION
+      <span data-i18n="btn_consumption">CALCULATE ENERGY</span>
     </button>
   </section>
 
@@ -114,98 +154,129 @@
        (apartment equivalence + building animation)
        ============================================ -->
   <section id="body-result" class="page">
-    <header class="step-header">
-      <span class="step-tag">STEP 1 — RESULT</span>
-      <h2>BODY SCALE</h2>
-      <p>What does your prompt cost?</p>
+    <!-- Cinematic intro text (fades in center then out) -->
+    <div class="result-intro-overlay" id="result-intro-overlay">
+      <div class="result-intro-text" id="result-intro-text"></div>
+    </div>
+
+    <!-- Big announcement text at top (for building insight) -->
+    <div class="result-announce" id="result-announce">
+      <div class="result-announce-text" id="result-announce-text"></div>
+    </div>
+
+    <header class="step-header result-header">
+      <span class="step-tag" data-i18n="step1_result_tag">STEP 1 — RESULT</span>
+      <h2 data-i18n="step1_title">YOUR OPERATION</h2>
     </header>
 
-    <!-- Insight card -->
-    <div class="insight-card" id="body-insight">
-      <div class="insight-header">
-        <span class="insight-icon">⚡</span>
-        <span class="insight-label">YOUR SESSION ENERGY</span>
+    <!-- 3-column layout: energy | building | models -->
+    <div class="result-triptych">
+      <!-- Left: Energy amount -->
+      <div class="result-energy-col anim-hidden" id="result-energy-wrap">
+        <div class="result-kwh-label" data-i18n="session_energy_label">ENERGY FOR 1 OPERATION</div>
+        <div class="result-kwh-value" id="body-kwh">0.000</div>
+        <div class="result-kwh-unit" data-i18n="kwh_unit">kWh USED</div>
       </div>
-      <div class="insight-value" id="body-kwh">0.000</div>
-      <div class="insight-unit">kWh consumed</div>
-    </div>
 
-    <!-- Building animation area -->
-    <div class="building-animation" id="building-animation">
-      <div class="building-visual">
-        <div class="building-structure" id="building-structure">
-          <!-- Floors rendered by JS -->
+      <!-- Center: Big 3D building -->
+      <div class="result-building-center anim-hidden" id="result-building-wrap">
+        <div class="hero-building-scene">
+          <div class="hero-building-object" id="hero-building">
+            <!-- Floors + roof rendered by JS -->
+          </div>
         </div>
-        <div class="building-label" id="building-label">Residential Building</div>
       </div>
-      <div class="building-insight" id="building-insight">
-        <!-- e.g. "This could light an apartment for 12 minutes" -->
+
+      <!-- Right: 4 equivalence models stacked vertically -->
+      <div class="result-models-col" id="equivalences">
+        <!-- Populated by JS -->
       </div>
     </div>
 
-    <!-- Equivalences -->
-    <div class="equivalence-list" id="equivalences">
-      <!-- Populated by JS -->
-    </div>
-
-    <div class="nav-buttons">
-      <button id="btn-back-body" class="nav-btn secondary">← Back</button>
-      <button id="btn-to-city" class="cta-btn">
-        SIMULATE CONSUMPTION →
-      </button>
+    <div class="nav-buttons body-result-nav">
+      <button id="btn-calc-info" class="nav-btn calc-info-btn" data-i18n="btn_calc_info">How is this calculated?</button>
+      <div class="nav-buttons-row">
+        <button id="btn-back-body" class="nav-btn secondary" data-i18n="btn_back">← Back</button>
+        <button id="btn-to-city" class="cta-btn">
+          <span data-i18n="btn_to_city">SIMULATE AT CITY SCALE →</span>
+        </button>
+      </div>
     </div>
   </section>
 
+  <!-- Calculation Popup -->
+  <div id="calc-popup" class="calc-popup hidden">
+    <div class="calc-popup-content">
+      <button id="calc-popup-close" class="calc-popup-close">✕</button>
+      <h3>How is this calculated?</h3>
+      <div class="calc-breakdown" id="calc-breakdown">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
   <!-- ============================================
-       STEP 2 — CITY SCALE 
+       STEP 2 — CITY SCALE
        (neighborhood simulation + Arduino trigger)
        ============================================ -->
   <section id="city-scale" class="page">
     <header class="step-header">
-      <span class="step-tag">STEP 2</span>
-      <h2>CITY SCALE</h2>
-      <p>If 40,000 people did the same operation…</p>
+      <span class="step-tag" data-i18n="step2_tag">STEP 2</span>
+      <h2 data-i18n="step2_title">NEIGHBORHOOD SCALE</h2>
+      <p data-i18n="step2_desc">WHAT IF YOUR WHOLE NEIGHBORHOOD DID THE SAME?</p>
     </header>
 
-    <div class="city-intro" id="city-intro">
-      <div class="city-stat">
-        <span class="city-stat-value" id="city-total-kwh">0</span>
-        <span class="city-stat-label">kWh total energy</span>
+    <div class="city-metrics">
+      <!-- Single operation cost -->
+      <div class="city-single-op" id="city-single-op">
+        <div class="single-op-label">ONE OPERATION COSTS:</div>
+        <div class="single-op-value" id="single-op-kwh">0.000</div>
+        <div class="single-op-unit">kWh</div>
       </div>
-      <p class="city-desc" id="city-desc">
-        A neighborhood of 40,000 people each running one AI session.
-      </p>
+
+      <!-- Neighborhood scaling -->
+      <div class="city-intro" id="city-intro">
+        <div class="city-neighborhood-label">NOW MULTIPLY BY 40,000 PEOPLE:</div>
+        <div class="city-stat">
+          <span class="city-stat-value" id="city-total-kwh">0</span>
+          <span class="city-stat-label" data-i18n="city_stat_label">kWh TOTAL ENERGY</span>
+        </div>
+        <p class="city-desc" id="city-desc"></p>
+      </div>
     </div>
 
-    <!-- Building duration cards -->
-    <div class="building-cards" id="building-cards">
-      <!-- Populated by JS: hospital, university, airport, etc. -->
-    </div>
+    <div class="city-grid-wrap">
+      <div class="building-cards-header">THIS ENERGY COULD POWER:</div>
+      <div class="city-grid" id="city-grid">
+        <div class="building-cards" id="building-cards">
+          <!-- Populated by JS -->
+        </div>
 
-    <!-- Arduino trigger -->
-    <div class="arduino-section">
-      <button id="btn-connect-arduino" class="connect-btn">
-        🔌 CONNECT ARDUINO
-      </button>
-      <p class="arduino-hint">Select a building type, then light up the physical model</p>
-      <button id="btn-simulate" class="cta-btn arduino-btn">
-        <span class="cta-icon">💡</span>
-        LIGHT UP MODEL
-      </button>
-      <div class="led-indicator" id="led-indicator">
-        <div class="led-dot" id="led-dot"></div>
-        <span class="led-label" id="led-label">LED OFF</span>
+        <div class="arduino-section arduino-card">
+          <button id="btn-connect-arduino" class="connect-btn">
+            🔌 <span data-i18n="btn_connect_arduino">CONNECT</span>
+          </button>
+          <button id="btn-simulate" class="cta-btn arduino-btn">
+            <span class="cta-icon">💡</span>
+            <span data-i18n="btn_simulate">LIGHT UP MODEL</span>
+          </button>
+          <div class="led-indicator" id="led-indicator">
+            <div class="led-dot" id="led-dot"></div>
+            <span class="led-label" id="led-label">LED OFF</span>
+          </div>
+          <p class="arduino-hint" data-i18n="arduino_hint">SELECT A BUILDING, THEN LIGHT UP THE PHYSICAL MODEL</p>
+        </div>
       </div>
     </div>
 
     <div class="nav-buttons">
-      <button id="btn-back-city" class="nav-btn secondary">← Back</button>
+      <button id="btn-back-city" class="nav-btn secondary" data-i18n="btn_back">← BACK</button>
       <button id="btn-restart-city" class="cta-btn restart-btn">
         <span class="cta-icon">↻</span>
-        RESTART
+        <span data-i18n="btn_restart">RESTART</span>
       </button>
       <button id="btn-to-planetary" class="cta-btn">
-        TRACE ENERGY FLOW →
+        <span data-i18n="btn_to_planetary">TRACE ENERGY FLOW →</span>
       </button>
     </div>
   </section>
@@ -216,16 +287,16 @@
        ============================================ -->
   <section id="planetary-scale" class="page">
     <header class="step-header">
-      <span class="step-tag">STEP 3</span>
-      <h2>PLANETARY SCALE</h2>
-      <p>Look up at the screen</p>
+      <span class="step-tag" data-i18n="step3_tag">STEP 3</span>
+      <h2 data-i18n="step3_title">PLANETARY SCALE</h2>
+      <p data-i18n="step3_desc">Look up at the screen</p>
     </header>
 
     <div class="planetary-content">
       <div class="planetary-icon">🌍</div>
-      <p class="planetary-desc">
+      <p class="planetary-desc" data-i18n="planetary_desc">
         The energy flow simulation is now displayed on the large screen.
-        Watch how your prompt's impact ripples across the planet — 
+        Watch how your prompt's impact ripples across the planet —
         electricity grids, water sources, CO₂ drift, and material supply chains.
       </p>
 
@@ -235,19 +306,19 @@
 
       <div class="planetary-hint">
         <span class="hint-pulse"></span>
-        The globe on the big screen is showing your energy flow in real time
+        <span data-i18n="planetary_hint">The globe on the big screen is showing your energy flow in real time</span>
       </div>
     </div>
 
     <div class="nav-buttons">
-      <button id="btn-back-planetary" class="nav-btn secondary">← Back</button>
+      <button id="btn-back-planetary" class="nav-btn secondary" data-i18n="btn_back">← Back</button>
       <button id="btn-create-scenario" class="cta-btn scenario-btn">
         <span class="cta-icon">🏗️</span>
-        CREATE SCENARIO
+        <span data-i18n="btn_create_scenario">CREATE SCENARIO</span>
       </button>
       <button id="btn-restart" class="cta-btn restart-btn">
         <span class="cta-icon">↻</span>
-        START OVER
+        <span data-i18n="btn_start_over">START OVER</span>
       </button>
     </div>
   </section>
@@ -258,13 +329,13 @@
        ============================================ -->
   <section id="scenario" class="page">
     <header class="step-header">
-      <span class="step-tag">STEP 4</span>
-      <h2>REDESIGN YOUR CITY</h2>
-      <p>What if you could reshape the infrastructure?</p>
+      <span class="step-tag" data-i18n="step4_tag">STEP 4</span>
+      <h2 data-i18n="step4_title">REDESIGN YOUR CITY</h2>
+      <p data-i18n="step4_desc">What if you could reshape the infrastructure?</p>
     </header>
 
-    <p class="scenario-intro">
-      Add urban components to your city and see how they change 
+    <p class="scenario-intro" data-i18n="scenario_intro">
+      Add urban components to your city and see how they change
       the energy flow, water use, and carbon emissions of your AI request.
     </p>
 
@@ -273,17 +344,17 @@
     </div>
 
     <div class="scenario-summary hidden" id="scenario-summary">
-      <h3 class="scenario-summary-title">SCENARIO IMPACT</h3>
+      <h3 class="scenario-summary-title" data-i18n="scenario_impact">SCENARIO IMPACT</h3>
       <div class="scenario-deltas" id="scenario-deltas">
         <!-- Populated by JS -->
       </div>
     </div>
 
     <div class="nav-buttons">
-      <button id="btn-back-scenario" class="nav-btn secondary">← Back</button>
+      <button id="btn-back-scenario" class="nav-btn secondary" data-i18n="btn_back">← Back</button>
       <button id="btn-apply-scenario" class="cta-btn" disabled>
         <span class="cta-icon">🌍</span>
-        APPLY SCENARIO TO GLOBE
+        <span data-i18n="btn_apply_scenario">APPLY SCENARIO TO GLOBE</span>
       </button>
     </div>
   </section>

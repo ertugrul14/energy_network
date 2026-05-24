@@ -12,7 +12,7 @@ export class UIController {
     this.globe = globe;
     this.selectedCity = null;
     this.selectedWorkload = null;
-    this.selectedDatacenter = 'arizona';
+    this.selectedDatacenter = 'amsterdam';
     this.currentHour = 14;
     this.simulationResults = null;
 
@@ -264,13 +264,9 @@ export class UIController {
       const workload = WORKLOADS[this.selectedWorkload];
       const workloadName = workload ? workload.name : 'AI workload';
 
-      // Per-query/per-image/per-hour energy for multiplier calculations
-      const perUnitKwh = workload?.perSession?.kwhPerQuery
-        || workload?.perSession?.kwhPerImage
-        || (workload?.perSession?.kwhPerHour ? workload.perSession.kwhPerHour / 60 : 0.003);
-      const unitLabel = workload?.perSession?.kwhPerQuery ? 'queries'
-        : workload?.perSession?.kwhPerImage ? 'images'
-        : workload?.perSession?.kwhPerHour ? 'minutes of operation' : 'queries';
+      // Per-operation energy
+      const perUnitKwh = workload?.perOperation?.kwhPerOperation || 0.003;
+      const unitLabel = 'operations';
 
       // Interior scale
       const interiorKwh = s.interior.deviceWh / 1000;
@@ -521,7 +517,7 @@ export class UIController {
 
     // Update impact values with animation
     this.animateValue('impact-electricity', results.electricity.withOverhead, 2);
-    this.animateValue('impact-water', results.water.liters, 1);
+    this.animateValue('impact-water', results.water.liters, 3);
     this.animateValue('impact-emissions', results.emissions.grams, 0);
     
     // Materials is qualitative
@@ -858,7 +854,7 @@ export class UIController {
     document.getElementById('scale-server-kwh').textContent = s.interior.serverWh.toFixed(1);
     document.getElementById('detail-laptop-watts').textContent = `${s.interior.laptopWatts} W`;
     document.getElementById('detail-network-watts').textContent = `${s.interior.networkWatts} W`;
-    document.getElementById('detail-session-duration').textContent = `${s.interior.sessionMinutes} min`;
+    document.getElementById('detail-session-duration').textContent = s.interior.operationLabel || '1 operation';
     document.getElementById('detail-gpu-demand').textContent = s.interior.gpuDemand;
 
     // Building

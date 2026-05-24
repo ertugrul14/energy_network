@@ -44,7 +44,7 @@ export class SimulationEngine {
   }
 
   /**
-   * Calculate electricity consumption
+   * Calculate electricity consumption for ONE operation
    */
   calculateElectricity() {
     if (!this.currentWorkload || !this.currentDatacenter) return null;
@@ -53,29 +53,14 @@ export class SimulationEngine {
     const dc = this.currentDatacenter;
     const hourModifier = TIME_MODIFIERS.demandByHour[this.currentHour];
 
-    let baseKwh = 0;
-
-    switch (workload.id) {
-      case 'chatbot':
-        baseKwh = workload.perSession.queries * workload.perSession.kwhPerQuery;
-        break;
-      case 'image':
-        baseKwh = workload.perSession.images * workload.perSession.kwhPerImage;
-        break;
-      case 'traffic':
-        baseKwh = workload.perSession.kwhPerHour;
-        break;
-      case 'biometric':
-        baseKwh = workload.perSession.kwhPerHour;
-        break;
-    }
+    const baseKwh = workload.perOperation.kwhPerOperation;
 
     // Apply PUE (Power Usage Effectiveness) - includes cooling overhead
     const withPue = baseKwh * dc.energy.pue;
-    
+
     // Apply heat penalty (more energy needed in hot climates)
     const withHeat = withPue * dc.climate.heatPenalty;
-    
+
     // Apply time-of-day modifier
     const final = withHeat * hourModifier;
 
@@ -329,10 +314,10 @@ export class SimulationEngine {
     const workload = this.currentWorkload;
     const device = INTERIOR_SCALE.laptop;
 
-    // --- Interior Scale ---
-    const sessionMinutes = workload.perSession.durationMinutes;
-    const deviceKwh = (device.activeWatts * sessionMinutes) / 60 / 1000;
-    const networkKwh = (device.networkWatts * sessionMinutes) / 60 / 1000;
+    // --- Interior Scale (single operation ~10 seconds device time) ---
+    const opSeconds = 10;
+    const deviceKwh = (device.activeWatts * opSeconds) / 3600 / 1000;
+    const networkKwh = (device.networkWatts * opSeconds) / 3600 / 1000;
     const serverKwh = electricity.baseKwh;
 
     const gpuType = workload.scaling.gpuType;
@@ -380,8 +365,8 @@ export class SimulationEngine {
         networkWh: networkKwh * 1000,
         laptopWatts: device.activeWatts,
         networkWatts: device.networkWatts,
-        sessionMinutes,
-        gpuDemand: `${gpuSpec.name} x${workload.scaling.gpusPerQuery || workload.scaling.gpusPerImage || workload.scaling.gpusPerHour}`
+        operationLabel: workload.perOperation.label,
+        gpuDemand: `${gpuSpec.name} x${workload.scaling.gpusPerOperation}`
       },
       building: {
         computeWh: computeKwh * 1000,

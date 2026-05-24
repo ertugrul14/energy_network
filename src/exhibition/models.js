@@ -1,59 +1,92 @@
 /**
  * EXHIBITION - City Scale Building Data
  * Defines building types for neighborhood simulation (40,000 people)
+ * Buildings match research: stadium, airport, hospital, residential, school, port, factory, office tower
  */
 
 // Neighborhood population for city-scale simulation
 export const NEIGHBORHOOD_POPULATION = 40000;
 
-// Building types — 4 categories matching the 4 Arduino LED dim levels
+// Building types for the physical maquette — each has average power consumption
+// Used to calculate: "how long could this building run on the neighborhood's AI energy?"
 export const BUILDING_TYPES = {
-  apartment: {
-    id: 'apartment',
-    name: 'Residential Building',
+  residential: {
+    id: 'residential',
+    name: 'Residential Buildings',
     icon: '🏠',
-    description: 'A typical apartment building with 40 units',
+    description: '10 apartment buildings with 40 units each',
     pwm: 20,
-    brightnessLabel: 'Very Dim',
-    avgPowerKw: 50,
+    avgPowerKw: 500,
     order: 1
   },
   hospital: {
     id: 'hospital',
     name: 'Hospital',
     icon: '🏥',
-    description: 'A mid-size hospital — 24/7 operations, life-critical systems',
-    pwm: 80,
-    brightnessLabel: 'Dim',
+    description: '24/7 operations, life-critical systems',
+    pwm: 60,
     avgPowerKw: 2500,
     order: 2
   },
-  university: {
-    id: 'university',
-    name: 'University Campus',
-    icon: '🎓',
-    description: 'A mid-size university — labs, servers, lecture halls',
-    pwm: 160,
-    brightnessLabel: 'Medium',
-    avgPowerKw: 5000,
+  school: {
+    id: 'school',
+    name: 'School',
+    icon: '🏫',
+    description: 'Classrooms, labs, heating and lighting',
+    pwm: 40,
+    avgPowerKw: 300,
     order: 3
+  },
+  stadium: {
+    id: 'stadium',
+    name: 'Stadium',
+    icon: '🏟️',
+    description: 'Floodlights, screens, PA systems',
+    pwm: 200,
+    avgPowerKw: 8000,
+    order: 4
   },
   airport: {
     id: 'airport',
-    name: 'Airport Terminal',
+    name: 'Airport',
     icon: '✈️',
-    description: 'An international airport terminal — runway lights, terminals',
+    description: 'Terminals, runway lights, radar',
     pwm: 255,
-    brightnessLabel: 'Bright',
     avgPowerKw: 15000,
-    order: 4
+    order: 5
+  },
+  port: {
+    id: 'port',
+    name: 'Port',
+    icon: '🚢',
+    description: 'Cranes, refrigeration, dock lights',
+    pwm: 180,
+    avgPowerKw: 6000,
+    order: 6
+  },
+  factory: {
+    id: 'factory',
+    name: 'Factory',
+    icon: '🏭',
+    description: 'Manufacturing machinery, ventilation',
+    pwm: 220,
+    avgPowerKw: 10000,
+    order: 7
+  },
+  officeTower: {
+    id: 'officeTower',
+    name: 'Office Tower',
+    icon: '🏢',
+    description: 'HVAC, elevators, computers, lighting',
+    pwm: 120,
+    avgPowerKw: 4000,
+    order: 8
   }
 };
 
 // ============================================
 // SCENARIO COMPONENTS — Urban interventions
 // Each component modifies the simulation when added to the city.
-// Modifiers are multipliers or offsets applied to datacenter/simulation values.
 // ============================================
 
 export const SCENARIO_COMPONENTS = {
@@ -63,12 +96,11 @@ export const SCENARIO_COMPONENTS = {
     icon: '🖥️',
     description: 'Build a data center in your city — shorter data path, but local heat & water use',
     category: 'infrastructure',
-    // Simulation modifiers
     effects: {
-      distanceMultiplier: 0.05,    // Request stays local (~5% of original distance)
-      pueMultiplier: 1.0,          // Same PUE
-      carbonIntensityOffset: 0,    // Uses local grid
-      waterMultiplier: 1.2,        // More local water consumption
+      distanceMultiplier: 0.05,
+      pueMultiplier: 1.0,
+      carbonIntensityOffset: 0,
+      waterMultiplier: 1.2,
       label: 'Data travels only within the city'
     }
   },
@@ -81,8 +113,8 @@ export const SCENARIO_COMPONENTS = {
     effects: {
       distanceMultiplier: 1.0,
       pueMultiplier: 1.0,
-      carbonIntensityOffset: -120,  // Significant reduction in gCO2/kWh
-      waterMultiplier: 0.9,         // Slightly less cooling needed
+      carbonIntensityOffset: -120,
+      waterMultiplier: 0.9,
       label: 'Solar panels replace fossil fuel electricity'
     }
   },
@@ -110,7 +142,7 @@ export const SCENARIO_COMPONENTS = {
       distanceMultiplier: 1.0,
       pueMultiplier: 0.95,
       carbonIntensityOffset: -200,
-      waterMultiplier: 1.3,        // Nuclear uses lots of cooling water
+      waterMultiplier: 1.3,
       label: 'Nuclear baseload drastically cuts carbon'
     }
   },
@@ -122,8 +154,8 @@ export const SCENARIO_COMPONENTS = {
     category: 'nature',
     effects: {
       distanceMultiplier: 1.0,
-      pueMultiplier: 0.98,         // Slightly cooler microclimate
-      carbonIntensityOffset: -30,  // Modest carbon sink
+      pueMultiplier: 0.98,
+      carbonIntensityOffset: -30,
       waterMultiplier: 1.0,
       label: 'Trees absorb CO₂ but energy demand unchanged'
     }
@@ -136,9 +168,9 @@ export const SCENARIO_COMPONENTS = {
     category: 'nature',
     effects: {
       distanceMultiplier: 1.0,
-      pueMultiplier: 0.90,         // Better cooling efficiency
+      pueMultiplier: 0.90,
       carbonIntensityOffset: 0,
-      waterMultiplier: 0.4,        // Dramatically less freshwater needed
+      waterMultiplier: 0.4,
       label: 'Natural cooling reduces water withdrawal'
     }
   }

@@ -13,13 +13,20 @@
 </head>
 <body class="screen-mode">
 
+  <!-- Language switcher -->
+  <div class="lang-switcher" id="lang-switcher">
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="ca">CA</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+  </div>
+
   <!-- Idle state — shown while waiting for tablet signal -->
   <div id="screen-idle" class="screen-overlay">
     <div class="idle-content">
       <div class="idle-icon pulse">◉</div>
-      <h1>ENERGY NETWORK</h1>
-      <p class="idle-subtitle">Waiting for tablet input…</p>
-      <p class="idle-desc">Pick up the tablet to trace the invisible infrastructure of AI</p>
+      <h1 data-i18n="idle_title">ENERGY NETWORK</h1>
+      <p class="idle-subtitle" data-i18n="idle_subtitle">Waiting for tablet input…</p>
+      <p class="idle-desc" data-i18n="idle_desc">Pick up the tablet to trace the invisible infrastructure of AI</p>
     </div>
   </div>
 
@@ -38,7 +45,7 @@
     </div>
   </div>
 
-  <!-- Impact overlay (bottom of screen) -->
+  <!-- Impact overlay (bottom of screen) — kept for legacy, hidden in favour of side panel -->
   <div id="screen-impact" class="hidden">
     <div class="screen-impact-grid">
       <div class="screen-impact-card">
@@ -65,31 +72,81 @@
     <div class="screen-narrative" id="screen-narrative"></div>
   </div>
 
+  <!-- Side panel — floating metrics for exhibition visitors -->
+  <div id="screen-side-panel" class="hidden">
+    <div class="sp-scale-label" id="sp-scale-label">1 PERSON</div>
+    <div class="sp-metrics">
+      <div class="sp-metric">
+        <div class="sp-metric-top">
+          <span class="sp-metric-icon electricity-color">⚡</span>
+          <span class="sp-metric-name" data-i18n="sp_electricity">Electricity</span>
+        </div>
+        <div class="sp-metric-data">
+          <div class="sp-metric-value electricity-color" id="sp-electricity">—</div>
+          <div class="sp-metric-unit" data-i18n="sp_kwh_unit">kilowatt-hours</div>
+        </div>
+      </div>
+
+      <div class="sp-metric">
+        <div class="sp-metric-top">
+          <span class="sp-metric-icon water-color">💧</span>
+          <span class="sp-metric-name" data-i18n="sp_water">Water</span>
+        </div>
+        <div class="sp-metric-data">
+          <div class="sp-metric-value water-color" id="sp-water">—</div>
+          <div class="sp-metric-unit" data-i18n="sp_water_unit">litres used</div>
+        </div>
+      </div>
+
+      <div class="sp-metric">
+        <div class="sp-metric-top">
+          <span class="sp-metric-icon emissions-color">🏭</span>
+          <span class="sp-metric-name" data-i18n="sp_co2">CO₂ Emissions</span>
+        </div>
+        <div class="sp-metric-data">
+          <div class="sp-metric-value emissions-color" id="sp-emissions">—</div>
+          <div class="sp-metric-unit" data-i18n="sp_co2_unit">grams of CO₂</div>
+        </div>
+      </div>
+
+      <div class="sp-metric">
+        <div class="sp-metric-top">
+          <span class="sp-metric-icon materials-color">🛤️</span>
+          <span class="sp-metric-name" data-i18n="sp_distance">Distance</span>
+        </div>
+        <div class="sp-metric-data">
+          <div class="sp-metric-value materials-color" id="sp-distance">—</div>
+          <div class="sp-metric-unit" data-i18n="sp_distance_unit">kilometres travelled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating legend -->
   <div id="screen-legend" class="hidden">
     <div class="legend-item">
       <span class="legend-line electricity"></span>
-      <span>Electricity</span>
+      <span data-i18n="legend_electricity">Electricity</span>
     </div>
     <div class="legend-item">
       <span class="legend-line water"></span>
-      <span>Water</span>
+      <span data-i18n="legend_water">Water</span>
     </div>
     <div class="legend-item">
       <span class="legend-line emissions"></span>
-      <span>CO₂ drift</span>
+      <span data-i18n="legend_co2">CO₂ drift</span>
     </div>
     <div class="legend-item">
       <span class="legend-line materials"></span>
-      <span>Materials</span>
+      <span data-i18n="legend_materials">Materials</span>
     </div>
   </div>
 
   <!-- Scenario comparison overlay -->
   <div id="screen-comparison" class="hidden">
     <div class="comparison-header">
-      <h2>SCENARIO COMPARISON</h2>
-      <p id="comparison-subtitle">Your urban interventions changed the energy flow</p>
+      <h2 data-i18n="comparison_title">SCENARIO COMPARISON</h2>
+      <p id="comparison-subtitle" data-i18n="comparison_subtitle">Your urban interventions changed the energy flow</p>
     </div>
     <div class="comparison-grid">
       <div class="comparison-column original-col">
@@ -149,6 +206,9 @@
       <!-- Shows which components were added -->
     </div>
   </div>
+
+  <!-- Sentence-by-sentence narrative animator -->
+  <div id="screen-narrator"></div>
 
   <script type="module" src="/src/exhibition/screen.js"></script>
 </body>
