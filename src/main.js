@@ -115,10 +115,10 @@ class DemoController {
   constructor(app) {
     this.app = app;
     this.demoScenarios = [
-      { city: 'barcelona', workload: 'chatbot', datacenter: 'ireland', hour: 10 },
-      { city: 'singapore', workload: 'pdfSummarize', datacenter: 'singapore_dc', hour: 15 },
-      { city: 'nairobi', workload: 'backgroundRemoval', datacenter: 'amsterdam', hour: 8 },
-      { city: 'riyadh', workload: 'realTimeTranslation', datacenter: 'riyadh_dc', hour: 18 }
+      { city: 'barcelona', workload: 'prompt', hour: 10 },
+      { city: 'singapore', workload: 'pdf', hour: 15 },
+      { city: 'lagos', workload: 'background', hour: 8 },
+      { city: 'riyadh', workload: 'translate', hour: 18 }
     ];
     this.currentScenario = 0;
   }

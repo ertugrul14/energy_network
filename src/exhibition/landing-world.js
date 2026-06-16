@@ -58,13 +58,13 @@ const LAND_DOTS = [];
 
 const NODES = [
   // Cities (blue)
-  { lat: 41.38, lng:   2.17, color: '#58a6ff', r: 3.5 }, // 0  Barcelona
-  { lat: 24.69, lng:  46.72, color: '#58a6ff', r: 3.5 }, // 1  Riyadh
-  { lat:  1.35, lng: 103.82, color: '#58a6ff', r: 3.5 }, // 2  Singapore
-  { lat: -1.29, lng:  36.82, color: '#58a6ff', r: 3.5 }, // 3  Nairobi
-  { lat:-23.55, lng: -46.63, color: '#58a6ff', r: 3.0 }, // 4  São Paulo
-  { lat:-33.87, lng: 151.21, color: '#58a6ff', r: 3.0 }, // 5  Sydney
-  { lat: 51.51, lng:  -0.13, color: '#58a6ff', r: 3.0 }, // 6  London
+  { lat: 41.38, lng:   2.17, color: '#5ABEF0', r: 3.5 }, // 0  Barcelona
+  { lat: 24.69, lng:  46.72, color: '#5ABEF0', r: 3.5 }, // 1  Riyadh
+  { lat:  1.35, lng: 103.82, color: '#5ABEF0', r: 3.5 }, // 2  Singapore
+  { lat: -1.29, lng:  36.82, color: '#5ABEF0', r: 3.5 }, // 3  Nairobi
+  { lat:-23.55, lng: -46.63, color: '#5ABEF0', r: 3.0 }, // 4  São Paulo
+  { lat:-33.87, lng: 151.21, color: '#5ABEF0', r: 3.0 }, // 5  Sydney
+  { lat: 51.51, lng:  -0.13, color: '#5ABEF0', r: 3.0 }, // 6  London
   // Datacenters (amber)
   { lat: 38.90, lng: -77.03, color: '#f0b429', r: 4.5 }, // 7  Virginia
   { lat: 53.33, lng:  -6.25, color: '#f0b429', r: 4.0 }, // 8  Dublin
@@ -90,7 +90,7 @@ const LINKS = [
 ];
 
 const TYPE_COLOR = {
-  data:     'rgba(88, 166, 255,',
+  data:     'rgba(90, 190, 240,',
   elec:     'rgba(240, 180,  41,',
   material: 'rgba(163, 113, 247,',
 };
@@ -190,14 +190,14 @@ export function initLandingWorld(canvasId) {
     const H  = canvas.offsetHeight;
     const cx = W / 2;
     const cy = H / 2;
-    const R  = Math.min(W * 0.92, H * 0.46);
+    const R  = Math.min(W * 0.42, H * 0.42);
 
     ctx.clearRect(0, 0, W, H);
 
     // ── 1. Atmosphere glow
     const atmo = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R * 1.18);
-    atmo.addColorStop(0, 'rgba(88,166,255,0.05)');
-    atmo.addColorStop(1, 'rgba(88,166,255,0)');
+    atmo.addColorStop(0, 'rgba(91,214,226,0.05)');
+    atmo.addColorStop(1, 'rgba(91,214,226,0)');
     ctx.beginPath();
     ctx.arc(cx, cy, R * 1.18, 0, Math.PI * 2);
     ctx.fillStyle = atmo;
@@ -208,7 +208,7 @@ export function initLandingWorld(canvasId) {
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(13,17,23,0.18)';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(88,166,255,0.3)';
+    ctx.strokeStyle = 'rgba(91,214,226,0.3)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -220,14 +220,14 @@ export function initLandingWorld(canvasId) {
       ctx.moveTo(p.x + 1.3, p.y);
       ctx.arc(p.x, p.y, 1.3, 0, Math.PI * 2);
     }
-    ctx.fillStyle = 'rgba(88, 166, 255, 0.5)';
+    ctx.fillStyle = 'rgba(90, 190, 240, 0.5)';
     ctx.fill();
 
     // ── 4. Wireframe grid (on top of land)
     ctx.lineWidth = 0.5;
 
     // Latitude lines every 20°
-    ctx.strokeStyle = 'rgba(88,166,255,0.08)';
+    ctx.strokeStyle = 'rgba(91,214,226,0.08)';
     for (let lat = -80; lat <= 80; lat += 20) {
       const pts = [];
       for (let lng = -180; lng <= 180; lng += 3)
@@ -236,7 +236,7 @@ export function initLandingWorld(canvasId) {
     }
 
     // Longitude lines every 20°
-    ctx.strokeStyle = 'rgba(88,166,255,0.06)';
+    ctx.strokeStyle = 'rgba(91,214,226,0.06)';
     for (let lng = -180; lng < 180; lng += 20) {
       const pts = [];
       for (let lat = -90; lat <= 90; lat += 2)

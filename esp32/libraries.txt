@@ -1,0 +1,9 @@
+# Libraries needed for Wokwi simulation and real hardware
+# Install these via Arduino Library Manager or PlatformIO:
+#
+# 1. WebSockets by Markus Sattler (v2.4.0+)
+# 2. ArduinoJson by Benoit Blanchon (v7.0+)
+# 3. LittleFS is built into ESP32 Arduino core
+#
+# For Wokwi: paste the sketch into a new ESP32-S3 Arduino project,
+# then add these libraries via the Library Manager tab.

@@ -1,0 +1,5607 @@
+{
+  "_meta": {
+    "description": "AI for All exhibit lookup. city -> operations -> {label, showGroups, min/max by CO2}",
+    "totals_units": {
+      "electricity_kWh": "kWh",
+      "co2_kg": "kg",
+      "water_L": "L",
+      "distance_km": "km (origin city -> destination data center, great-circle)"
+    },
+    "buildingHours_units": "hours of that building's operation, by metric (elec/co2/water)",
+    "min_max_note": "min = destination with lowest CO2; max = destination with highest CO2. Since the exact data center is unknown, these bound the possible impact.",
+    "showGroups_note": "primary + secondary together cover all 8 buildings with no overlap; light up primary by default, secondary as the alternate combination",
+    "buildings_all": [
+      "stadium",
+      "officeTowers",
+      "airport",
+      "factory",
+      "port",
+      "school",
+      "hospital",
+      "residential"
+    ],
+    "building_hourly_rates_note": "co2 & water rates are per-city (home grid); electricity is grid-independent",
+    "grid_factors_per_city": {
+      "Barcelona": {
+        "co2_g_per_kWh": 170,
+        "water_L_per_kWh": 1.6
+      },
+      "Riyadh": {
+        "co2_g_per_kWh": 600,
+        "water_L_per_kWh": 2.6
+      },
+      "Singapore": {
+        "co2_g_per_kWh": 410,
+        "water_L_per_kWh": 2.2
+      },
+      "Lagos": {
+        "co2_g_per_kWh": 380,
+        "water_L_per_kWh": 1.4
+      },
+      "Chicago": {
+        "co2_g_per_kWh": 300,
+        "water_L_per_kWh": 1.7
+      },
+      "SaoPaulo": {
+        "co2_g_per_kWh": 90,
+        "water_L_per_kWh": 1.0
+      }
+    }
+  },
+  "Barcelona": {
+    "label": "Barcelona",
+    "aiUsers": 568000,
+    "operations": {
+      "prompt": {
+        "label": "Chat with AI (ChatGPT)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "factory",
+            "airport",
+            "officeTowers",
+            "port",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 2279,
+          "electricity_kWh": 752.0,
+          "co2_kg": 17.0,
+          "water_L": 136.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.1,
+              "co2": 0.0,
+              "water": 0.0
+            },
+            "officeTowers": {
+              "elec": 0.4,
+              "co2": 0.1,
+              "water": 0.0
+            },
+            "airport": {
+              "elec": 1.6,
+              "co2": 0.2,
+              "water": 0.2
+            },
+            "factory": {
+              "elec": 3.0,
+              "co2": 0.4,
+              "water": 0.3
+            },
+            "port": {
+              "elec": 3.3,
+              "co2": 0.4,
+              "water": 0.4
+            },
+            "school": {
+              "elec": 7.5,
+              "co2": 1.0,
+              "water": 0.9
+            },
+            "hospital": {
+              "elec": 11.0,
+              "co2": 1.5,
+              "water": 1.2
+            },
+            "residential": {
+              "elec": 104.4,
+              "co2": 13.9,
+              "water": 11.8
+            }
+          }
+        },
+        "max": {
+          "destination": "Pune",
+          "distance_km": 7151,
+          "electricity_kWh": 862.8,
+          "co2_kg": 545.3,
+          "water_L": 335.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.2,
+              "co2": 0.6,
+              "water": 0.0
+            },
+            "officeTowers": {
+              "elec": 0.4,
+              "co2": 1.7,
+              "water": 0.1
+            },
+            "airport": {
+              "elec": 1.9,
+              "co2": 7.0,
+              "water": 0.5
+            },
+            "factory": {
+              "elec": 3.5,
+              "co2": 12.8,
+              "water": 0.8
+            },
+            "port": {
+              "elec": 3.8,
+              "co2": 14.0,
+              "water": 0.9
+            },
+            "school": {
+              "elec": 8.6,
+              "co2": 32.1,
+              "water": 2.1
+            },
+            "hospital": {
+              "elec": 12.6,
+              "co2": 46.8,
+              "water": 3.1
+            },
+            "residential": {
+              "elec": 119.8,
+              "co2": 445.5,
+              "water": 29.1
+            }
+          }
+        }
+      },
+      "translate": {
+        "label": "Real-time Translation (Google Translate)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "officeTowers",
+            "factory"
+          ],
+          "secondary": [
+            "stadium",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 2726,
+          "electricity_kWh": 43054.4,
+          "co2_kg": 3016.1,
+          "water_L": 8395.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 7.5,
+              "co2": 3.1,
+              "water": 0.9
+            },
+            "officeTowers": {
+              "elec": 22.4,
+              "co2": 9.2,
+              "water": 2.7
+            },
+            "airport": {
+              "elec": 94.3,
+              "co2": 38.9,
+              "water": 11.5
+            },
+            "factory": {
+              "elec": 172.2,
+              "co2": 71.0,
+              "water": 21.0
+            },
+            "port": {
+              "elec": 188.6,
+              "co2": 77.7,
+              "water": 23.0
+            },
+            "school": {
+              "elec": 430.5,
+              "co2": 177.4,
+              "water": 52.5
+            },
+            "hospital": {
+              "elec": 628.5,
+              "co2": 259.0,
+              "water": 76.6
+            },
+            "residential": {
+              "elec": 5979.8,
+              "co2": 2464.1,
+              "water": 728.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 10363,
+          "electricity_kWh": 58788.0,
+          "co2_kg": 28814.6,
+          "water_L": 22930.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 10.2,
+              "co2": 29.5,
+              "water": 2.5
+            },
+            "officeTowers": {
+              "elec": 30.6,
+              "co2": 88.1,
+              "water": 7.5
+            },
+            "airport": {
+              "elec": 128.8,
+              "co2": 371.2,
+              "water": 31.4
+            },
+            "factory": {
+              "elec": 235.2,
+              "co2": 678.0,
+              "water": 57.3
+            },
+            "port": {
+              "elec": 257.5,
+              "co2": 742.4,
+              "water": 62.8
+            },
+            "school": {
+              "elec": 587.9,
+              "co2": 1695.0,
+              "water": 143.3
+            },
+            "hospital": {
+              "elec": 858.2,
+              "co2": 2474.4,
+              "water": 209.2
+            },
+            "residential": {
+              "elec": 8165.0,
+              "co2": 23541.4,
+              "water": 1990.5
+            }
+          }
+        }
+      },
+      "pdf": {
+        "label": "Summarise PDF (Claude)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "factory"
+          ],
+          "secondary": [
+            "airport",
+            "officeTowers",
+            "stadium",
+            "school",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris (France)",
+          "distance_km": 831,
+          "electricity_kWh": 6992.1,
+          "co2_kg": 153.4,
+          "water_L": 2095.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.2,
+              "co2": 0.2,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 3.6,
+              "co2": 0.5,
+              "water": 0.7
+            },
+            "airport": {
+              "elec": 15.3,
+              "co2": 2.0,
+              "water": 2.9
+            },
+            "factory": {
+              "elec": 28.0,
+              "co2": 3.6,
+              "water": 5.2
+            },
+            "port": {
+              "elec": 30.6,
+              "co2": 4.0,
+              "water": 5.7
+            },
+            "school": {
+              "elec": 69.9,
+              "co2": 9.0,
+              "water": 13.1
+            },
+            "hospital": {
+              "elec": 102.1,
+              "co2": 13.2,
+              "water": 19.1
+            },
+            "residential": {
+              "elec": 971.1,
+              "co2": 125.3,
+              "water": 181.9
+            }
+          }
+        },
+        "max": {
+          "destination": "Jakarta (Indonesia)",
+          "distance_km": 11687,
+          "electricity_kWh": 7469.2,
+          "co2_kg": 4856.4,
+          "water_L": 3141.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.3,
+              "co2": 5.0,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 3.9,
+              "co2": 14.9,
+              "water": 1.0
+            },
+            "airport": {
+              "elec": 16.4,
+              "co2": 62.6,
+              "water": 4.3
+            },
+            "factory": {
+              "elec": 29.9,
+              "co2": 114.3,
+              "water": 7.9
+            },
+            "port": {
+              "elec": 32.7,
+              "co2": 125.1,
+              "water": 8.6
+            },
+            "school": {
+              "elec": 74.7,
+              "co2": 285.7,
+              "water": 19.6
+            },
+            "hospital": {
+              "elec": 109.0,
+              "co2": 417.0,
+              "water": 28.7
+            },
+            "residential": {
+              "elec": 1037.4,
+              "co2": 3967.6,
+              "water": 272.7
+            }
+          }
+        }
+      },
+      "background": {
+        "label": "Remove Background (Adobe Express)",
+        "showGroups": {
+          "primary": [
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "hospital",
+            "port",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Dublin (serves EMEA)",
+          "distance_km": 1471,
+          "electricity_kWh": 1840.3,
+          "co2_kg": 533.9,
+          "water_L": 471.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.3,
+              "co2": 0.5,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.0,
+              "co2": 1.6,
+              "water": 0.2
+            },
+            "airport": {
+              "elec": 4.0,
+              "co2": 6.9,
+              "water": 0.6
+            },
+            "factory": {
+              "elec": 7.4,
+              "co2": 12.6,
+              "water": 1.2
+            },
+            "port": {
+              "elec": 8.1,
+              "co2": 13.8,
+              "water": 1.3
+            },
+            "school": {
+              "elec": 18.4,
+              "co2": 31.4,
+              "water": 2.9
+            },
+            "hospital": {
+              "elec": 26.9,
+              "co2": 45.8,
+              "water": 4.3
+            },
+            "residential": {
+              "elec": 255.6,
+              "co2": 436.2,
+              "water": 40.9
+            }
+          }
+        },
+        "max": {
+          "destination": "Dublin (serves EMEA)",
+          "distance_km": 1471,
+          "electricity_kWh": 1840.3,
+          "co2_kg": 533.9,
+          "water_L": 471.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.3,
+              "co2": 0.5,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.0,
+              "co2": 1.6,
+              "water": 0.2
+            },
+            "airport": {
+              "elec": 4.0,
+              "co2": 6.9,
+              "water": 0.6
+            },
+            "factory": {
+              "elec": 7.4,
+              "co2": 12.6,
+              "water": 1.2
+            },
+            "port": {
+              "elec": 8.1,
+              "co2": 13.8,
+              "water": 1.3
+            },
+            "school": {
+              "elec": 18.4,
+              "co2": 31.4,
+              "water": 2.9
+            },
+            "hospital": {
+              "elec": 26.9,
+              "co2": 45.8,
+              "water": 4.3
+            },
+            "residential": {
+              "elec": 255.6,
+              "co2": 436.2,
+              "water": 40.9
+            }
+          }
+        }
+      },
+      "image": {
+        "label": "Generate Image (Midjourney)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "port",
+            "school"
+          ],
+          "secondary": [
+            "hospital",
+            "residential",
+            "factory",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 2726,
+          "electricity_kWh": 13069.7,
+          "co2_kg": 914.5,
+          "water_L": 2550.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.3,
+              "co2": 0.9,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 6.8,
+              "co2": 2.8,
+              "water": 0.8
+            },
+            "airport": {
+              "elec": 28.6,
+              "co2": 11.8,
+              "water": 3.5
+            },
+            "factory": {
+              "elec": 52.3,
+              "co2": 21.5,
+              "water": 6.4
+            },
+            "port": {
+              "elec": 57.2,
+              "co2": 23.6,
+              "water": 7.0
+            },
+            "school": {
+              "elec": 130.7,
+              "co2": 53.8,
+              "water": 15.9
+            },
+            "hospital": {
+              "elec": 190.8,
+              "co2": 78.5,
+              "water": 23.3
+            },
+            "residential": {
+              "elec": 1815.2,
+              "co2": 747.1,
+              "water": 221.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 10363,
+          "electricity_kWh": 13569.5,
+          "co2_kg": 6651.3,
+          "water_L": 5293.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.4,
+              "co2": 6.8,
+              "water": 0.6
+            },
+            "officeTowers": {
+              "elec": 7.1,
+              "co2": 20.3,
+              "water": 1.7
+            },
+            "airport": {
+              "elec": 29.7,
+              "co2": 85.7,
+              "water": 7.2
+            },
+            "factory": {
+              "elec": 54.3,
+              "co2": 156.5,
+              "water": 13.2
+            },
+            "port": {
+              "elec": 59.4,
+              "co2": 171.4,
+              "water": 14.5
+            },
+            "school": {
+              "elec": 135.7,
+              "co2": 391.3,
+              "water": 33.1
+            },
+            "hospital": {
+              "elec": 198.1,
+              "co2": 571.2,
+              "water": 48.3
+            },
+            "residential": {
+              "elec": 1884.7,
+              "co2": 5434.1,
+              "water": 459.5
+            }
+          }
+        }
+      },
+      "video": {
+        "label": "Generate Video (Sora)",
+        "showGroups": {
+          "primary": [
+            "stadium",
+            "officeTowers",
+            "airport"
+          ],
+          "secondary": [
+            "factory",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris",
+          "distance_km": 831,
+          "electricity_kWh": 199936.0,
+          "co2_kg": 4402.0,
+          "water_L": 59992.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 34.8,
+              "co2": 4.5,
+              "water": 6.5
+            },
+            "officeTowers": {
+              "elec": 104.0,
+              "co2": 13.5,
+              "water": 19.5
+            },
+            "airport": {
+              "elec": 437.9,
+              "co2": 56.7,
+              "water": 82.1
+            },
+            "factory": {
+              "elec": 799.7,
+              "co2": 103.6,
+              "water": 150.0
+            },
+            "port": {
+              "elec": 875.8,
+              "co2": 113.4,
+              "water": 164.2
+            },
+            "school": {
+              "elec": 1999.4,
+              "co2": 258.9,
+              "water": 375.0
+            },
+            "hospital": {
+              "elec": 2918.8,
+              "co2": 378.0,
+              "water": 547.4
+            },
+            "residential": {
+              "elec": 27768.9,
+              "co2": 3596.4,
+              "water": 5207.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 8064,
+          "electricity_kWh": 227484.0,
+          "co2_kg": 143312.1,
+          "water_L": 92129.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 39.6,
+              "co2": 146.6,
+              "water": 10.0
+            },
+            "officeTowers": {
+              "elec": 118.3,
+              "co2": 438.4,
+              "water": 29.9
+            },
+            "airport": {
+              "elec": 498.2,
+              "co2": 1846.3,
+              "water": 126.1
+            },
+            "factory": {
+              "elec": 909.9,
+              "co2": 3372.0,
+              "water": 230.3
+            },
+            "port": {
+              "elec": 996.4,
+              "co2": 3692.6,
+              "water": 252.2
+            },
+            "school": {
+              "elec": 2274.8,
+              "co2": 8430.1,
+              "water": 575.8
+            },
+            "hospital": {
+              "elec": 3320.9,
+              "co2": 12306.7,
+              "water": 840.6
+            },
+            "residential": {
+              "elec": 31595.0,
+              "co2": 117085.0,
+              "water": 7997.4
+            }
+          }
+        }
+      },
+      "voice": {
+        "label": "Clone Voice (ElevenLabs)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "residential"
+          ],
+          "secondary": [
+            "school",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "The Dalles, Oregon",
+          "distance_km": 8830,
+          "electricity_kWh": 3692.0,
+          "co2_kg": 443.0,
+          "water_L": 886.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.6,
+              "co2": 0.5,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.9,
+              "co2": 1.4,
+              "water": 0.3
+            },
+            "airport": {
+              "elec": 8.1,
+              "co2": 5.7,
+              "water": 1.2
+            },
+            "factory": {
+              "elec": 14.8,
+              "co2": 10.4,
+              "water": 2.2
+            },
+            "port": {
+              "elec": 16.2,
+              "co2": 11.4,
+              "water": 2.4
+            },
+            "school": {
+              "elec": 36.9,
+              "co2": 26.1,
+              "water": 5.5
+            },
+            "hospital": {
+              "elec": 53.9,
+              "co2": 38.0,
+              "water": 8.1
+            },
+            "residential": {
+              "elec": 512.8,
+              "co2": 362.0,
+              "water": 76.9
+            }
+          }
+        },
+        "max": {
+          "destination": "Columbus, Ohio",
+          "distance_km": 6867,
+          "electricity_kWh": 3754.5,
+          "co2_kg": 1539.3,
+          "water_L": 1073.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.7,
+              "co2": 1.6,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 2.0,
+              "co2": 4.7,
+              "water": 0.3
+            },
+            "airport": {
+              "elec": 8.2,
+              "co2": 19.8,
+              "water": 1.5
+            },
+            "factory": {
+              "elec": 15.0,
+              "co2": 36.2,
+              "water": 2.7
+            },
+            "port": {
+              "elec": 16.4,
+              "co2": 39.7,
+              "water": 2.9
+            },
+            "school": {
+              "elec": 37.5,
+              "co2": 90.5,
+              "water": 6.7
+            },
+            "hospital": {
+              "elec": 54.8,
+              "co2": 132.2,
+              "water": 9.8
+            },
+            "residential": {
+              "elec": 521.5,
+              "co2": 1257.6,
+              "water": 93.2
+            }
+          }
+        }
+      },
+      "code": {
+        "label": "Code with AI (GitHub Copilot)",
+        "showGroups": {
+          "primary": [
+            "factory",
+            "school",
+            "hospital"
+          ],
+          "secondary": [
+            "residential",
+            "port",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 2279,
+          "electricity_kWh": 1732.4,
+          "co2_kg": 39.8,
+          "water_L": 312.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.3,
+              "co2": 0.0,
+              "water": 0.0
+            },
+            "officeTowers": {
+              "elec": 0.9,
+              "co2": 0.1,
+              "water": 0.1
+            },
+            "airport": {
+              "elec": 3.8,
+              "co2": 0.5,
+              "water": 0.4
+            },
+            "factory": {
+              "elec": 6.9,
+              "co2": 0.9,
+              "water": 0.8
+            },
+            "port": {
+              "elec": 7.6,
+              "co2": 1.0,
+              "water": 0.9
+            },
+            "school": {
+              "elec": 17.3,
+              "co2": 2.3,
+              "water": 2.0
+            },
+            "hospital": {
+              "elec": 25.3,
+              "co2": 3.4,
+              "water": 2.9
+            },
+            "residential": {
+              "elec": 240.6,
+              "co2": 32.5,
+              "water": 27.1
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 8064,
+          "electricity_kWh": 2003.3,
+          "co2_kg": 1261.0,
+          "water_L": 812.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.3,
+              "co2": 1.3,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.0,
+              "co2": 3.9,
+              "water": 0.3
+            },
+            "airport": {
+              "elec": 4.4,
+              "co2": 16.2,
+              "water": 1.1
+            },
+            "factory": {
+              "elec": 8.0,
+              "co2": 29.7,
+              "water": 2.0
+            },
+            "port": {
+              "elec": 8.8,
+              "co2": 32.5,
+              "water": 2.2
+            },
+            "school": {
+              "elec": 20.0,
+              "co2": 74.2,
+              "water": 5.1
+            },
+            "hospital": {
+              "elec": 29.2,
+              "co2": 108.3,
+              "water": 7.4
+            },
+            "residential": {
+              "elec": 278.2,
+              "co2": 1030.2,
+              "water": 70.5
+            }
+          }
+        }
+      }
+    }
+  },
+  "Riyadh": {
+    "label": "Riyadh",
+    "aiUsers": 2837000,
+    "operations": {
+      "prompt": {
+        "label": "Chat with AI (ChatGPT)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "factory",
+            "airport",
+            "officeTowers",
+            "port",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 4444,
+          "electricity_kWh": 3756.2,
+          "co2_kg": 85.1,
+          "water_L": 680.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.7,
+              "co2": 0.0,
+              "water": 0.0
+            },
+            "officeTowers": {
+              "elec": 2.0,
+              "co2": 0.1,
+              "water": 0.1
+            },
+            "airport": {
+              "elec": 8.2,
+              "co2": 0.3,
+              "water": 0.6
+            },
+            "factory": {
+              "elec": 15.0,
+              "co2": 0.6,
+              "water": 1.0
+            },
+            "port": {
+              "elec": 16.5,
+              "co2": 0.6,
+              "water": 1.1
+            },
+            "school": {
+              "elec": 37.6,
+              "co2": 1.4,
+              "water": 2.6
+            },
+            "hospital": {
+              "elec": 54.8,
+              "co2": 2.1,
+              "water": 3.8
+            },
+            "residential": {
+              "elec": 521.7,
+              "co2": 19.7,
+              "water": 36.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Pune",
+          "distance_km": 2888,
+          "electricity_kWh": 4309.4,
+          "co2_kg": 2723.5,
+          "water_L": 1673.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.7,
+              "co2": 0.8,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 2.2,
+              "co2": 2.4,
+              "water": 0.3
+            },
+            "airport": {
+              "elec": 9.4,
+              "co2": 9.9,
+              "water": 1.4
+            },
+            "factory": {
+              "elec": 17.2,
+              "co2": 18.2,
+              "water": 2.6
+            },
+            "port": {
+              "elec": 18.9,
+              "co2": 19.9,
+              "water": 2.8
+            },
+            "school": {
+              "elec": 43.1,
+              "co2": 45.4,
+              "water": 6.4
+            },
+            "hospital": {
+              "elec": 62.9,
+              "co2": 66.3,
+              "water": 9.4
+            },
+            "residential": {
+              "elec": 598.5,
+              "co2": 630.4,
+              "water": 89.4
+            }
+          }
+        }
+      },
+      "translate": {
+        "label": "Real-time Translation (Google Translate)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "officeTowers",
+            "factory"
+          ],
+          "secondary": [
+            "stadium",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 4257,
+          "electricity_kWh": 230648.1,
+          "co2_kg": 16142.5,
+          "water_L": 44994.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 40.1,
+              "co2": 4.7,
+              "water": 3.0
+            },
+            "officeTowers": {
+              "elec": 119.9,
+              "co2": 14.0,
+              "water": 9.0
+            },
+            "airport": {
+              "elec": 505.1,
+              "co2": 58.9,
+              "water": 37.9
+            },
+            "factory": {
+              "elec": 922.6,
+              "co2": 107.6,
+              "water": 69.2
+            },
+            "port": {
+              "elec": 1010.3,
+              "co2": 117.8,
+              "water": 75.8
+            },
+            "school": {
+              "elec": 2306.5,
+              "co2": 269.0,
+              "water": 173.1
+            },
+            "hospital": {
+              "elec": 3367.1,
+              "co2": 392.8,
+              "water": 252.6
+            },
+            "residential": {
+              "elec": 32034.5,
+              "co2": 3736.7,
+              "water": 2403.6
+            }
+          }
+        },
+        "max": {
+          "destination": "Inzai City (Japan)",
+          "distance_km": 8724,
+          "electricity_kWh": 276891.2,
+          "co2_kg": 132856.7,
+          "water_L": 95493.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 48.2,
+              "co2": 38.5,
+              "water": 6.4
+            },
+            "officeTowers": {
+              "elec": 144.0,
+              "co2": 115.1,
+              "water": 19.1
+            },
+            "airport": {
+              "elec": 606.4,
+              "co2": 484.9,
+              "water": 80.4
+            },
+            "factory": {
+              "elec": 1107.6,
+              "co2": 885.7,
+              "water": 146.9
+            },
+            "port": {
+              "elec": 1212.8,
+              "co2": 969.9,
+              "water": 160.9
+            },
+            "school": {
+              "elec": 2768.9,
+              "co2": 2214.3,
+              "water": 367.3
+            },
+            "hospital": {
+              "elec": 4042.2,
+              "co2": 3232.5,
+              "water": 536.2
+            },
+            "residential": {
+              "elec": 38457.1,
+              "co2": 30753.9,
+              "water": 5101.1
+            }
+          }
+        }
+      },
+      "pdf": {
+        "label": "Summarise PDF (Claude)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "factory"
+          ],
+          "secondary": [
+            "airport",
+            "officeTowers",
+            "stadium",
+            "school",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris (France)",
+          "distance_km": 4677,
+          "electricity_kWh": 35008.6,
+          "co2_kg": 766.0,
+          "water_L": 10496.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 6.1,
+              "co2": 0.2,
+              "water": 0.7
+            },
+            "officeTowers": {
+              "elec": 18.2,
+              "co2": 0.7,
+              "water": 2.1
+            },
+            "airport": {
+              "elec": 76.7,
+              "co2": 2.8,
+              "water": 8.8
+            },
+            "factory": {
+              "elec": 140.0,
+              "co2": 5.1,
+              "water": 16.1
+            },
+            "port": {
+              "elec": 153.3,
+              "co2": 5.6,
+              "water": 17.7
+            },
+            "school": {
+              "elec": 350.1,
+              "co2": 12.8,
+              "water": 40.4
+            },
+            "hospital": {
+              "elec": 511.1,
+              "co2": 18.6,
+              "water": 58.9
+            },
+            "residential": {
+              "elec": 4862.3,
+              "co2": 177.3,
+              "water": 560.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Jakarta (Indonesia)",
+          "distance_km": 7358,
+          "electricity_kWh": 37221.4,
+          "co2_kg": 24199.6,
+          "water_L": 15631.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 6.5,
+              "co2": 7.0,
+              "water": 1.0
+            },
+            "officeTowers": {
+              "elec": 19.4,
+              "co2": 21.0,
+              "water": 3.1
+            },
+            "airport": {
+              "elec": 81.5,
+              "co2": 88.3,
+              "water": 13.2
+            },
+            "factory": {
+              "elec": 148.9,
+              "co2": 161.3,
+              "water": 24.0
+            },
+            "port": {
+              "elec": 163.0,
+              "co2": 176.7,
+              "water": 26.3
+            },
+            "school": {
+              "elec": 372.2,
+              "co2": 403.3,
+              "water": 60.1
+            },
+            "hospital": {
+              "elec": 543.4,
+              "co2": 588.8,
+              "water": 87.8
+            },
+            "residential": {
+              "elec": 5169.6,
+              "co2": 5601.8,
+              "water": 835.0
+            }
+          }
+        }
+      },
+      "background": {
+        "label": "Remove Background (Adobe Express)",
+        "showGroups": {
+          "primary": [
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "hospital",
+            "port",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Dublin (serves EMEA)",
+          "distance_km": 5396,
+          "electricity_kWh": 9333.7,
+          "co2_kg": 2695.2,
+          "water_L": 2383.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.6,
+              "co2": 0.8,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 4.9,
+              "co2": 2.3,
+              "water": 0.5
+            },
+            "airport": {
+              "elec": 20.4,
+              "co2": 9.8,
+              "water": 2.0
+            },
+            "factory": {
+              "elec": 37.3,
+              "co2": 18.0,
+              "water": 3.7
+            },
+            "port": {
+              "elec": 40.9,
+              "co2": 19.7,
+              "water": 4.0
+            },
+            "school": {
+              "elec": 93.3,
+              "co2": 44.9,
+              "water": 9.2
+            },
+            "hospital": {
+              "elec": 136.3,
+              "co2": 65.6,
+              "water": 13.4
+            },
+            "residential": {
+              "elec": 1296.4,
+              "co2": 623.9,
+              "water": 127.3
+            }
+          }
+        },
+        "max": {
+          "destination": "Dublin (serves EMEA)",
+          "distance_km": 5396,
+          "electricity_kWh": 9333.7,
+          "co2_kg": 2695.2,
+          "water_L": 2383.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.6,
+              "co2": 0.8,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 4.9,
+              "co2": 2.3,
+              "water": 0.5
+            },
+            "airport": {
+              "elec": 20.4,
+              "co2": 9.8,
+              "water": 2.0
+            },
+            "factory": {
+              "elec": 37.3,
+              "co2": 18.0,
+              "water": 3.7
+            },
+            "port": {
+              "elec": 40.9,
+              "co2": 19.7,
+              "water": 4.0
+            },
+            "school": {
+              "elec": 93.3,
+              "co2": 44.9,
+              "water": 9.2
+            },
+            "hospital": {
+              "elec": 136.3,
+              "co2": 65.6,
+              "water": 13.4
+            },
+            "residential": {
+              "elec": 1296.4,
+              "co2": 623.9,
+              "water": 127.3
+            }
+          }
+        }
+      },
+      "image": {
+        "label": "Generate Image (Midjourney)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "port",
+            "school"
+          ],
+          "secondary": [
+            "hospital",
+            "residential",
+            "factory",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 4257,
+          "electricity_kWh": 65307.7,
+          "co2_kg": 4567.6,
+          "water_L": 12738.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 11.4,
+              "co2": 1.3,
+              "water": 0.9
+            },
+            "officeTowers": {
+              "elec": 34.0,
+              "co2": 4.0,
+              "water": 2.5
+            },
+            "airport": {
+              "elec": 143.0,
+              "co2": 16.7,
+              "water": 10.7
+            },
+            "factory": {
+              "elec": 261.2,
+              "co2": 30.5,
+              "water": 19.6
+            },
+            "port": {
+              "elec": 286.1,
+              "co2": 33.3,
+              "water": 21.5
+            },
+            "school": {
+              "elec": 653.1,
+              "co2": 76.1,
+              "water": 49.0
+            },
+            "hospital": {
+              "elec": 953.4,
+              "co2": 111.1,
+              "water": 71.5
+            },
+            "residential": {
+              "elec": 9070.5,
+              "co2": 1057.3,
+              "water": 680.5
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 7376,
+          "electricity_kWh": 67719.2,
+          "co2_kg": 33192.9,
+          "water_L": 26412.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 11.8,
+              "co2": 9.6,
+              "water": 1.8
+            },
+            "officeTowers": {
+              "elec": 35.2,
+              "co2": 28.8,
+              "water": 5.3
+            },
+            "airport": {
+              "elec": 148.3,
+              "co2": 121.2,
+              "water": 22.2
+            },
+            "factory": {
+              "elec": 270.9,
+              "co2": 221.3,
+              "water": 40.6
+            },
+            "port": {
+              "elec": 296.6,
+              "co2": 242.3,
+              "water": 44.5
+            },
+            "school": {
+              "elec": 677.2,
+              "co2": 553.2,
+              "water": 101.6
+            },
+            "hospital": {
+              "elec": 988.6,
+              "co2": 807.6,
+              "water": 148.3
+            },
+            "residential": {
+              "elec": 9405.4,
+              "co2": 7683.5,
+              "water": 1410.9
+            }
+          }
+        }
+      },
+      "video": {
+        "label": "Generate Video (Sora)",
+        "showGroups": {
+          "primary": [
+            "stadium",
+            "officeTowers",
+            "airport"
+          ],
+          "secondary": [
+            "factory",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris",
+          "distance_km": 4677,
+          "electricity_kWh": 999475.1,
+          "co2_kg": 21986.8,
+          "water_L": 299814.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 173.8,
+              "co2": 6.4,
+              "water": 20.1
+            },
+            "officeTowers": {
+              "elec": 519.7,
+              "co2": 19.1,
+              "water": 60.0
+            },
+            "airport": {
+              "elec": 2189.0,
+              "co2": 80.3,
+              "water": 252.5
+            },
+            "factory": {
+              "elec": 3997.9,
+              "co2": 146.6,
+              "water": 461.3
+            },
+            "port": {
+              "elec": 4377.9,
+              "co2": 160.5,
+              "water": 505.1
+            },
+            "school": {
+              "elec": 9994.8,
+              "co2": 366.4,
+              "water": 1153.1
+            },
+            "hospital": {
+              "elec": 14590.9,
+              "co2": 535.0,
+              "water": 1683.4
+            },
+            "residential": {
+              "elec": 138816.0,
+              "co2": 5089.5,
+              "water": 16015.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 3751,
+          "electricity_kWh": 1135367.4,
+          "co2_kg": 715321.2,
+          "water_L": 459849.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 197.5,
+              "co2": 207.3,
+              "water": 30.8
+            },
+            "officeTowers": {
+              "elec": 590.4,
+              "co2": 620.0,
+              "water": 92.0
+            },
+            "airport": {
+              "elec": 2486.6,
+              "co2": 2611.0,
+              "water": 387.4
+            },
+            "factory": {
+              "elec": 4541.5,
+              "co2": 4768.8,
+              "water": 707.5
+            },
+            "port": {
+              "elec": 4973.1,
+              "co2": 5222.1,
+              "water": 774.7
+            },
+            "school": {
+              "elec": 11353.7,
+              "co2": 11922.0,
+              "water": 1768.7
+            },
+            "hospital": {
+              "elec": 16574.7,
+              "co2": 17404.4,
+              "water": 2582.0
+            },
+            "residential": {
+              "elec": 157689.9,
+              "co2": 165583.6,
+              "water": 24564.6
+            }
+          }
+        }
+      },
+      "voice": {
+        "label": "Clone Voice (ElevenLabs)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "residential"
+          ],
+          "secondary": [
+            "school",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "The Dalles, Oregon",
+          "distance_km": 12101,
+          "electricity_kWh": 18667.5,
+          "co2_kg": 2241.2,
+          "water_L": 4482.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 3.2,
+              "co2": 0.6,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 9.7,
+              "co2": 1.9,
+              "water": 0.9
+            },
+            "airport": {
+              "elec": 40.9,
+              "co2": 8.2,
+              "water": 3.8
+            },
+            "factory": {
+              "elec": 74.7,
+              "co2": 14.9,
+              "water": 6.9
+            },
+            "port": {
+              "elec": 81.8,
+              "co2": 16.4,
+              "water": 7.6
+            },
+            "school": {
+              "elec": 186.7,
+              "co2": 37.4,
+              "water": 17.2
+            },
+            "hospital": {
+              "elec": 272.5,
+              "co2": 54.5,
+              "water": 25.2
+            },
+            "residential": {
+              "elec": 2592.7,
+              "co2": 518.8,
+              "water": 239.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Columbus, Ohio",
+          "distance_km": 11134,
+          "electricity_kWh": 19064.6,
+          "co2_kg": 7801.8,
+          "water_L": 5418.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 3.3,
+              "co2": 2.3,
+              "water": 0.4
+            },
+            "officeTowers": {
+              "elec": 9.9,
+              "co2": 6.8,
+              "water": 1.1
+            },
+            "airport": {
+              "elec": 41.8,
+              "co2": 28.5,
+              "water": 4.6
+            },
+            "factory": {
+              "elec": 76.3,
+              "co2": 52.0,
+              "water": 8.3
+            },
+            "port": {
+              "elec": 83.5,
+              "co2": 57.0,
+              "water": 9.1
+            },
+            "school": {
+              "elec": 190.6,
+              "co2": 130.0,
+              "water": 20.8
+            },
+            "hospital": {
+              "elec": 278.3,
+              "co2": 189.8,
+              "water": 30.4
+            },
+            "residential": {
+              "elec": 2647.9,
+              "co2": 1806.0,
+              "water": 289.5
+            }
+          }
+        }
+      },
+      "code": {
+        "label": "Code with AI (GitHub Copilot)",
+        "showGroups": {
+          "primary": [
+            "factory",
+            "school",
+            "hospital"
+          ],
+          "secondary": [
+            "residential",
+            "port",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 4444,
+          "electricity_kWh": 8652.9,
+          "co2_kg": 198.6,
+          "water_L": 1560.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.5,
+              "co2": 0.1,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 4.5,
+              "co2": 0.2,
+              "water": 0.3
+            },
+            "airport": {
+              "elec": 19.0,
+              "co2": 0.7,
+              "water": 1.3
+            },
+            "factory": {
+              "elec": 34.6,
+              "co2": 1.3,
+              "water": 2.4
+            },
+            "port": {
+              "elec": 37.9,
+              "co2": 1.4,
+              "water": 2.6
+            },
+            "school": {
+              "elec": 86.5,
+              "co2": 3.3,
+              "water": 6.0
+            },
+            "hospital": {
+              "elec": 126.3,
+              "co2": 4.8,
+              "water": 8.8
+            },
+            "residential": {
+              "elec": 1201.8,
+              "co2": 46.0,
+              "water": 83.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 3751,
+          "electricity_kWh": 10006.1,
+          "co2_kg": 6298.1,
+          "water_L": 4056.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.7,
+              "co2": 1.8,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 5.2,
+              "co2": 5.5,
+              "water": 0.8
+            },
+            "airport": {
+              "elec": 21.9,
+              "co2": 23.0,
+              "water": 3.4
+            },
+            "factory": {
+              "elec": 40.0,
+              "co2": 42.0,
+              "water": 6.2
+            },
+            "port": {
+              "elec": 43.8,
+              "co2": 46.0,
+              "water": 6.8
+            },
+            "school": {
+              "elec": 100.1,
+              "co2": 105.0,
+              "water": 15.6
+            },
+            "hospital": {
+              "elec": 146.1,
+              "co2": 153.2,
+              "water": 22.8
+            },
+            "residential": {
+              "elec": 1389.7,
+              "co2": 1457.9,
+              "water": 216.7
+            }
+          }
+        }
+      }
+    }
+  },
+  "Singapore": {
+    "label": "Singapore",
+    "aiUsers": 3670000,
+    "operations": {
+      "prompt": {
+        "label": "Chat with AI (ChatGPT)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "factory",
+            "airport",
+            "officeTowers",
+            "port",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 9637,
+          "electricity_kWh": 4859.1,
+          "co2_kg": 110.1,
+          "water_L": 880.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.8,
+              "co2": 0.0,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 2.5,
+              "co2": 0.1,
+              "water": 0.2
+            },
+            "airport": {
+              "elec": 10.6,
+              "co2": 0.6,
+              "water": 0.9
+            },
+            "factory": {
+              "elec": 19.4,
+              "co2": 1.1,
+              "water": 1.6
+            },
+            "port": {
+              "elec": 21.3,
+              "co2": 1.2,
+              "water": 1.8
+            },
+            "school": {
+              "elec": 48.6,
+              "co2": 2.7,
+              "water": 4.0
+            },
+            "hospital": {
+              "elec": 70.9,
+              "co2": 3.9,
+              "water": 5.8
+            },
+            "residential": {
+              "elec": 674.9,
+              "co2": 37.3,
+              "water": 55.6
+            }
+          }
+        },
+        "max": {
+          "destination": "Pune",
+          "distance_km": 3784,
+          "electricity_kWh": 5574.7,
+          "co2_kg": 3523.2,
+          "water_L": 2165.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.0,
+              "co2": 1.5,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 2.9,
+              "co2": 4.5,
+              "water": 0.5
+            },
+            "airport": {
+              "elec": 12.2,
+              "co2": 18.8,
+              "water": 2.2
+            },
+            "factory": {
+              "elec": 22.3,
+              "co2": 34.4,
+              "water": 3.9
+            },
+            "port": {
+              "elec": 24.4,
+              "co2": 37.6,
+              "water": 4.3
+            },
+            "school": {
+              "elec": 55.7,
+              "co2": 85.9,
+              "water": 9.8
+            },
+            "hospital": {
+              "elec": 81.4,
+              "co2": 125.4,
+              "water": 14.4
+            },
+            "residential": {
+              "elec": 774.3,
+              "co2": 1193.5,
+              "water": 136.7
+            }
+          }
+        }
+      },
+      "translate": {
+        "label": "Real-time Translation (Google Translate)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "officeTowers",
+            "factory"
+          ],
+          "secondary": [
+            "stadium",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 9150,
+          "electricity_kWh": 362963.0,
+          "co2_kg": 25433.1,
+          "water_L": 70794.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 63.1,
+              "co2": 10.8,
+              "water": 5.6
+            },
+            "officeTowers": {
+              "elec": 188.7,
+              "co2": 32.3,
+              "water": 16.7
+            },
+            "airport": {
+              "elec": 794.9,
+              "co2": 135.9,
+              "water": 70.5
+            },
+            "factory": {
+              "elec": 1451.9,
+              "co2": 248.1,
+              "water": 128.7
+            },
+            "port": {
+              "elec": 1589.9,
+              "co2": 271.7,
+              "water": 141.0
+            },
+            "school": {
+              "elec": 3629.6,
+              "co2": 620.3,
+              "water": 321.8
+            },
+            "hospital": {
+              "elec": 5298.7,
+              "co2": 905.6,
+              "water": 469.8
+            },
+            "residential": {
+              "elec": 50411.5,
+              "co2": 8615.5,
+              "water": 4469.3
+            }
+          }
+        },
+        "max": {
+          "destination": "Central Ohio",
+          "distance_km": 15365,
+          "electricity_kWh": 445538.0,
+          "co2_kg": 182619.2,
+          "water_L": 126945.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 77.5,
+              "co2": 77.5,
+              "water": 10.0
+            },
+            "officeTowers": {
+              "elec": 231.7,
+              "co2": 231.6,
+              "water": 30.0
+            },
+            "airport": {
+              "elec": 975.8,
+              "co2": 975.5,
+              "water": 126.4
+            },
+            "factory": {
+              "elec": 1782.2,
+              "co2": 1781.7,
+              "water": 230.8
+            },
+            "port": {
+              "elec": 1951.5,
+              "co2": 1951.0,
+              "water": 252.7
+            },
+            "school": {
+              "elec": 4455.4,
+              "co2": 4454.1,
+              "water": 577.0
+            },
+            "hospital": {
+              "elec": 6504.2,
+              "co2": 6502.4,
+              "water": 842.4
+            },
+            "residential": {
+              "elec": 61880.3,
+              "co2": 61862.9,
+              "water": 8014.2
+            }
+          }
+        }
+      },
+      "pdf": {
+        "label": "Summarise PDF (Claude)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "factory"
+          ],
+          "secondary": [
+            "airport",
+            "officeTowers",
+            "stadium",
+            "school",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris (France)",
+          "distance_km": 10729,
+          "electricity_kWh": 45397.9,
+          "co2_kg": 990.9,
+          "water_L": 13615.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 7.9,
+              "co2": 0.4,
+              "water": 1.1
+            },
+            "officeTowers": {
+              "elec": 23.6,
+              "co2": 1.3,
+              "water": 3.2
+            },
+            "airport": {
+              "elec": 99.4,
+              "co2": 5.3,
+              "water": 13.6
+            },
+            "factory": {
+              "elec": 181.6,
+              "co2": 9.7,
+              "water": 24.8
+            },
+            "port": {
+              "elec": 198.9,
+              "co2": 10.6,
+              "water": 27.1
+            },
+            "school": {
+              "elec": 454.0,
+              "co2": 24.2,
+              "water": 61.9
+            },
+            "hospital": {
+              "elec": 662.7,
+              "co2": 35.3,
+              "water": 90.3
+            },
+            "residential": {
+              "elec": 6305.3,
+              "co2": 335.7,
+              "water": 859.6
+            }
+          }
+        },
+        "max": {
+          "destination": "Jakarta (Indonesia)",
+          "distance_km": 906,
+          "electricity_kWh": 48040.3,
+          "co2_kg": 31231.7,
+          "water_L": 20185.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 8.4,
+              "co2": 13.2,
+              "water": 1.6
+            },
+            "officeTowers": {
+              "elec": 25.0,
+              "co2": 39.6,
+              "water": 4.8
+            },
+            "airport": {
+              "elec": 105.2,
+              "co2": 166.8,
+              "water": 20.1
+            },
+            "factory": {
+              "elec": 192.2,
+              "co2": 304.7,
+              "water": 36.7
+            },
+            "port": {
+              "elec": 210.4,
+              "co2": 333.7,
+              "water": 40.2
+            },
+            "school": {
+              "elec": 480.4,
+              "co2": 761.7,
+              "water": 91.7
+            },
+            "hospital": {
+              "elec": 701.3,
+              "co2": 1112.0,
+              "water": 133.9
+            },
+            "residential": {
+              "elec": 6672.3,
+              "co2": 10579.8,
+              "water": 1274.3
+            }
+          }
+        }
+      },
+      "background": {
+        "label": "Remove Background (Adobe Express)",
+        "showGroups": {
+          "primary": [
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "hospital",
+            "port",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Tokyo (serves Asia Pacific)",
+          "distance_km": 5311,
+          "electricity_kWh": 12661.5,
+          "co2_kg": 6092.2,
+          "water_L": 4367.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.2,
+              "co2": 2.6,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 6.6,
+              "co2": 7.7,
+              "water": 1.0
+            },
+            "airport": {
+              "elec": 27.7,
+              "co2": 32.5,
+              "water": 4.3
+            },
+            "factory": {
+              "elec": 50.6,
+              "co2": 59.4,
+              "water": 7.9
+            },
+            "port": {
+              "elec": 55.5,
+              "co2": 65.1,
+              "water": 8.7
+            },
+            "school": {
+              "elec": 126.6,
+              "co2": 148.6,
+              "water": 19.9
+            },
+            "hospital": {
+              "elec": 184.8,
+              "co2": 216.9,
+              "water": 29.0
+            },
+            "residential": {
+              "elec": 1758.5,
+              "co2": 2063.8,
+              "water": 275.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Tokyo (serves Asia Pacific)",
+          "distance_km": 5311,
+          "electricity_kWh": 12661.5,
+          "co2_kg": 6092.2,
+          "water_L": 4367.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.2,
+              "co2": 2.6,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 6.6,
+              "co2": 7.7,
+              "water": 1.0
+            },
+            "airport": {
+              "elec": 27.7,
+              "co2": 32.5,
+              "water": 4.3
+            },
+            "factory": {
+              "elec": 50.6,
+              "co2": 59.4,
+              "water": 7.9
+            },
+            "port": {
+              "elec": 55.5,
+              "co2": 65.1,
+              "water": 8.7
+            },
+            "school": {
+              "elec": 126.6,
+              "co2": 148.6,
+              "water": 19.9
+            },
+            "hospital": {
+              "elec": 184.8,
+              "co2": 216.9,
+              "water": 29.0
+            },
+            "residential": {
+              "elec": 1758.5,
+              "co2": 2063.8,
+              "water": 275.7
+            }
+          }
+        }
+      },
+      "image": {
+        "label": "Generate Image (Midjourney)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "port",
+            "school"
+          ],
+          "secondary": [
+            "hospital",
+            "residential",
+            "factory",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 9150,
+          "electricity_kWh": 84556.8,
+          "co2_kg": 5908.7,
+          "water_L": 16478.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 14.7,
+              "co2": 2.5,
+              "water": 1.3
+            },
+            "officeTowers": {
+              "elec": 44.0,
+              "co2": 7.5,
+              "water": 3.9
+            },
+            "airport": {
+              "elec": 185.2,
+              "co2": 31.6,
+              "water": 16.4
+            },
+            "factory": {
+              "elec": 338.2,
+              "co2": 57.6,
+              "water": 30.0
+            },
+            "port": {
+              "elec": 370.4,
+              "co2": 63.1,
+              "water": 32.8
+            },
+            "school": {
+              "elec": 845.6,
+              "co2": 144.1,
+              "water": 74.9
+            },
+            "hospital": {
+              "elec": 1234.4,
+              "co2": 210.4,
+              "water": 109.3
+            },
+            "residential": {
+              "elec": 11744.0,
+              "co2": 2001.6,
+              "water": 1040.3
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 3097,
+          "electricity_kWh": 87529.5,
+          "co2_kg": 42902.3,
+          "water_L": 34131.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 15.2,
+              "co2": 18.2,
+              "water": 2.7
+            },
+            "officeTowers": {
+              "elec": 45.5,
+              "co2": 54.4,
+              "water": 8.1
+            },
+            "airport": {
+              "elec": 191.7,
+              "co2": 229.2,
+              "water": 34.0
+            },
+            "factory": {
+              "elec": 350.1,
+              "co2": 418.6,
+              "water": 62.1
+            },
+            "port": {
+              "elec": 383.4,
+              "co2": 458.3,
+              "water": 68.0
+            },
+            "school": {
+              "elec": 875.3,
+              "co2": 1046.4,
+              "water": 155.1
+            },
+            "hospital": {
+              "elec": 1277.8,
+              "co2": 1527.6,
+              "water": 226.5
+            },
+            "residential": {
+              "elec": 12156.9,
+              "co2": 14533.3,
+              "water": 2154.7
+            }
+          }
+        }
+      },
+      "video": {
+        "label": "Generate Video (Sora)",
+        "showGroups": {
+          "primary": [
+            "stadium",
+            "officeTowers",
+            "airport"
+          ],
+          "secondary": [
+            "factory",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris",
+          "distance_km": 10729,
+          "electricity_kWh": 1294042.0,
+          "co2_kg": 28479.2,
+          "water_L": 388249.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 225.1,
+              "co2": 12.1,
+              "water": 30.7
+            },
+            "officeTowers": {
+              "elec": 672.9,
+              "co2": 36.1,
+              "water": 91.8
+            },
+            "airport": {
+              "elec": 2834.1,
+              "co2": 152.1,
+              "water": 386.5
+            },
+            "factory": {
+              "elec": 5176.2,
+              "co2": 277.8,
+              "water": 705.9
+            },
+            "port": {
+              "elec": 5668.2,
+              "co2": 304.3,
+              "water": 773.0
+            },
+            "school": {
+              "elec": 12940.4,
+              "co2": 694.6,
+              "water": 1764.8
+            },
+            "hospital": {
+              "elec": 18891.1,
+              "co2": 1014.0,
+              "water": 2576.3
+            },
+            "residential": {
+              "elec": 179728.1,
+              "co2": 9647.4,
+              "water": 24510.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Mumbai",
+          "distance_km": 3904,
+          "electricity_kWh": 1468734.0,
+          "co2_kg": 925390.5,
+          "water_L": 594907.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 255.4,
+              "co2": 392.5,
+              "water": 47.0
+            },
+            "officeTowers": {
+              "elec": 763.8,
+              "co2": 1173.7,
+              "water": 140.6
+            },
+            "airport": {
+              "elec": 3216.7,
+              "co2": 4943.2,
+              "water": 592.2
+            },
+            "factory": {
+              "elec": 5874.9,
+              "co2": 9028.2,
+              "water": 1081.6
+            },
+            "port": {
+              "elec": 6433.4,
+              "co2": 9886.3,
+              "water": 1184.5
+            },
+            "school": {
+              "elec": 14687.3,
+              "co2": 22570.5,
+              "water": 2704.1
+            },
+            "hospital": {
+              "elec": 21441.4,
+              "co2": 32949.6,
+              "water": 3947.6
+            },
+            "residential": {
+              "elec": 203990.8,
+              "co2": 313479.2,
+              "water": 37557.3
+            }
+          }
+        }
+      },
+      "voice": {
+        "label": "Clone Voice (ElevenLabs)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "residential"
+          ],
+          "secondary": [
+            "school",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "The Dalles, Oregon",
+          "distance_km": 13181,
+          "electricity_kWh": 24222.0,
+          "co2_kg": 2899.3,
+          "water_L": 5798.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 4.2,
+              "co2": 1.2,
+              "water": 0.5
+            },
+            "officeTowers": {
+              "elec": 12.6,
+              "co2": 3.7,
+              "water": 1.4
+            },
+            "airport": {
+              "elec": 53.0,
+              "co2": 15.5,
+              "water": 5.8
+            },
+            "factory": {
+              "elec": 96.9,
+              "co2": 28.3,
+              "water": 10.5
+            },
+            "port": {
+              "elec": 106.1,
+              "co2": 31.0,
+              "water": 11.5
+            },
+            "school": {
+              "elec": 242.2,
+              "co2": 70.7,
+              "water": 26.4
+            },
+            "hospital": {
+              "elec": 353.6,
+              "co2": 103.2,
+              "water": 38.5
+            },
+            "residential": {
+              "elec": 3364.2,
+              "co2": 982.1,
+              "water": 366.1
+            }
+          }
+        },
+        "max": {
+          "destination": "Columbus, Ohio",
+          "distance_km": 15369,
+          "electricity_kWh": 25029.4,
+          "co2_kg": 10276.0,
+          "water_L": 7119.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 4.4,
+              "co2": 4.4,
+              "water": 0.6
+            },
+            "officeTowers": {
+              "elec": 13.0,
+              "co2": 13.0,
+              "water": 1.7
+            },
+            "airport": {
+              "elec": 54.8,
+              "co2": 54.9,
+              "water": 7.1
+            },
+            "factory": {
+              "elec": 100.1,
+              "co2": 100.3,
+              "water": 12.9
+            },
+            "port": {
+              "elec": 109.6,
+              "co2": 109.8,
+              "water": 14.2
+            },
+            "school": {
+              "elec": 250.3,
+              "co2": 250.6,
+              "water": 32.4
+            },
+            "hospital": {
+              "elec": 365.4,
+              "co2": 365.9,
+              "water": 47.2
+            },
+            "residential": {
+              "elec": 3476.3,
+              "co2": 3481.0,
+              "water": 449.5
+            }
+          }
+        }
+      },
+      "code": {
+        "label": "Code with AI (GitHub Copilot)",
+        "showGroups": {
+          "primary": [
+            "factory",
+            "school",
+            "hospital"
+          ],
+          "secondary": [
+            "residential",
+            "port",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 9637,
+          "electricity_kWh": 11197.2,
+          "co2_kg": 256.9,
+          "water_L": 2018.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.9,
+              "co2": 0.1,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 5.8,
+              "co2": 0.3,
+              "water": 0.5
+            },
+            "airport": {
+              "elec": 24.5,
+              "co2": 1.4,
+              "water": 2.0
+            },
+            "factory": {
+              "elec": 44.8,
+              "co2": 2.5,
+              "water": 3.7
+            },
+            "port": {
+              "elec": 49.0,
+              "co2": 2.7,
+              "water": 4.0
+            },
+            "school": {
+              "elec": 112.0,
+              "co2": 6.3,
+              "water": 9.2
+            },
+            "hospital": {
+              "elec": 163.5,
+              "co2": 9.1,
+              "water": 13.4
+            },
+            "residential": {
+              "elec": 1555.2,
+              "co2": 87.0,
+              "water": 127.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 2902,
+          "electricity_kWh": 12944.1,
+          "co2_kg": 8147.4,
+          "water_L": 5248.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.3,
+              "co2": 3.5,
+              "water": 0.4
+            },
+            "officeTowers": {
+              "elec": 6.7,
+              "co2": 10.3,
+              "water": 1.2
+            },
+            "airport": {
+              "elec": 28.3,
+              "co2": 43.5,
+              "water": 5.2
+            },
+            "factory": {
+              "elec": 51.8,
+              "co2": 79.5,
+              "water": 9.5
+            },
+            "port": {
+              "elec": 56.7,
+              "co2": 87.0,
+              "water": 10.4
+            },
+            "school": {
+              "elec": 129.4,
+              "co2": 198.7,
+              "water": 23.9
+            },
+            "hospital": {
+              "elec": 189.0,
+              "co2": 290.1,
+              "water": 34.8
+            },
+            "residential": {
+              "elec": 1797.8,
+              "co2": 2760.0,
+              "water": 331.3
+            }
+          }
+        }
+      }
+    }
+  },
+  "Lagos": {
+    "label": "Lagos",
+    "aiUsers": 1955000,
+    "operations": {
+      "prompt": {
+        "label": "Chat with AI (ChatGPT)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "factory",
+            "airport",
+            "officeTowers",
+            "port",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 6003,
+          "electricity_kWh": 2588.4,
+          "co2_kg": 58.6,
+          "water_L": 469.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.5,
+              "co2": 0.0,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.3,
+              "co2": 0.1,
+              "water": 0.2
+            },
+            "airport": {
+              "elec": 5.7,
+              "co2": 0.3,
+              "water": 0.7
+            },
+            "factory": {
+              "elec": 10.4,
+              "co2": 0.6,
+              "water": 1.3
+            },
+            "port": {
+              "elec": 11.3,
+              "co2": 0.7,
+              "water": 1.5
+            },
+            "school": {
+              "elec": 25.9,
+              "co2": 1.5,
+              "water": 3.4
+            },
+            "hospital": {
+              "elec": 37.8,
+              "co2": 2.3,
+              "water": 4.9
+            },
+            "residential": {
+              "elec": 359.5,
+              "co2": 21.4,
+              "water": 46.5
+            }
+          }
+        },
+        "max": {
+          "destination": "Pune",
+          "distance_km": 7724,
+          "electricity_kWh": 2969.6,
+          "co2_kg": 1876.8,
+          "water_L": 1153.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.5,
+              "co2": 0.9,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.5,
+              "co2": 2.6,
+              "water": 0.4
+            },
+            "airport": {
+              "elec": 6.5,
+              "co2": 10.8,
+              "water": 1.8
+            },
+            "factory": {
+              "elec": 11.9,
+              "co2": 19.8,
+              "water": 3.3
+            },
+            "port": {
+              "elec": 13.0,
+              "co2": 21.6,
+              "water": 3.6
+            },
+            "school": {
+              "elec": 29.7,
+              "co2": 49.4,
+              "water": 8.2
+            },
+            "hospital": {
+              "elec": 43.4,
+              "co2": 72.1,
+              "water": 12.0
+            },
+            "residential": {
+              "elec": 412.5,
+              "co2": 686.0,
+              "water": 114.4
+            }
+          }
+        }
+      },
+      "translate": {
+        "label": "Real-time Translation (Google Translate)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "officeTowers",
+            "factory"
+          ],
+          "secondary": [
+            "stadium",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 6331,
+          "electricity_kWh": 173604.0,
+          "co2_kg": 12160.1,
+          "water_L": 33841.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 30.2,
+              "co2": 5.6,
+              "water": 4.2
+            },
+            "officeTowers": {
+              "elec": 90.3,
+              "co2": 16.6,
+              "water": 12.6
+            },
+            "airport": {
+              "elec": 380.2,
+              "co2": 70.1,
+              "water": 52.9
+            },
+            "factory": {
+              "elec": 694.4,
+              "co2": 128.0,
+              "water": 96.7
+            },
+            "port": {
+              "elec": 760.4,
+              "co2": 140.2,
+              "water": 105.9
+            },
+            "school": {
+              "elec": 1736.0,
+              "co2": 320.0,
+              "water": 241.7
+            },
+            "hospital": {
+              "elec": 2534.4,
+              "co2": 467.2,
+              "water": 352.9
+            },
+            "residential": {
+              "elec": 24111.7,
+              "co2": 4444.5,
+              "water": 3357.2
+            }
+          }
+        },
+        "max": {
+          "destination": "Inzai City (Japan)",
+          "distance_km": 13494,
+          "electricity_kWh": 224238.5,
+          "co2_kg": 107681.4,
+          "water_L": 77398.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 39.0,
+              "co2": 49.3,
+              "water": 9.6
+            },
+            "officeTowers": {
+              "elec": 116.6,
+              "co2": 147.4,
+              "water": 28.7
+            },
+            "airport": {
+              "elec": 491.1,
+              "co2": 620.6,
+              "water": 121.1
+            },
+            "factory": {
+              "elec": 897.0,
+              "co2": 1133.5,
+              "water": 221.1
+            },
+            "port": {
+              "elec": 982.2,
+              "co2": 1241.2,
+              "water": 242.2
+            },
+            "school": {
+              "elec": 2242.4,
+              "co2": 2833.7,
+              "water": 552.8
+            },
+            "hospital": {
+              "elec": 3273.6,
+              "co2": 4136.8,
+              "water": 807.1
+            },
+            "residential": {
+              "elec": 31144.2,
+              "co2": 39357.2,
+              "water": 7678.4
+            }
+          }
+        }
+      },
+      "pdf": {
+        "label": "Summarise PDF (Claude)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "factory"
+          ],
+          "secondary": [
+            "airport",
+            "officeTowers",
+            "stadium",
+            "school",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris (France)",
+          "distance_km": 4709,
+          "electricity_kWh": 24124.7,
+          "co2_kg": 527.9,
+          "water_L": 7233.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 4.2,
+              "co2": 0.2,
+              "water": 0.9
+            },
+            "officeTowers": {
+              "elec": 12.5,
+              "co2": 0.7,
+              "water": 2.7
+            },
+            "airport": {
+              "elec": 52.8,
+              "co2": 3.0,
+              "water": 11.3
+            },
+            "factory": {
+              "elec": 96.5,
+              "co2": 5.6,
+              "water": 20.7
+            },
+            "port": {
+              "elec": 105.7,
+              "co2": 6.1,
+              "water": 22.6
+            },
+            "school": {
+              "elec": 241.2,
+              "co2": 13.9,
+              "water": 51.7
+            },
+            "hospital": {
+              "elec": 352.2,
+              "co2": 20.3,
+              "water": 75.4
+            },
+            "residential": {
+              "elec": 3350.7,
+              "co2": 192.9,
+              "water": 717.6
+            }
+          }
+        },
+        "max": {
+          "destination": "Jakarta (Indonesia)",
+          "distance_km": 11567,
+          "electricity_kWh": 25708.2,
+          "co2_kg": 16715.3,
+          "water_L": 10791.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 4.5,
+              "co2": 7.7,
+              "water": 1.3
+            },
+            "officeTowers": {
+              "elec": 13.4,
+              "co2": 22.9,
+              "water": 4.0
+            },
+            "airport": {
+              "elec": 56.3,
+              "co2": 96.3,
+              "water": 16.9
+            },
+            "factory": {
+              "elec": 102.8,
+              "co2": 176.0,
+              "water": 30.8
+            },
+            "port": {
+              "elec": 112.6,
+              "co2": 192.7,
+              "water": 33.8
+            },
+            "school": {
+              "elec": 257.1,
+              "co2": 439.9,
+              "water": 77.1
+            },
+            "hospital": {
+              "elec": 375.3,
+              "co2": 642.2,
+              "water": 112.5
+            },
+            "residential": {
+              "elec": 3570.6,
+              "co2": 6109.4,
+              "water": 1070.6
+            }
+          }
+        }
+      },
+      "background": {
+        "label": "Remove Background (Adobe Express)",
+        "showGroups": {
+          "primary": [
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "hospital",
+            "port",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Dublin (serves EMEA)",
+          "distance_km": 5280,
+          "electricity_kWh": 6431.9,
+          "co2_kg": 1857.2,
+          "water_L": 1642.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.1,
+              "co2": 0.8,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 3.3,
+              "co2": 2.5,
+              "water": 0.6
+            },
+            "airport": {
+              "elec": 14.1,
+              "co2": 10.7,
+              "water": 2.6
+            },
+            "factory": {
+              "elec": 25.7,
+              "co2": 19.6,
+              "water": 4.7
+            },
+            "port": {
+              "elec": 28.2,
+              "co2": 21.4,
+              "water": 5.1
+            },
+            "school": {
+              "elec": 64.3,
+              "co2": 48.9,
+              "water": 11.7
+            },
+            "hospital": {
+              "elec": 93.9,
+              "co2": 71.4,
+              "water": 17.1
+            },
+            "residential": {
+              "elec": 893.3,
+              "co2": 678.8,
+              "water": 162.9
+            }
+          }
+        },
+        "max": {
+          "destination": "Dublin (serves EMEA)",
+          "distance_km": 5280,
+          "electricity_kWh": 6431.9,
+          "co2_kg": 1857.2,
+          "water_L": 1642.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.1,
+              "co2": 0.8,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 3.3,
+              "co2": 2.5,
+              "water": 0.6
+            },
+            "airport": {
+              "elec": 14.1,
+              "co2": 10.7,
+              "water": 2.6
+            },
+            "factory": {
+              "elec": 25.7,
+              "co2": 19.6,
+              "water": 4.7
+            },
+            "port": {
+              "elec": 28.2,
+              "co2": 21.4,
+              "water": 5.1
+            },
+            "school": {
+              "elec": 64.3,
+              "co2": 48.9,
+              "water": 11.7
+            },
+            "hospital": {
+              "elec": 93.9,
+              "co2": 71.4,
+              "water": 17.1
+            },
+            "residential": {
+              "elec": 893.3,
+              "co2": 678.8,
+              "water": 162.9
+            }
+          }
+        }
+      },
+      "image": {
+        "label": "Generate Image (Midjourney)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "port",
+            "school"
+          ],
+          "secondary": [
+            "hospital",
+            "residential",
+            "factory",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 6331,
+          "electricity_kWh": 45023.6,
+          "co2_kg": 3147.6,
+          "water_L": 8778.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 7.8,
+              "co2": 1.4,
+              "water": 1.1
+            },
+            "officeTowers": {
+              "elec": 23.4,
+              "co2": 4.3,
+              "water": 3.3
+            },
+            "airport": {
+              "elec": 98.6,
+              "co2": 18.1,
+              "water": 13.7
+            },
+            "factory": {
+              "elec": 180.1,
+              "co2": 33.1,
+              "water": 25.1
+            },
+            "port": {
+              "elec": 197.2,
+              "co2": 36.3,
+              "water": 27.5
+            },
+            "school": {
+              "elec": 450.2,
+              "co2": 82.8,
+              "water": 62.7
+            },
+            "hospital": {
+              "elec": 657.3,
+              "co2": 120.9,
+              "water": 91.5
+            },
+            "residential": {
+              "elec": 6253.3,
+              "co2": 1150.4,
+              "water": 870.8
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 12404,
+          "electricity_kWh": 46724.5,
+          "co2_kg": 22893.0,
+          "water_L": 18220.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 8.1,
+              "co2": 10.5,
+              "water": 2.3
+            },
+            "officeTowers": {
+              "elec": 24.3,
+              "co2": 31.3,
+              "water": 6.8
+            },
+            "airport": {
+              "elec": 102.3,
+              "co2": 131.9,
+              "water": 28.5
+            },
+            "factory": {
+              "elec": 186.9,
+              "co2": 241.0,
+              "water": 52.1
+            },
+            "port": {
+              "elec": 204.7,
+              "co2": 263.9,
+              "water": 57.0
+            },
+            "school": {
+              "elec": 467.2,
+              "co2": 602.4,
+              "water": 130.1
+            },
+            "hospital": {
+              "elec": 682.1,
+              "co2": 879.5,
+              "water": 190.0
+            },
+            "residential": {
+              "elec": 6489.5,
+              "co2": 8367.3,
+              "water": 1807.6
+            }
+          }
+        }
+      },
+      "video": {
+        "label": "Generate Video (Sora)",
+        "showGroups": {
+          "primary": [
+            "stadium",
+            "officeTowers",
+            "airport"
+          ],
+          "secondary": [
+            "factory",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris",
+          "distance_km": 4709,
+          "electricity_kWh": 688746.5,
+          "co2_kg": 15151.2,
+          "water_L": 206624.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 119.8,
+              "co2": 6.9,
+              "water": 25.7
+            },
+            "officeTowers": {
+              "elec": 358.2,
+              "co2": 20.7,
+              "water": 76.7
+            },
+            "airport": {
+              "elec": 1508.4,
+              "co2": 87.3,
+              "water": 323.2
+            },
+            "factory": {
+              "elec": 2755.0,
+              "co2": 159.5,
+              "water": 590.4
+            },
+            "port": {
+              "elec": 3016.8,
+              "co2": 174.6,
+              "water": 646.5
+            },
+            "school": {
+              "elec": 6887.5,
+              "co2": 398.7,
+              "water": 1475.9
+            },
+            "hospital": {
+              "elec": 10054.7,
+              "co2": 582.1,
+              "water": 2154.6
+            },
+            "residential": {
+              "elec": 95659.2,
+              "co2": 5537.7,
+              "water": 20498.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 8429,
+          "electricity_kWh": 782977.5,
+          "co2_kg": 493285.6,
+          "water_L": 317120.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 136.2,
+              "co2": 225.8,
+              "water": 39.4
+            },
+            "officeTowers": {
+              "elec": 407.2,
+              "co2": 675.0,
+              "water": 117.8
+            },
+            "airport": {
+              "elec": 1714.8,
+              "co2": 2843.0,
+              "water": 496.1
+            },
+            "factory": {
+              "elec": 3131.9,
+              "co2": 5192.5,
+              "water": 906.1
+            },
+            "port": {
+              "elec": 3429.6,
+              "co2": 5686.0,
+              "water": 992.2
+            },
+            "school": {
+              "elec": 7829.8,
+              "co2": 12981.2,
+              "water": 2265.1
+            },
+            "hospital": {
+              "elec": 11430.3,
+              "co2": 18950.7,
+              "water": 3306.8
+            },
+            "residential": {
+              "elec": 108746.9,
+              "co2": 180294.4,
+              "water": 31460.4
+            }
+          }
+        }
+      },
+      "voice": {
+        "label": "Clone Voice (ElevenLabs)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "residential"
+          ],
+          "secondary": [
+            "school",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "The Dalles, Oregon",
+          "distance_km": 12037,
+          "electricity_kWh": 12844.4,
+          "co2_kg": 1544.5,
+          "water_L": 3088.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.2,
+              "co2": 0.7,
+              "water": 0.4
+            },
+            "officeTowers": {
+              "elec": 6.7,
+              "co2": 2.1,
+              "water": 1.1
+            },
+            "airport": {
+              "elec": 28.1,
+              "co2": 8.9,
+              "water": 4.8
+            },
+            "factory": {
+              "elec": 51.4,
+              "co2": 16.3,
+              "water": 8.8
+            },
+            "port": {
+              "elec": 56.3,
+              "co2": 17.8,
+              "water": 9.7
+            },
+            "school": {
+              "elec": 128.4,
+              "co2": 40.6,
+              "water": 22.1
+            },
+            "hospital": {
+              "elec": 187.5,
+              "co2": 59.3,
+              "water": 32.2
+            },
+            "residential": {
+              "elec": 1783.9,
+              "co2": 564.5,
+              "water": 306.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Columbus, Ohio",
+          "distance_km": 9233,
+          "electricity_kWh": 13039.8,
+          "co2_kg": 5356.7,
+          "water_L": 3714.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.3,
+              "co2": 2.5,
+              "water": 0.5
+            },
+            "officeTowers": {
+              "elec": 6.8,
+              "co2": 7.3,
+              "water": 1.4
+            },
+            "airport": {
+              "elec": 28.6,
+              "co2": 30.9,
+              "water": 5.8
+            },
+            "factory": {
+              "elec": 52.2,
+              "co2": 56.4,
+              "water": 10.6
+            },
+            "port": {
+              "elec": 57.1,
+              "co2": 61.7,
+              "water": 11.6
+            },
+            "school": {
+              "elec": 130.4,
+              "co2": 141.0,
+              "water": 26.5
+            },
+            "hospital": {
+              "elec": 190.4,
+              "co2": 205.8,
+              "water": 38.7
+            },
+            "residential": {
+              "elec": 1811.1,
+              "co2": 1957.9,
+              "water": 368.5
+            }
+          }
+        }
+      },
+      "code": {
+        "label": "Code with AI (GitHub Copilot)",
+        "showGroups": {
+          "primary": [
+            "factory",
+            "school",
+            "hospital"
+          ],
+          "secondary": [
+            "residential",
+            "port",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 6003,
+          "electricity_kWh": 5962.8,
+          "co2_kg": 136.8,
+          "water_L": 1075.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.0,
+              "co2": 0.1,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 3.1,
+              "co2": 0.2,
+              "water": 0.4
+            },
+            "airport": {
+              "elec": 13.1,
+              "co2": 0.8,
+              "water": 1.7
+            },
+            "factory": {
+              "elec": 23.9,
+              "co2": 1.4,
+              "water": 3.1
+            },
+            "port": {
+              "elec": 26.1,
+              "co2": 1.6,
+              "water": 3.4
+            },
+            "school": {
+              "elec": 59.6,
+              "co2": 3.6,
+              "water": 7.7
+            },
+            "hospital": {
+              "elec": 87.0,
+              "co2": 5.3,
+              "water": 11.2
+            },
+            "residential": {
+              "elec": 828.2,
+              "co2": 50.0,
+              "water": 106.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 8429,
+          "electricity_kWh": 6897.2,
+          "co2_kg": 4340.1,
+          "water_L": 2795.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.2,
+              "co2": 2.0,
+              "water": 0.3
+            },
+            "officeTowers": {
+              "elec": 3.6,
+              "co2": 5.9,
+              "water": 1.0
+            },
+            "airport": {
+              "elec": 15.1,
+              "co2": 25.0,
+              "water": 4.4
+            },
+            "factory": {
+              "elec": 27.6,
+              "co2": 45.7,
+              "water": 8.0
+            },
+            "port": {
+              "elec": 30.2,
+              "co2": 50.0,
+              "water": 8.7
+            },
+            "school": {
+              "elec": 69.0,
+              "co2": 114.2,
+              "water": 20.0
+            },
+            "hospital": {
+              "elec": 100.7,
+              "co2": 166.7,
+              "water": 29.2
+            },
+            "residential": {
+              "elec": 957.9,
+              "co2": 1586.3,
+              "water": 277.3
+            }
+          }
+        }
+      }
+    }
+  },
+  "Chicago": {
+    "label": "Chicago",
+    "aiUsers": 1246000,
+    "operations": {
+      "prompt": {
+        "label": "Chat with AI (ChatGPT)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "factory",
+            "airport",
+            "officeTowers",
+            "port",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 6880,
+          "electricity_kWh": 1649.7,
+          "co2_kg": 37.4,
+          "water_L": 299.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.3,
+              "co2": 0.0,
+              "water": 0.0
+            },
+            "officeTowers": {
+              "elec": 0.9,
+              "co2": 0.1,
+              "water": 0.1
+            },
+            "airport": {
+              "elec": 3.6,
+              "co2": 0.3,
+              "water": 0.4
+            },
+            "factory": {
+              "elec": 6.6,
+              "co2": 0.5,
+              "water": 0.7
+            },
+            "port": {
+              "elec": 7.2,
+              "co2": 0.5,
+              "water": 0.8
+            },
+            "school": {
+              "elec": 16.5,
+              "co2": 1.2,
+              "water": 1.8
+            },
+            "hospital": {
+              "elec": 24.1,
+              "co2": 1.8,
+              "water": 2.6
+            },
+            "residential": {
+              "elec": 229.1,
+              "co2": 17.3,
+              "water": 24.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Pune",
+          "distance_km": 13035,
+          "electricity_kWh": 1893.9,
+          "co2_kg": 1196.2,
+          "water_L": 735.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.3,
+              "co2": 0.7,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 1.0,
+              "co2": 2.1,
+              "water": 0.2
+            },
+            "airport": {
+              "elec": 4.1,
+              "co2": 8.7,
+              "water": 0.9
+            },
+            "factory": {
+              "elec": 7.6,
+              "co2": 15.9,
+              "water": 1.7
+            },
+            "port": {
+              "elec": 8.3,
+              "co2": 17.5,
+              "water": 1.9
+            },
+            "school": {
+              "elec": 18.9,
+              "co2": 39.9,
+              "water": 4.3
+            },
+            "hospital": {
+              "elec": 27.6,
+              "co2": 58.2,
+              "water": 6.3
+            },
+            "residential": {
+              "elec": 263.0,
+              "co2": 553.8,
+              "water": 60.1
+            }
+          }
+        }
+      },
+      "translate": {
+        "label": "Real-time Translation (Google Translate)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "officeTowers",
+            "factory"
+          ],
+          "secondary": [
+            "stadium",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 7191,
+          "electricity_kWh": 114507.4,
+          "co2_kg": 8011.8,
+          "water_L": 22328.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 19.9,
+              "co2": 4.6,
+              "water": 2.3
+            },
+            "officeTowers": {
+              "elec": 59.5,
+              "co2": 13.9,
+              "water": 6.8
+            },
+            "airport": {
+              "elec": 250.8,
+              "co2": 58.5,
+              "water": 28.8
+            },
+            "factory": {
+              "elec": 458.0,
+              "co2": 106.8,
+              "water": 52.5
+            },
+            "port": {
+              "elec": 501.6,
+              "co2": 117.0,
+              "water": 57.5
+            },
+            "school": {
+              "elec": 1145.1,
+              "co2": 267.1,
+              "water": 131.3
+            },
+            "hospital": {
+              "elec": 1671.6,
+              "co2": 389.9,
+              "water": 191.7
+            },
+            "residential": {
+              "elec": 15903.8,
+              "co2": 3709.2,
+              "water": 1824.2
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 12134,
+          "electricity_kWh": 136935.4,
+          "co2_kg": 67097.1,
+          "water_L": 53403.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 23.8,
+              "co2": 38.9,
+              "water": 5.5
+            },
+            "officeTowers": {
+              "elec": 71.2,
+              "co2": 116.3,
+              "water": 16.3
+            },
+            "airport": {
+              "elec": 299.9,
+              "co2": 489.8,
+              "water": 68.8
+            },
+            "factory": {
+              "elec": 547.7,
+              "co2": 894.6,
+              "water": 125.7
+            },
+            "port": {
+              "elec": 599.8,
+              "co2": 979.7,
+              "water": 137.6
+            },
+            "school": {
+              "elec": 1369.4,
+              "co2": 2236.6,
+              "water": 314.1
+            },
+            "hospital": {
+              "elec": 1999.1,
+              "co2": 3265.1,
+              "water": 458.6
+            },
+            "residential": {
+              "elec": 19018.8,
+              "co2": 31063.5,
+              "water": 4363.0
+            }
+          }
+        }
+      },
+      "pdf": {
+        "label": "Summarise PDF (Claude)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "factory"
+          ],
+          "secondary": [
+            "airport",
+            "officeTowers",
+            "stadium",
+            "school",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris (France)",
+          "distance_km": 6650,
+          "electricity_kWh": 15388.1,
+          "co2_kg": 336.4,
+          "water_L": 4622.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.7,
+              "co2": 0.2,
+              "water": 0.5
+            },
+            "officeTowers": {
+              "elec": 8.0,
+              "co2": 0.6,
+              "water": 1.4
+            },
+            "airport": {
+              "elec": 33.7,
+              "co2": 2.5,
+              "water": 6.0
+            },
+            "factory": {
+              "elec": 61.6,
+              "co2": 4.5,
+              "water": 10.9
+            },
+            "port": {
+              "elec": 67.4,
+              "co2": 4.9,
+              "water": 11.9
+            },
+            "school": {
+              "elec": 153.9,
+              "co2": 11.2,
+              "water": 27.2
+            },
+            "hospital": {
+              "elec": 224.6,
+              "co2": 16.4,
+              "water": 39.7
+            },
+            "residential": {
+              "elec": 2137.2,
+              "co2": 155.8,
+              "water": 377.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Jakarta (Indonesia)",
+          "distance_km": 15799,
+          "electricity_kWh": 16409.8,
+          "co2_kg": 10665.8,
+          "water_L": 6890.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.9,
+              "co2": 6.2,
+              "water": 0.7
+            },
+            "officeTowers": {
+              "elec": 8.5,
+              "co2": 18.5,
+              "water": 2.1
+            },
+            "airport": {
+              "elec": 35.9,
+              "co2": 77.9,
+              "water": 8.9
+            },
+            "factory": {
+              "elec": 65.6,
+              "co2": 142.2,
+              "water": 16.2
+            },
+            "port": {
+              "elec": 71.9,
+              "co2": 155.7,
+              "water": 17.8
+            },
+            "school": {
+              "elec": 164.1,
+              "co2": 355.5,
+              "water": 40.5
+            },
+            "hospital": {
+              "elec": 239.6,
+              "co2": 519.0,
+              "water": 59.2
+            },
+            "residential": {
+              "elec": 2279.1,
+              "co2": 4937.9,
+              "water": 562.9
+            }
+          }
+        }
+      },
+      "background": {
+        "label": "Remove Background (Adobe Express)",
+        "showGroups": {
+          "primary": [
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "hospital",
+            "port",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Virginia (serves N. America)",
+          "distance_km": 913,
+          "electricity_kWh": 4174.1,
+          "co2_kg": 1246.0,
+          "water_L": 1370.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.7,
+              "co2": 0.7,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 2.2,
+              "co2": 2.2,
+              "water": 0.4
+            },
+            "airport": {
+              "elec": 9.1,
+              "co2": 9.1,
+              "water": 1.8
+            },
+            "factory": {
+              "elec": 16.7,
+              "co2": 16.6,
+              "water": 3.2
+            },
+            "port": {
+              "elec": 18.3,
+              "co2": 18.2,
+              "water": 3.5
+            },
+            "school": {
+              "elec": 41.7,
+              "co2": 41.5,
+              "water": 8.1
+            },
+            "hospital": {
+              "elec": 60.9,
+              "co2": 60.6,
+              "water": 11.8
+            },
+            "residential": {
+              "elec": 579.7,
+              "co2": 576.9,
+              "water": 112.0
+            }
+          }
+        },
+        "max": {
+          "destination": "Virginia (serves N. America)",
+          "distance_km": 913,
+          "electricity_kWh": 4174.1,
+          "co2_kg": 1246.0,
+          "water_L": 1370.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.7,
+              "co2": 0.7,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 2.2,
+              "co2": 2.2,
+              "water": 0.4
+            },
+            "airport": {
+              "elec": 9.1,
+              "co2": 9.1,
+              "water": 1.8
+            },
+            "factory": {
+              "elec": 16.7,
+              "co2": 16.6,
+              "water": 3.2
+            },
+            "port": {
+              "elec": 18.3,
+              "co2": 18.2,
+              "water": 3.5
+            },
+            "school": {
+              "elec": 41.7,
+              "co2": 41.5,
+              "water": 8.1
+            },
+            "hospital": {
+              "elec": 60.9,
+              "co2": 60.6,
+              "water": 11.8
+            },
+            "residential": {
+              "elec": 579.7,
+              "co2": 576.9,
+              "water": 112.0
+            }
+          }
+        }
+      },
+      "image": {
+        "label": "Generate Image (Midjourney)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "port",
+            "school"
+          ],
+          "secondary": [
+            "hospital",
+            "residential",
+            "factory",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 7191,
+          "electricity_kWh": 28695.4,
+          "co2_kg": 2006.1,
+          "water_L": 5594.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 5.0,
+              "co2": 1.2,
+              "water": 0.6
+            },
+            "officeTowers": {
+              "elec": 14.9,
+              "co2": 3.5,
+              "water": 1.7
+            },
+            "airport": {
+              "elec": 62.8,
+              "co2": 14.6,
+              "water": 7.2
+            },
+            "factory": {
+              "elec": 114.8,
+              "co2": 26.7,
+              "water": 13.2
+            },
+            "port": {
+              "elec": 125.7,
+              "co2": 29.3,
+              "water": 14.4
+            },
+            "school": {
+              "elec": 287.0,
+              "co2": 66.9,
+              "water": 32.9
+            },
+            "hospital": {
+              "elec": 418.9,
+              "co2": 97.6,
+              "water": 48.0
+            },
+            "residential": {
+              "elec": 3985.5,
+              "co2": 928.7,
+              "water": 457.1
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 12134,
+          "electricity_kWh": 29779.4,
+          "co2_kg": 14590.7,
+          "water_L": 11612.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 5.2,
+              "co2": 8.5,
+              "water": 1.2
+            },
+            "officeTowers": {
+              "elec": 15.5,
+              "co2": 25.3,
+              "water": 3.6
+            },
+            "airport": {
+              "elec": 65.2,
+              "co2": 106.5,
+              "water": 15.0
+            },
+            "factory": {
+              "elec": 119.1,
+              "co2": 194.5,
+              "water": 27.3
+            },
+            "port": {
+              "elec": 130.4,
+              "co2": 213.0,
+              "water": 29.9
+            },
+            "school": {
+              "elec": 297.8,
+              "co2": 486.4,
+              "water": 68.3
+            },
+            "hospital": {
+              "elec": 434.7,
+              "co2": 710.0,
+              "water": 99.7
+            },
+            "residential": {
+              "elec": 4136.0,
+              "co2": 6754.9,
+              "water": 948.8
+            }
+          }
+        }
+      },
+      "video": {
+        "label": "Generate Video (Sora)",
+        "showGroups": {
+          "primary": [
+            "stadium",
+            "officeTowers",
+            "airport"
+          ],
+          "secondary": [
+            "factory",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris",
+          "distance_km": 6650,
+          "electricity_kWh": 439090.4,
+          "co2_kg": 9656.5,
+          "water_L": 131727.1,
+          "buildingHours": {
+            "stadium": {
+              "elec": 76.4,
+              "co2": 5.6,
+              "water": 13.5
+            },
+            "officeTowers": {
+              "elec": 228.3,
+              "co2": 16.7,
+              "water": 40.3
+            },
+            "airport": {
+              "elec": 961.7,
+              "co2": 70.5,
+              "water": 169.7
+            },
+            "factory": {
+              "elec": 1756.4,
+              "co2": 128.8,
+              "water": 309.9
+            },
+            "port": {
+              "elec": 1923.3,
+              "co2": 141.0,
+              "water": 339.4
+            },
+            "school": {
+              "elec": 4390.9,
+              "co2": 321.9,
+              "water": 774.9
+            },
+            "hospital": {
+              "elec": 6410.1,
+              "co2": 469.9,
+              "water": 1131.2
+            },
+            "residential": {
+              "elec": 60984.8,
+              "co2": 4470.6,
+              "water": 10762.0
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 13779,
+          "electricity_kWh": 499396.8,
+          "co2_kg": 314639.9,
+          "water_L": 202275.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 86.9,
+              "co2": 182.4,
+              "water": 20.7
+            },
+            "officeTowers": {
+              "elec": 259.7,
+              "co2": 545.4,
+              "water": 61.9
+            },
+            "airport": {
+              "elec": 1093.7,
+              "co2": 2297.0,
+              "water": 260.6
+            },
+            "factory": {
+              "elec": 1997.6,
+              "co2": 4195.2,
+              "water": 475.9
+            },
+            "port": {
+              "elec": 2187.5,
+              "co2": 4594.0,
+              "water": 521.2
+            },
+            "school": {
+              "elec": 4994.0,
+              "co2": 10488.0,
+              "water": 1189.9
+            },
+            "hospital": {
+              "elec": 7290.5,
+              "co2": 15310.9,
+              "water": 1737.0
+            },
+            "residential": {
+              "elec": 69360.7,
+              "co2": 145666.6,
+              "water": 16525.8
+            }
+          }
+        }
+      },
+      "voice": {
+        "label": "Clone Voice (ElevenLabs)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "residential"
+          ],
+          "secondary": [
+            "school",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "The Dalles, Oregon",
+          "distance_km": 2707,
+          "electricity_kWh": 7912.1,
+          "co2_kg": 947.0,
+          "water_L": 1893.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.4,
+              "co2": 0.5,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 4.1,
+              "co2": 1.6,
+              "water": 0.6
+            },
+            "airport": {
+              "elec": 17.3,
+              "co2": 6.9,
+              "water": 2.4
+            },
+            "factory": {
+              "elec": 31.6,
+              "co2": 12.6,
+              "water": 4.5
+            },
+            "port": {
+              "elec": 34.7,
+              "co2": 13.8,
+              "water": 4.9
+            },
+            "school": {
+              "elec": 79.1,
+              "co2": 31.6,
+              "water": 11.1
+            },
+            "hospital": {
+              "elec": 115.5,
+              "co2": 46.1,
+              "water": 16.3
+            },
+            "residential": {
+              "elec": 1098.9,
+              "co2": 438.4,
+              "water": 154.7
+            }
+          }
+        },
+        "max": {
+          "destination": "Columbus, Ohio",
+          "distance_km": 444,
+          "electricity_kWh": 8049.2,
+          "co2_kg": 3301.9,
+          "water_L": 2292.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.4,
+              "co2": 1.9,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 4.2,
+              "co2": 5.7,
+              "water": 0.7
+            },
+            "airport": {
+              "elec": 17.6,
+              "co2": 24.1,
+              "water": 3.0
+            },
+            "factory": {
+              "elec": 32.2,
+              "co2": 44.0,
+              "water": 5.4
+            },
+            "port": {
+              "elec": 35.3,
+              "co2": 48.2,
+              "water": 5.9
+            },
+            "school": {
+              "elec": 80.5,
+              "co2": 110.1,
+              "water": 13.5
+            },
+            "hospital": {
+              "elec": 117.5,
+              "co2": 160.7,
+              "water": 19.7
+            },
+            "residential": {
+              "elec": 1117.9,
+              "co2": 1528.7,
+              "water": 187.3
+            }
+          }
+        }
+      },
+      "code": {
+        "label": "Code with AI (GitHub Copilot)",
+        "showGroups": {
+          "primary": [
+            "factory",
+            "school",
+            "hospital"
+          ],
+          "secondary": [
+            "residential",
+            "port",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 6880,
+          "electricity_kWh": 3800.3,
+          "co2_kg": 87.2,
+          "water_L": 685.3,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.7,
+              "co2": 0.1,
+              "water": 0.1
+            },
+            "officeTowers": {
+              "elec": 2.0,
+              "co2": 0.2,
+              "water": 0.2
+            },
+            "airport": {
+              "elec": 8.3,
+              "co2": 0.6,
+              "water": 0.9
+            },
+            "factory": {
+              "elec": 15.2,
+              "co2": 1.2,
+              "water": 1.6
+            },
+            "port": {
+              "elec": 16.6,
+              "co2": 1.3,
+              "water": 1.8
+            },
+            "school": {
+              "elec": 38.0,
+              "co2": 2.9,
+              "water": 4.0
+            },
+            "hospital": {
+              "elec": 55.5,
+              "co2": 4.2,
+              "water": 5.9
+            },
+            "residential": {
+              "elec": 527.8,
+              "co2": 40.4,
+              "water": 56.0
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 13779,
+          "electricity_kWh": 4395.9,
+          "co2_kg": 2766.1,
+          "water_L": 1781.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.8,
+              "co2": 1.6,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 2.3,
+              "co2": 4.8,
+              "water": 0.5
+            },
+            "airport": {
+              "elec": 9.6,
+              "co2": 20.2,
+              "water": 2.3
+            },
+            "factory": {
+              "elec": 17.6,
+              "co2": 36.9,
+              "water": 4.2
+            },
+            "port": {
+              "elec": 19.3,
+              "co2": 40.4,
+              "water": 4.6
+            },
+            "school": {
+              "elec": 44.0,
+              "co2": 92.2,
+              "water": 10.5
+            },
+            "hospital": {
+              "elec": 64.2,
+              "co2": 134.6,
+              "water": 15.3
+            },
+            "residential": {
+              "elec": 610.5,
+              "co2": 1280.6,
+              "water": 145.6
+            }
+          }
+        }
+      }
+    }
+  },
+  "SaoPaulo": {
+    "label": "Sao Paulo",
+    "aiUsers": 3794000,
+    "operations": {
+      "prompt": {
+        "label": "Chat with AI (ChatGPT)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "factory",
+            "airport",
+            "officeTowers",
+            "port",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 10927,
+          "electricity_kWh": 5023.3,
+          "co2_kg": 113.8,
+          "water_L": 910.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 0.9,
+              "co2": 0.2,
+              "water": 0.2
+            },
+            "officeTowers": {
+              "elec": 2.6,
+              "co2": 0.7,
+              "water": 0.5
+            },
+            "airport": {
+              "elec": 11.0,
+              "co2": 2.8,
+              "water": 2.0
+            },
+            "factory": {
+              "elec": 20.1,
+              "co2": 5.1,
+              "water": 3.6
+            },
+            "port": {
+              "elec": 22.0,
+              "co2": 5.5,
+              "water": 4.0
+            },
+            "school": {
+              "elec": 50.2,
+              "co2": 12.6,
+              "water": 9.1
+            },
+            "hospital": {
+              "elec": 73.3,
+              "co2": 18.5,
+              "water": 13.3
+            },
+            "residential": {
+              "elec": 697.7,
+              "co2": 175.6,
+              "water": 126.5
+            }
+          }
+        },
+        "max": {
+          "destination": "Pune",
+          "distance_km": 13856,
+          "electricity_kWh": 5766.9,
+          "co2_kg": 3642.2,
+          "water_L": 2238.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 1.0,
+              "co2": 7.0,
+              "water": 0.4
+            },
+            "officeTowers": {
+              "elec": 3.0,
+              "co2": 21.0,
+              "water": 1.2
+            },
+            "airport": {
+              "elec": 12.6,
+              "co2": 88.6,
+              "water": 4.9
+            },
+            "factory": {
+              "elec": 23.1,
+              "co2": 161.9,
+              "water": 9.0
+            },
+            "port": {
+              "elec": 25.3,
+              "co2": 177.3,
+              "water": 9.8
+            },
+            "school": {
+              "elec": 57.7,
+              "co2": 404.7,
+              "water": 22.4
+            },
+            "hospital": {
+              "elec": 84.2,
+              "co2": 590.8,
+              "water": 32.7
+            },
+            "residential": {
+              "elec": 801.0,
+              "co2": 5620.7,
+              "water": 310.9
+            }
+          }
+        }
+      },
+      "translate": {
+        "label": "Real-time Translation (Google Translate)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "officeTowers",
+            "factory"
+          ],
+          "secondary": [
+            "stadium",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 11438,
+          "electricity_kWh": 406716.8,
+          "co2_kg": 28455.0,
+          "water_L": 79294.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 70.7,
+              "co2": 55.0,
+              "water": 13.8
+            },
+            "officeTowers": {
+              "elec": 211.5,
+              "co2": 164.4,
+              "water": 41.2
+            },
+            "airport": {
+              "elec": 890.8,
+              "co2": 692.4,
+              "water": 173.7
+            },
+            "factory": {
+              "elec": 1626.9,
+              "co2": 1264.7,
+              "water": 317.2
+            },
+            "port": {
+              "elec": 1781.5,
+              "co2": 1384.9,
+              "water": 347.3
+            },
+            "school": {
+              "elec": 4067.2,
+              "co2": 3161.7,
+              "water": 792.9
+            },
+            "hospital": {
+              "elec": 5937.5,
+              "co2": 4615.6,
+              "water": 1157.6
+            },
+            "residential": {
+              "elec": 56488.4,
+              "co2": 43912.0,
+              "water": 11013.1
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 18705,
+          "electricity_kWh": 506878.4,
+          "co2_kg": 248279.4,
+          "water_L": 197629.5,
+          "buildingHours": {
+            "stadium": {
+              "elec": 88.2,
+              "co2": 479.8,
+              "water": 34.4
+            },
+            "officeTowers": {
+              "elec": 263.6,
+              "co2": 1434.6,
+              "water": 102.8
+            },
+            "airport": {
+              "elec": 1110.1,
+              "co2": 6041.7,
+              "water": 432.8
+            },
+            "factory": {
+              "elec": 2027.5,
+              "co2": 11034.6,
+              "water": 790.5
+            },
+            "port": {
+              "elec": 2220.2,
+              "co2": 12083.5,
+              "water": 865.7
+            },
+            "school": {
+              "elec": 5068.8,
+              "co2": 27586.6,
+              "water": 1976.3
+            },
+            "hospital": {
+              "elec": 7399.7,
+              "co2": 40272.4,
+              "water": 2885.1
+            },
+            "residential": {
+              "elec": 70399.8,
+              "co2": 383147.2,
+              "water": 27448.5
+            }
+          }
+        }
+      },
+      "pdf": {
+        "label": "Summarise PDF (Claude)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "factory"
+          ],
+          "secondary": [
+            "airport",
+            "officeTowers",
+            "stadium",
+            "school",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris (France)",
+          "distance_km": 9402,
+          "electricity_kWh": 46931.8,
+          "co2_kg": 1024.4,
+          "water_L": 14075.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 8.2,
+              "co2": 2.0,
+              "water": 2.4
+            },
+            "officeTowers": {
+              "elec": 24.4,
+              "co2": 5.9,
+              "water": 7.3
+            },
+            "airport": {
+              "elec": 102.8,
+              "co2": 24.9,
+              "water": 30.8
+            },
+            "factory": {
+              "elec": 187.7,
+              "co2": 45.5,
+              "water": 56.3
+            },
+            "port": {
+              "elec": 205.6,
+              "co2": 49.9,
+              "water": 61.7
+            },
+            "school": {
+              "elec": 469.3,
+              "co2": 113.8,
+              "water": 140.8
+            },
+            "hospital": {
+              "elec": 685.1,
+              "co2": 166.2,
+              "water": 205.5
+            },
+            "residential": {
+              "elec": 6518.3,
+              "co2": 1580.8,
+              "water": 1955.0
+            }
+          }
+        },
+        "max": {
+          "destination": "Jakarta (Indonesia)",
+          "distance_km": 15629,
+          "electricity_kWh": 49967.0,
+          "co2_kg": 32476.6,
+          "water_L": 20980.8,
+          "buildingHours": {
+            "stadium": {
+              "elec": 8.7,
+              "co2": 62.8,
+              "water": 3.6
+            },
+            "officeTowers": {
+              "elec": 26.0,
+              "co2": 187.7,
+              "water": 10.9
+            },
+            "airport": {
+              "elec": 109.4,
+              "co2": 790.3,
+              "water": 46.0
+            },
+            "factory": {
+              "elec": 199.9,
+              "co2": 1443.4,
+              "water": 83.9
+            },
+            "port": {
+              "elec": 218.9,
+              "co2": 1580.6,
+              "water": 91.9
+            },
+            "school": {
+              "elec": 499.7,
+              "co2": 3608.5,
+              "water": 209.8
+            },
+            "hospital": {
+              "elec": 729.4,
+              "co2": 5267.9,
+              "water": 306.3
+            },
+            "residential": {
+              "elec": 6939.9,
+              "co2": 50118.3,
+              "water": 2914.0
+            }
+          }
+        }
+      },
+      "background": {
+        "label": "Remove Background (Adobe Express)",
+        "showGroups": {
+          "primary": [
+            "school",
+            "residential"
+          ],
+          "secondary": [
+            "hospital",
+            "port",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Virginia (serves N. America)",
+          "distance_km": 7664,
+          "electricity_kWh": 13013.4,
+          "co2_kg": 3907.8,
+          "water_L": 4287.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.3,
+              "co2": 7.6,
+              "water": 0.7
+            },
+            "officeTowers": {
+              "elec": 6.8,
+              "co2": 22.6,
+              "water": 2.2
+            },
+            "airport": {
+              "elec": 28.5,
+              "co2": 95.1,
+              "water": 9.4
+            },
+            "factory": {
+              "elec": 52.1,
+              "co2": 173.7,
+              "water": 17.1
+            },
+            "port": {
+              "elec": 57.0,
+              "co2": 190.2,
+              "water": 18.8
+            },
+            "school": {
+              "elec": 130.1,
+              "co2": 434.2,
+              "water": 42.9
+            },
+            "hospital": {
+              "elec": 190.0,
+              "co2": 633.9,
+              "water": 62.6
+            },
+            "residential": {
+              "elec": 1807.4,
+              "co2": 6030.6,
+              "water": 595.4
+            }
+          }
+        },
+        "max": {
+          "destination": "Virginia (serves N. America)",
+          "distance_km": 7664,
+          "electricity_kWh": 13013.4,
+          "co2_kg": 3907.8,
+          "water_L": 4287.2,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.3,
+              "co2": 7.6,
+              "water": 0.7
+            },
+            "officeTowers": {
+              "elec": 6.8,
+              "co2": 22.6,
+              "water": 2.2
+            },
+            "airport": {
+              "elec": 28.5,
+              "co2": 95.1,
+              "water": 9.4
+            },
+            "factory": {
+              "elec": 52.1,
+              "co2": 173.7,
+              "water": 17.1
+            },
+            "port": {
+              "elec": 57.0,
+              "co2": 190.2,
+              "water": 18.8
+            },
+            "school": {
+              "elec": 130.1,
+              "co2": 434.2,
+              "water": 42.9
+            },
+            "hospital": {
+              "elec": 190.0,
+              "co2": 633.9,
+              "water": 62.6
+            },
+            "residential": {
+              "elec": 1807.4,
+              "co2": 6030.6,
+              "water": 595.4
+            }
+          }
+        }
+      },
+      "image": {
+        "label": "Generate Image (Midjourney)",
+        "showGroups": {
+          "primary": [
+            "airport",
+            "port",
+            "school"
+          ],
+          "secondary": [
+            "hospital",
+            "residential",
+            "factory",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Hamina (Finland)",
+          "distance_km": 11438,
+          "electricity_kWh": 87489.6,
+          "co2_kg": 6108.3,
+          "water_L": 17073.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 15.2,
+              "co2": 11.8,
+              "water": 3.0
+            },
+            "officeTowers": {
+              "elec": 45.5,
+              "co2": 35.3,
+              "water": 8.9
+            },
+            "airport": {
+              "elec": 191.6,
+              "co2": 148.6,
+              "water": 37.4
+            },
+            "factory": {
+              "elec": 350.0,
+              "co2": 271.5,
+              "water": 68.3
+            },
+            "port": {
+              "elec": 383.2,
+              "co2": 297.3,
+              "water": 74.8
+            },
+            "school": {
+              "elec": 874.9,
+              "co2": 678.7,
+              "water": 170.7
+            },
+            "hospital": {
+              "elec": 1277.2,
+              "co2": 990.8,
+              "water": 249.2
+            },
+            "residential": {
+              "elec": 12151.3,
+              "co2": 9426.5,
+              "water": 2371.2
+            }
+          }
+        },
+        "max": {
+          "destination": "Changhua County (Taiwan)",
+          "distance_km": 18705,
+          "electricity_kWh": 90828.4,
+          "co2_kg": 44503.6,
+          "water_L": 35436.0,
+          "buildingHours": {
+            "stadium": {
+              "elec": 15.8,
+              "co2": 86.0,
+              "water": 6.2
+            },
+            "officeTowers": {
+              "elec": 47.2,
+              "co2": 257.1,
+              "water": 18.4
+            },
+            "airport": {
+              "elec": 198.9,
+              "co2": 1083.0,
+              "water": 77.6
+            },
+            "factory": {
+              "elec": 363.3,
+              "co2": 1977.9,
+              "water": 141.7
+            },
+            "port": {
+              "elec": 397.8,
+              "co2": 2165.9,
+              "water": 155.2
+            },
+            "school": {
+              "elec": 908.3,
+              "co2": 4944.8,
+              "water": 354.4
+            },
+            "hospital": {
+              "elec": 1326.0,
+              "co2": 7218.8,
+              "water": 517.3
+            },
+            "residential": {
+              "elec": 12615.0,
+              "co2": 68678.4,
+              "water": 4921.7
+            }
+          }
+        }
+      },
+      "video": {
+        "label": "Generate Video (Sora)",
+        "showGroups": {
+          "primary": [
+            "stadium",
+            "officeTowers",
+            "airport"
+          ],
+          "secondary": [
+            "factory",
+            "port",
+            "school",
+            "hospital",
+            "residential"
+          ]
+        },
+        "min": {
+          "destination": "Paris",
+          "distance_km": 9402,
+          "electricity_kWh": 1337764.4,
+          "co2_kg": 29441.4,
+          "water_L": 401291.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 232.7,
+              "co2": 56.9,
+              "water": 69.8
+            },
+            "officeTowers": {
+              "elec": 695.7,
+              "co2": 170.1,
+              "water": 208.7
+            },
+            "airport": {
+              "elec": 2929.8,
+              "co2": 716.4,
+              "water": 878.9
+            },
+            "factory": {
+              "elec": 5351.1,
+              "co2": 1308.5,
+              "water": 1605.2
+            },
+            "port": {
+              "elec": 5859.7,
+              "co2": 1432.9,
+              "water": 1757.7
+            },
+            "school": {
+              "elec": 13377.6,
+              "co2": 3271.3,
+              "water": 4012.9
+            },
+            "hospital": {
+              "elec": 19529.4,
+              "co2": 4775.6,
+              "water": 5858.3
+            },
+            "residential": {
+              "elec": 185800.6,
+              "co2": 45434.3,
+              "water": 55734.9
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 14322,
+          "electricity_kWh": 1521014.6,
+          "co2_kg": 958136.8,
+          "water_L": 615955.9,
+          "buildingHours": {
+            "stadium": {
+              "elec": 264.5,
+              "co2": 1851.5,
+              "water": 107.1
+            },
+            "officeTowers": {
+              "elec": 791.0,
+              "co2": 5536.1,
+              "water": 320.3
+            },
+            "airport": {
+              "elec": 3331.2,
+              "co2": 23315.7,
+              "water": 1349.0
+            },
+            "factory": {
+              "elec": 6084.1,
+              "co2": 42583.9,
+              "water": 2463.8
+            },
+            "port": {
+              "elec": 6662.4,
+              "co2": 46631.5,
+              "water": 2698.0
+            },
+            "school": {
+              "elec": 15210.1,
+              "co2": 106459.6,
+              "water": 6159.6
+            },
+            "hospital": {
+              "elec": 22204.6,
+              "co2": 155415.5,
+              "water": 8992.1
+            },
+            "residential": {
+              "elec": 211252.0,
+              "co2": 1478606.1,
+              "water": 85549.4
+            }
+          }
+        }
+      },
+      "voice": {
+        "label": "Clone Voice (ElevenLabs)",
+        "showGroups": {
+          "primary": [
+            "hospital",
+            "port",
+            "residential"
+          ],
+          "secondary": [
+            "school",
+            "factory",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "The Dalles, Oregon",
+          "distance_km": 10739,
+          "electricity_kWh": 24812.8,
+          "co2_kg": 2997.3,
+          "water_L": 5956.6,
+          "buildingHours": {
+            "stadium": {
+              "elec": 4.3,
+              "co2": 5.8,
+              "water": 1.0
+            },
+            "officeTowers": {
+              "elec": 12.9,
+              "co2": 17.3,
+              "water": 3.1
+            },
+            "airport": {
+              "elec": 54.3,
+              "co2": 72.9,
+              "water": 13.0
+            },
+            "factory": {
+              "elec": 99.3,
+              "co2": 133.2,
+              "water": 23.8
+            },
+            "port": {
+              "elec": 108.7,
+              "co2": 145.9,
+              "water": 26.1
+            },
+            "school": {
+              "elec": 248.1,
+              "co2": 333.0,
+              "water": 59.6
+            },
+            "hospital": {
+              "elec": 362.2,
+              "co2": 486.2,
+              "water": 87.0
+            },
+            "residential": {
+              "elec": 3446.2,
+              "co2": 4625.4,
+              "water": 827.3
+            }
+          }
+        },
+        "max": {
+          "destination": "Columbus, Ohio",
+          "distance_km": 8004,
+          "electricity_kWh": 25192.2,
+          "co2_kg": 10319.7,
+          "water_L": 7170.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 4.4,
+              "co2": 19.9,
+              "water": 1.2
+            },
+            "officeTowers": {
+              "elec": 13.1,
+              "co2": 59.6,
+              "water": 3.7
+            },
+            "airport": {
+              "elec": 55.2,
+              "co2": 251.1,
+              "water": 15.7
+            },
+            "factory": {
+              "elec": 100.8,
+              "co2": 458.7,
+              "water": 28.7
+            },
+            "port": {
+              "elec": 110.3,
+              "co2": 502.2,
+              "water": 31.4
+            },
+            "school": {
+              "elec": 251.9,
+              "co2": 1146.6,
+              "water": 71.7
+            },
+            "hospital": {
+              "elec": 367.8,
+              "co2": 1673.9,
+              "water": 104.7
+            },
+            "residential": {
+              "elec": 3498.9,
+              "co2": 15925.4,
+              "water": 995.9
+            }
+          }
+        }
+      },
+      "code": {
+        "label": "Code with AI (GitHub Copilot)",
+        "showGroups": {
+          "primary": [
+            "factory",
+            "school",
+            "hospital"
+          ],
+          "secondary": [
+            "residential",
+            "port",
+            "airport",
+            "officeTowers",
+            "stadium"
+          ]
+        },
+        "min": {
+          "destination": "Stockholm",
+          "distance_km": 10927,
+          "electricity_kWh": 11575.5,
+          "co2_kg": 265.6,
+          "water_L": 2086.7,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.0,
+              "co2": 0.5,
+              "water": 0.4
+            },
+            "officeTowers": {
+              "elec": 6.0,
+              "co2": 1.5,
+              "water": 1.1
+            },
+            "airport": {
+              "elec": 25.4,
+              "co2": 6.5,
+              "water": 4.6
+            },
+            "factory": {
+              "elec": 46.3,
+              "co2": 11.8,
+              "water": 8.3
+            },
+            "port": {
+              "elec": 50.7,
+              "co2": 12.9,
+              "water": 9.1
+            },
+            "school": {
+              "elec": 115.8,
+              "co2": 29.5,
+              "water": 20.9
+            },
+            "hospital": {
+              "elec": 169.0,
+              "co2": 43.1,
+              "water": 30.5
+            },
+            "residential": {
+              "elec": 1607.7,
+              "co2": 409.8,
+              "water": 289.8
+            }
+          }
+        },
+        "max": {
+          "destination": "Chennai",
+          "distance_km": 14322,
+          "electricity_kWh": 13385.2,
+          "co2_kg": 8422.7,
+          "water_L": 5425.4,
+          "buildingHours": {
+            "stadium": {
+              "elec": 2.3,
+              "co2": 16.3,
+              "water": 0.9
+            },
+            "officeTowers": {
+              "elec": 7.0,
+              "co2": 48.7,
+              "water": 2.8
+            },
+            "airport": {
+              "elec": 29.3,
+              "co2": 205.0,
+              "water": 11.9
+            },
+            "factory": {
+              "elec": 53.5,
+              "co2": 374.3,
+              "water": 21.7
+            },
+            "port": {
+              "elec": 58.6,
+              "co2": 409.9,
+              "water": 23.8
+            },
+            "school": {
+              "elec": 133.9,
+              "co2": 935.9,
+              "water": 54.3
+            },
+            "hospital": {
+              "elec": 195.4,
+              "co2": 1366.2,
+              "water": 79.2
+            },
+            "residential": {
+              "elec": 1859.1,
+              "co2": 12998.0,
+              "water": 753.5
+            }
+          }
+        }
+      }
+    }
+  }
+}

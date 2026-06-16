@@ -14,11 +14,8 @@ export const CITIES = {
     country: 'Spain',
     flag: '🇪🇸',
     coords: { lat: 41.3851, lng: 2.1734 },
-    population: 1620000,
-    internetPenetration: 0.93,
-    aiAdoption: 0.25,
-    context: 'Typical AI consumer city — users generate digital demand but large computation occurs elsewhere',
-    defaultDatacenter: 'ireland'
+    aiUsers: 568000,
+    exhibitKey: 'Barcelona',
   },
   riyadh: {
     id: 'riyadh',
@@ -26,11 +23,8 @@ export const CITIES = {
     country: 'Saudi Arabia',
     flag: '🇸🇦',
     coords: { lat: 24.7136, lng: 46.6753 },
-    population: 7500000,
-    internetPenetration: 0.98,
-    aiAdoption: 0.22,
-    context: 'Rapidly scaling AI infrastructure under extreme environmental conditions — strong government-backed expansion',
-    defaultDatacenter: 'riyadh_dc'
+    aiUsers: 2837000,
+    exhibitKey: 'Riyadh',
   },
   singapore: {
     id: 'singapore',
@@ -38,23 +32,35 @@ export const CITIES = {
     country: 'Singapore',
     flag: '🇸🇬',
     coords: { lat: 1.3521, lng: 103.8198 },
-    population: 5920000,
-    internetPenetration: 0.96,
-    aiAdoption: 0.30,
-    context: 'One of the densest data-center hubs in the world — heavy infrastructure concentration and energy pressure',
-    defaultDatacenter: 'singapore_dc'
+    aiUsers: 3670000,
+    exhibitKey: 'Singapore',
   },
-  nairobi: {
-    id: 'nairobi',
-    name: 'Nairobi',
-    country: 'Kenya',
-    flag: '🇰🇪',
-    coords: { lat: -1.2921, lng: 36.8219 },
-    population: 4740000,
-    internetPenetration: 0.85,
-    aiAdoption: 0.15,
-    context: 'Emerging digital gateway for East Africa — future expansion of AI infrastructure in emerging regions',
-    defaultDatacenter: 'singapore_dc'
+  lagos: {
+    id: 'lagos',
+    name: 'Lagos',
+    country: 'Nigeria',
+    flag: '🇳🇬',
+    coords: { lat: 6.5244, lng: 3.3792 },
+    aiUsers: 1955000,
+    exhibitKey: 'Lagos',
+  },
+  chicago: {
+    id: 'chicago',
+    name: 'Chicago',
+    country: 'United States',
+    flag: '🇺🇸',
+    coords: { lat: 41.8781, lng: -87.6298 },
+    aiUsers: 1246000,
+    exhibitKey: 'Chicago',
+  },
+  saopaulo: {
+    id: 'saopaulo',
+    name: 'São Paulo',
+    country: 'Brazil',
+    flag: '🇧🇷',
+    coords: { lat: -23.5505, lng: -46.6333 },
+    aiUsers: 3794000,
+    exhibitKey: 'SaoPaulo',
   }
 };
 
@@ -314,248 +320,53 @@ export const DATACENTERS = {
 // ============================================
 
 export const WORKLOADS = {
-  chatbot: {
-    id: 'chatbot',
+  prompt: {
+    id: 'prompt',
     name: 'Chat with AI',
+    provider: 'ChatGPT',
     icon: '💬',
-    description: 'One prompt to an OpenAI model like ChatGPT',
-    intensity: 'low',
-
-    perOperation: {
-      kwhPerOperation: 0.0029,
-      label: '1 chat prompt'
-    },
-
-    scaling: {
-      modelSize: 'large',
-      gpuType: 'A100',
-      gpusPerOperation: 8
-    },
-
-    cityRouting: {
-      barcelona: {
-        platform: 'ChatGPT',
-        operator: 'OpenAI via Microsoft Azure',
-        min: {
-          datacenter: 'Stockholm',
-          country: 'Sweden',
-          kWh: 0.00035,
-          co2_g: 0.008,
-          water_mL: 0.06,
-          distance_km: 2500
-        },
-        max: {
-          datacenter: 'Frankfurt',
-          country: 'Germany',
-          kWh: 0.0024,
-          co2_g: 0.840,
-          water_mL: 0.72,
-          distance_km: 1500
-        }
-      }
-    }
   },
-  
-  realTimeTranslation: {
-    id: 'realTimeTranslation',
-    name: 'Real-Time Translation',
+  translate: {
+    id: 'translate',
+    name: 'Real-time Translation',
+    provider: 'Google Translate',
     icon: '🌐',
-    description: 'Speech recognition + computer vision + NLP for live translation',
-    intensity: 'medium',
-
-    perOperation: {
-      kwhPerOperation: 0.0050,
-      label: '1 live translation (30 seconds of speech)'
-    },
-
-    scaling: {
-      modelSize: 'large',
-      gpuType: 'A100',
-      gpusPerOperation: 4
-    },
-
-    cityRouting: {
-      barcelona: {
-        platform: 'Google Translate',
-        operator: 'Google (owned campus network)',
-        min: {
-          datacenter: 'Belgium',
-          country: 'Belgium',
-          kWh: 0.00109,
-          co2_g: 0.148,
-          water_mL: 0.24,
-          distance_km: 1100
-        },
-        max: {
-          datacenter: 'Germany',
-          country: 'Germany',
-          kWh: 0.011,
-          co2_g: 4.08,
-          water_mL: 3.30,
-          distance_km: 1500
-        }
-      }
-    }
   },
-  
-  pdfSummarize: {
-    id: 'pdfSummarize',
-    name: 'Summarize a PDF',
+  pdf: {
+    id: 'pdf',
+    name: 'Summarise PDF',
+    provider: 'Claude',
     icon: '📄',
-    description: 'Analyze and summarize one document using AI',
-    intensity: 'high',
-
-    perOperation: {
-      kwhPerOperation: 0.012,
-      label: '1 PDF summary (20 pages)'
-    },
-
-    scaling: {
-      modelSize: 'xl',
-      gpuType: 'A100',
-      gpusPerOperation: 8
-    },
-
-    cityRouting: {
-      barcelona: {
-        platform: 'Claude',
-        operator: 'Anthropic via Amazon Web Services',
-        min: {
-          datacenter: 'Paris',
-          country: 'France',
-          kWh: 0.00224,
-          co2_g: 0.049,
-          water_mL: 0.67,
-          distance_km: 1000
-        },
-        max: {
-          datacenter: 'Frankfurt',
-          country: 'Germany',
-          kWh: 0.0224,
-          co2_g: 8.31,
-          water_mL: 7.84,
-          distance_km: 1500
-        }
-      }
-    }
   },
-  
-  backgroundRemoval: {
-    id: 'backgroundRemoval',
+  background: {
+    id: 'background',
     name: 'Remove Background',
+    provider: 'Adobe Express',
     icon: '✂️',
-    description: 'Remove the background from one photo using AI',
-    intensity: 'low',
-
-    perOperation: {
-      kwhPerOperation: 0.0023,
-      label: '1 photo background removal'
-    },
-
-    scaling: {
-      modelSize: 'medium',
-      gpuType: 'T4',
-      gpusPerOperation: 1
-    },
-
-    cityRouting: {
-      barcelona: {
-        platform: 'Adobe Express',
-        operator: 'Adobe Firefly via Amazon Web Services',
-        min: {
-          datacenter: 'Oregon',
-          country: 'USA',
-          kWh: 0.00057,
-          co2_g: 0.114,
-          water_mL: 0.17,
-          distance_km: 9400
-        },
-        max: {
-          datacenter: 'Virginia',
-          country: 'USA',
-          kWh: 0.0057,
-          co2_g: 1.98,
-          water_mL: 2.28,
-          distance_km: 6800
-        }
-      }
-    }
   },
-
-  imageGeneration: {
-    id: 'imageGeneration',
+  image: {
+    id: 'image',
     name: 'Generate Image',
+    provider: 'Midjourney',
     icon: '🎨',
-    description: 'Generate one image from a text prompt using a diffusion model',
-    intensity: 'medium',
-
-    perOperation: {
-      kwhPerOperation: 0.0070,
-      label: '1 image generation (512×512)'
-    },
-
-    scaling: {
-      modelSize: 'large',
-      gpuType: 'A100',
-      gpusPerOperation: 4
-    }
   },
-
-  videoGeneration: {
-    id: 'videoGeneration',
+  video: {
+    id: 'video',
     name: 'Generate Video',
+    provider: 'Sora',
     icon: '🎬',
-    description: 'Generate a short AI video clip from a text prompt',
-    intensity: 'extreme',
-
-    perOperation: {
-      kwhPerOperation: 0.050,
-      label: '1 video clip (5 seconds)'
-    },
-
-    scaling: {
-      modelSize: 'xl',
-      gpuType: 'H100',
-      gpusPerOperation: 16
-    }
   },
-
-  voiceClone: {
-    id: 'voiceClone',
-    name: 'Clone a Voice',
+  voice: {
+    id: 'voice',
+    name: 'Clone Voice',
+    provider: 'ElevenLabs',
     icon: '🎙️',
-    description: 'Clone a voice from a short audio sample and generate speech',
-    intensity: 'medium',
-
-    perOperation: {
-      kwhPerOperation: 0.0085,
-      label: '1 voice clone + 30s speech'
-    },
-
-    scaling: {
-      modelSize: 'large',
-      gpuType: 'A100',
-      gpusPerOperation: 2
-    }
   },
-
-  codeAssist: {
-    id: 'codeAssist',
+  code: {
+    id: 'code',
     name: 'Code with AI',
+    provider: 'GitHub Copilot',
     icon: '👨‍💻',
-    description: 'AI-assisted code generation and completion',
-    intensity: 'medium',
-
-    perOperation: {
-      kwhPerOperation: 0.0040,
-      label: '1 code completion request'
-    },
-
-    scaling: {
-      modelSize: 'large',
-      gpuType: 'A100',
-      gpusPerOperation: 4
-    }
   }
 };
 
@@ -800,7 +611,9 @@ export const ENERGY_REFERENCE = {
     barcelona: { kWhPerHour: 0.35, label: 'Barcelona apartment' },
     riyadh:    { kWhPerHour: 0.55, label: 'Riyadh apartment' },
     singapore: { kWhPerHour: 0.45, label: 'Singapore apartment' },
-    nairobi:   { kWhPerHour: 0.10, label: 'Nairobi apartment' },
+    lagos:     { kWhPerHour: 0.12, label: 'Lagos apartment' },
+    chicago:   { kWhPerHour: 0.40, label: 'Chicago apartment' },
+    saopaulo:  { kWhPerHour: 0.30, label: 'São Paulo apartment' },
     default:   { kWhPerHour: 0.35, label: 'typical apartment' }
   },
   // Reference building in each city centre (real coordinates with 3D buildings in Mapbox)
@@ -808,14 +621,18 @@ export const ENERGY_REFERENCE = {
     barcelona: { lat: 41.3870, lng: 2.1700, name: 'Eixample District' },
     riyadh:    { lat: 24.7136, lng: 46.6753, name: 'Al Olaya District' },
     singapore: { lat: 1.2830, lng: 103.8513, name: 'Marina Bay' },
-    nairobi:   { lat: -1.2864, lng: 36.8172, name: 'Westlands' }
+    lagos:     { lat: 6.4541, lng: 3.4218, name: 'Victoria Island' },
+    chicago:   { lat: 41.8827, lng: -87.6233, name: 'The Loop' },
+    saopaulo:  { lat: -23.5614, lng: -46.6558, name: 'Paulista Avenue' },
   },
   // Average apartments per city block / neighborhood
   neighborhoodSize: {
     barcelona: 120,
     riyadh: 100,
     singapore: 150,
-    nairobi: 60,
+    lagos: 60,
+    chicago: 100,
+    saopaulo: 110,
     default: 80
   },
   // Everyday equivalences (energy in kWh for comparison)

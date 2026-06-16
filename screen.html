@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ENERGY NETWORK — Exhibition Screen</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
   <link rel="stylesheet" href="/src/styles/exhibition.css">
   <link rel="stylesheet" href="/src/styles/main.css">
@@ -209,6 +207,25 @@
 
   <!-- Sentence-by-sentence narrative animator -->
   <div id="screen-narrator"></div>
+
+  <!-- Narrative: large centered text overlay -->
+  <div id="narrative-center" class="narrative-center hidden">
+    <div class="narrative-center-text" id="narrative-center-text"></div>
+    <div class="narrative-center-sub" id="narrative-center-sub"></div>
+  </div>
+
+  <!-- Narrative: slot machine (datacenter city cycler) -->
+  <div id="narrative-slot" class="narrative-slot hidden">
+    <div class="narrative-slot-viewport">
+      <div class="narrative-slot-track" id="narrative-slot-track"></div>
+    </div>
+  </div>
+
+  <!-- Narrative: metric comparison panel (min vs max) -->
+  <div id="narrative-comparison" class="narrative-comparison hidden">
+    <div class="narrative-cmp-card narrative-cmp-min"></div>
+    <div class="narrative-cmp-card narrative-cmp-max"></div>
+  </div>
 
   <script type="module" src="/src/exhibition/screen.js"></script>
 </body>

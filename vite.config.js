@@ -13,7 +13,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         tablet: resolve(__dirname, 'tablet.html'),
-        screen: resolve(__dirname, 'screen.html')
+        screen: resolve(__dirname, 'screen.html'),
       }
     }
   }

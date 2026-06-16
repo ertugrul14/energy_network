@@ -543,10 +543,12 @@ export class GlobeVisualization {
 
   _getCityData() {
     return {
-      barcelona: { center: { lat: 41.3851, lng: 2.1734 }, name: 'Barcelona' },
+      barcelona: { center: { lat: 41.3851, lng: 2.1734 },  name: 'Barcelona' },
       riyadh:    { center: { lat: 24.7136, lng: 46.6753 }, name: 'Riyadh' },
       singapore: { center: { lat: 1.3521,  lng: 103.8198 }, name: 'Singapore' },
-      nairobi:   { center: { lat: -1.2921, lng: 36.8219 }, name: 'Nairobi' }
+      lagos:     { center: { lat: 6.5244,  lng: 3.3792 },  name: 'Lagos' },
+      chicago:   { center: { lat: 41.8781, lng: -87.6298 }, name: 'Chicago' },
+      saopaulo:  { center: { lat: -23.5505, lng: -46.6333 }, name: 'São Paulo' }
     };
   }
 

@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = "ghost-network.ino.bin"
+elf = "ghost-network.ino.elf"

@@ -9,9 +9,31 @@ import { simulationEngine } from '../simulation/engine.js';
 import { CITIES, DATACENTERS, WORKLOADS } from '../data/models.js';
 import { SCENARIO_COMPONENTS } from './models.js';
 import { i18n } from '../i18n/i18n.js';
+import { createBridge } from './ws-bridge.js';
+import { NarrativeDirector } from './narrative.js';
 
-// BroadcastChannel for tablet ↔ screen communication
-const channel = new BroadcastChannel('ghost-network-exhibition');
+// WebSocket bridge for tablet ↔ screen communication
+const channel = createBridge('screen');
+
+// Destination name → approximate coordinates for flow visualization
+const DESTINATION_COORDS = {
+  'Stockholm':                { lat: 59.3293, lng: 18.0686 },
+  'Hamina (Finland)':         { lat: 60.5693, lng: 27.1878 },
+  'Dublin (serves EMEA)':     { lat: 53.4055, lng: -6.3725 },
+  'Paris (France)':           { lat: 48.8566, lng: 2.3522 },
+  'Paris':                    { lat: 48.8566, lng: 2.3522 },
+  'Virginia (serves N. America)': { lat: 39.0438, lng: -77.4874 },
+  'The Dalles, Oregon':       { lat: 45.5946, lng: -121.1787 },
+  'Columbus, Ohio':           { lat: 39.9612, lng: -82.9988 },
+  'Central Ohio':             { lat: 40.0, lng: -82.9 },
+  'Changhua County (Taiwan)': { lat: 24.0518, lng: 120.5161 },
+  'Inzai City (Japan)':       { lat: 35.8319, lng: 140.1462 },
+  'Tokyo (serves Asia Pacific)': { lat: 35.6762, lng: 139.6503 },
+  'Jakarta (Indonesia)':      { lat: -6.2088, lng: 106.8456 },
+  'Chennai':                  { lat: 13.0827, lng: 80.2707 },
+  'Mumbai':                   { lat: 19.0760, lng: 72.8777 },
+  'Pune':                     { lat: 18.5204, lng: 73.8567 },
+};
 
 // Words to colour-highlight in the narrator
 const NARRATOR_HIGHLIGHTS = [
@@ -50,6 +72,8 @@ class ScreenController {
     this._scaleCycleTimer = null;
     this._showingMass = false;
     this.MASS_MULTIPLIER = 40000;
+    this.narrativeDirector = null;
+    this.exhibitData = null;
     this.init();
   }
 
@@ -58,15 +82,26 @@ class ScreenController {
     const container = document.getElementById('globe-container');
     this.globe = new GlobeVisualization(container);
 
-    // Wait for map to load, then create markers
+    // Load exhibit data for narrative director
+    try {
+      const res = await fetch('/exhibit_data.json');
+      if (res.ok) this.exhibitData = await res.json();
+    } catch (e) {
+      console.warn('[Screen] Could not load exhibit_data.json:', e);
+    }
+
+    // Wait for map to load, then create markers + narrative director
     this.globe.map.on('load', () => {
       this.globe.createAllLocationMarkers();
+      if (this.exhibitData) {
+        this.narrativeDirector = new NarrativeDirector(this.globe, this.exhibitData);
+      }
       console.log('[Screen] Globe ready, waiting for tablet…');
     });
 
     // Listen for messages from tablet
-    channel.addEventListener('message', (e) => {
-      this.handleTabletMessage(e.data);
+    channel.onMessage((msg) => {
+      if (!msg.type?.startsWith('_ws:')) this.handleTabletMessage(msg);
     });
 
     // Language switcher
@@ -104,7 +139,13 @@ class ScreenController {
         break;
 
       case 'trace-energy-flow':
-        this.runVisualization(msg);
+        if (msg.exhibitMin && msg.exhibitMax && this.narrativeDirector) {
+          this.runNarrative(msg);
+        } else if (msg.exhibitMin && msg.exhibitMax) {
+          this.runExhibitVisualization(msg);
+        } else {
+          this.runVisualization(msg);
+        }
         break;
 
       case 'scenario-flow':
@@ -120,6 +161,28 @@ class ScreenController {
         this._updateLangButtons();
         break;
     }
+  }
+
+  runNarrative({ city, workload, exhibitMin, exhibitMax }) {
+    document.getElementById('screen-idle').classList.add('hidden');
+    document.getElementById('screen-info-bar').classList.add('hidden');
+    document.getElementById('screen-impact').classList.add('hidden');
+    document.getElementById('screen-legend').classList.add('hidden');
+    document.getElementById('screen-comparison').classList.add('hidden');
+    document.getElementById('screen-side-panel').classList.add('hidden');
+    this.clearNarrator();
+    this._stopScaleCycle();
+
+    if (this.isShowingFlows) {
+      this.globe.clearFlows();
+      this.isShowingFlows = false;
+    }
+
+    const cityData = CITIES[city];
+    const workloadData = WORKLOADS[workload];
+    if (!cityData) return;
+
+    this.narrativeDirector.run(cityData, workloadData, exhibitMin, exhibitMax);
   }
 
   showIdle() {
@@ -138,6 +201,7 @@ class ScreenController {
     sidePanel.classList.add('hidden');
     this.clearNarrator();
     this._stopScaleCycle();
+    if (this.narrativeDirector) this.narrativeDirector.stop();
 
     this.currentResults = null;
 
@@ -211,6 +275,96 @@ class ScreenController {
 
     } catch (err) {
       console.error('[Screen] Visualization error:', err);
+    }
+  }
+
+  runExhibitVisualization({ city, workload, exhibitMin, exhibitMax }) {
+    try {
+      const cityData = CITIES[city];
+      const minE = exhibitMin;
+      const maxE = exhibitMax;
+
+      this.currentResults = { city: cityData, workload: WORKLOADS[workload], min: minE, max: maxE };
+
+      document.getElementById('screen-idle').classList.add('hidden');
+      document.getElementById('screen-comparison').classList.add('hidden');
+
+      const infoBar = document.getElementById('screen-info-bar');
+      document.getElementById('screen-city').textContent = cityData?.name || city;
+      document.getElementById('screen-dc').textContent = `${minE.destination} – ${maxE.destination}`;
+      document.getElementById('screen-workload').textContent = i18n.tMap ? i18n.tMap('workload_names', workload) : (WORKLOADS[workload]?.name || workload);
+      infoBar.classList.remove('hidden');
+
+      document.getElementById('screen-electricity').textContent = `${minE.electricity_kWh.toFixed(1)} – ${maxE.electricity_kWh.toFixed(1)}`;
+      document.getElementById('screen-water').textContent = `${minE.water_L.toFixed(1)} – ${maxE.water_L.toFixed(1)}`;
+      document.getElementById('screen-emissions').textContent = `${minE.co2_kg.toFixed(1)} – ${maxE.co2_kg.toFixed(1)}`;
+      document.getElementById('screen-distance').textContent = `${minE.distance_km.toLocaleString()} – ${maxE.distance_km.toLocaleString()}`;
+
+      const provider = WORKLOADS[workload]?.provider || workload;
+      const co2Ratio = maxE.co2_kg > 0 && minE.co2_kg > 0 ? (maxE.co2_kg / minE.co2_kg).toFixed(0) : '?';
+      const narrativeText = [
+        `At minimum, this ${provider} request travels ${minE.distance_km.toLocaleString()} km to ${minE.destination} — using ${minE.electricity_kWh.toFixed(1)} kWh, releasing ${minE.co2_kg.toFixed(1)} kg CO₂, and consuming ${minE.water_L.toFixed(1)} L of water.`,
+        `At maximum, the same request routes to ${maxE.destination} — ${maxE.distance_km.toLocaleString()} km away — using ${maxE.electricity_kWh.toFixed(1)} kWh, releasing ${maxE.co2_kg.toFixed(1)} kg CO₂, and consuming ${maxE.water_L.toFixed(1)} L of water.`,
+        `That is ${co2Ratio}× more carbon for the identical computation — the difference is not the request, it is the electricity grid powering the server.`,
+      ].join(' ');
+
+      document.getElementById('screen-narrative').textContent = narrativeText;
+      document.getElementById('screen-side-panel').classList.remove('hidden');
+      this.animateNarrative(narrativeText);
+      document.getElementById('screen-legend').classList.remove('hidden');
+
+      if (cityData?.coords) {
+        this.globe.focusOnLocation(cityData.coords);
+      }
+
+      // Generate flow arcs
+      const flows = [];
+      if (cityData?.coords) {
+        const minCoords = DESTINATION_COORDS[minE.destination];
+        const maxCoords = DESTINATION_COORDS[maxE.destination];
+
+        if (minCoords) {
+          flows.push({
+            type: 'electricity',
+            from: { lat: cityData.coords.lat, lng: cityData.coords.lng },
+            to: minCoords,
+            label: `Min: ${minE.destination}`,
+            intensity: 0.7
+          });
+          flows.push({
+            type: 'data',
+            from: { lat: cityData.coords.lat, lng: cityData.coords.lng },
+            to: minCoords,
+            label: 'Request',
+            intensity: 1
+          });
+        }
+        if (maxCoords && maxE.destination !== minE.destination) {
+          flows.push({
+            type: 'electricity',
+            from: { lat: cityData.coords.lat, lng: cityData.coords.lng },
+            to: maxCoords,
+            label: `Max: ${maxE.destination}`,
+            intensity: 1
+          });
+          flows.push({
+            type: 'emissions',
+            from: maxCoords,
+            to: { lat: maxCoords.lat + 5, lng: maxCoords.lng + 8 },
+            label: 'CO₂ drift',
+            intensity: 0.6
+          });
+        }
+      }
+
+      if (flows.length > 0) {
+        this.globe.clearFlows();
+        this.globe.visualizeFlows(flows);
+        this.isShowingFlows = true;
+      }
+
+    } catch (err) {
+      console.error('[Screen] Exhibit visualization error:', err);
     }
   }
 
@@ -378,8 +532,28 @@ class ScreenController {
     const r = this.currentResults;
     if (!r) return;
 
-    const m = mass ? this.MASS_MULTIPLIER : 1;
     const label = document.getElementById('sp-scale-label');
+
+    // Exhibit data format (min/max pre-computed)
+    if (r.min && r.max) {
+      const aiUsers = r.city?.aiUsers || 1;
+      if (mass) {
+        label.textContent = i18n.t ? i18n.t('scale_people')(aiUsers) : `${aiUsers.toLocaleString()} PEOPLE`;
+        document.getElementById('sp-electricity').textContent = `${r.min.electricity_kWh.toFixed(1)} – ${r.max.electricity_kWh.toFixed(1)}`;
+        document.getElementById('sp-water').textContent = `${r.min.water_L.toFixed(1)} – ${r.max.water_L.toFixed(1)}`;
+        document.getElementById('sp-emissions').textContent = `${r.min.co2_kg.toFixed(1)} – ${r.max.co2_kg.toFixed(1)}`;
+      } else {
+        label.textContent = i18n.t ? i18n.t('scale_one_person') : '1 PERSON';
+        document.getElementById('sp-electricity').textContent = `${(r.min.electricity_kWh / aiUsers).toFixed(6)} – ${(r.max.electricity_kWh / aiUsers).toFixed(6)}`;
+        document.getElementById('sp-water').textContent = `${(r.min.water_L / aiUsers * 1000).toFixed(2)} – ${(r.max.water_L / aiUsers * 1000).toFixed(2)} mL`;
+        document.getElementById('sp-emissions').textContent = `${(r.min.co2_kg / aiUsers * 1000).toFixed(2)} – ${(r.max.co2_kg / aiUsers * 1000).toFixed(2)} g`;
+      }
+      document.getElementById('sp-distance').textContent = `${r.min.distance_km.toLocaleString()} – ${r.max.distance_km.toLocaleString()}`;
+      return;
+    }
+
+    // Simulation engine format
+    const m = mass ? this.MASS_MULTIPLIER : 1;
     label.textContent = mass
       ? `${this.MASS_MULTIPLIER.toLocaleString()} PEOPLE`
       : '1 PERSON';

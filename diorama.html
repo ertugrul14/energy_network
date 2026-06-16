@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ENERGY NETWORK — Diorama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/diorama.css">
+</head>
+<body>
+
+  <!-- Language switcher -->
+  <div class="lang-switcher" id="lang-switcher">
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="ca">CA</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+  </div>
+
+  <div class="diorama">
+
+    <!-- ── LEFT: 3D model + TV behind it ────────────────── -->
+    <div class="diorama-stage" id="diorama-stage">
+      <!-- TV sits behind the model -->
+      <div class="tv" id="tv">
+        <div class="tv-bezel">
+          <iframe class="tv-frame" id="tv-frame" src="/screen.html" title="Big screen"></iframe>
+          <div class="tv-off" id="tv-off">
+            <span class="tv-off-dot"></span>
+            <span class="tv-off-text">SCREEN STANDBY</span>
+          </div>
+        </div>
+        <div class="tv-stand"></div>
+      </div>
+
+      <!-- Three.js renders here, on top of (in front of) the TV -->
+      <canvas id="diorama-canvas"></canvas>
+
+      <div class="stage-loading" id="stage-loading">
+        <span class="stage-loading-dot"></span>
+        LOADING MODEL…
+      </div>
+
+      <div class="stage-hint">DRAG TO ORBIT</div>
+    </div>
+
+    <!-- ── RIGHT: narrative frames ──────────────────────── -->
+    <div class="diorama-panel">
+      <div class="dpanel-chrome">
+        <span class="hg-br hg-br-tl"></span>
+        <span class="hg-br hg-br-tr"></span>
+        <span class="hg-br hg-br-bl"></span>
+        <span class="hg-br hg-br-brr"></span>
+      </div>
+
+      <div class="dpanel-top">
+        <span class="dpanel-pulse"></span>
+        <span class="dpanel-wordmark">ENERGY<span class="dpanel-dot">·</span>NETWORK</span>
+      </div>
+
+      <!-- Step progress -->
+      <div class="dsteps" id="dsteps">
+        <span class="dstep-dot active" data-step="0"></span>
+        <span class="dstep-dot" data-step="1"></span>
+        <span class="dstep-dot" data-step="2"></span>
+      </div>
+
+      <!-- Frame 0 — Select city & AI task -->
+      <section class="dframe active" data-frame="0">
+        <div class="dframe-num">01</div>
+        <h2 data-i18n="onboard_step1_title">Select city &amp; AI task</h2>
+        <p data-i18n="onboard_step1_desc">Pick your location and the AI operation to simulate.</p>
+        <div class="dframe-cue">→ the tablet on the model lights up</div>
+        <button class="dframe-next" data-next="1">
+          <span data-i18n="btn_next">NEXT</span><span class="dframe-arrow">→</span>
+        </button>
+      </section>
+
+      <!-- Frame 1 — Light up the model -->
+      <section class="dframe" data-frame="1">
+        <div class="dframe-num">02</div>
+        <h2 data-i18n="onboard_step3_title">Light up the model</h2>
+        <p data-i18n="onboard_step3_desc">The physical model glows based on your city's energy use.</p>
+        <div class="dframe-cue">→ the buildings glow from within</div>
+        <button class="dframe-next" data-next="2">
+          <span data-i18n="btn_next">NEXT</span><span class="dframe-arrow">→</span>
+        </button>
+      </section>
+
+      <!-- Frame 2 — Watch the big screen -->
+      <section class="dframe" data-frame="2">
+        <div class="dframe-num">03</div>
+        <h2 data-i18n="onboard_step4_title">Watch the big screen</h2>
+        <p data-i18n="onboard_step4_desc">See electricity, water, and CO₂ flow across the planet.</p>
+        <div class="dframe-cue">→ the screen behind the model comes alive</div>
+        <button class="dframe-next dframe-restart" data-next="0">
+          <span class="dframe-arrow rev">↻</span><span data-i18n="btn_restart">RESTART</span>
+        </button>
+      </section>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/exhibition/diorama.js"></script>
+</body>
+</html>

@@ -1,568 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ENERGY NETWORK | The Material Geopolitics of AI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="/src/styles/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>3D Architectural Diorama</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f1419;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="loading-content">
-      <div class="loading-icon">◉</div>
-      <h1>ENERGY NETWORK</h1>
-      <p class="tagline">Tracing the invisible infrastructure of AI</p>
-      <div class="loading-bar">
-        <div class="loading-progress"></div>
-      </div>
-      <p class="loading-text">Mapping displaced externalities...</p>
-    </div>
-  </div>
+<script type="module">
+  import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+  import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 
-  <!-- Main Application -->
-  <div id="app">
-    <!-- Header -->
-    <header id="header">
-      <div class="logo">
-        <span class="logo-icon">◉</span>
-        <span class="title">ENERGY NETWORK</span>
-      </div>
-      <nav class="nav-layers">
-        <button class="layer-btn active" data-layer="all">ALL FLOWS</button>
-        <button class="layer-btn" data-layer="electricity">ELECTRICITY</button>
-        <button class="layer-btn" data-layer="water">WATER</button>
-        <button class="layer-btn" data-layer="emissions">EMISSIONS</button>
-        <button class="layer-btn" data-layer="materials">MATERIALS</button>
-      </nav>
-      <button id="info-toggle" class="info-btn">ABOUT</button>
-    </header>
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f1419);
 
-    <!-- Globe Container -->
-    <div id="globe-container"></div>
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
+  camera.position.set(65, 55, 85);
 
-    <!-- Control Panel -->
-    <aside id="control-panel">
-      <div class="panel-section">
-        <h2>SELECT CITY</h2>
-        <p class="panel-desc">Where the "smart" service is consumed</p>
-        <div class="city-grid">
-          <button class="city-btn" data-city="barcelona">
-            <span class="city-flag">🇪🇸</span>
-            <span class="city-name">Barcelona</span>
-          </button>
-          <button class="city-btn" data-city="riyadh">
-            <span class="city-flag">🇸🇦</span>
-            <span class="city-name">Riyadh</span>
-          </button>
-          <button class="city-btn" data-city="singapore">
-            <span class="city-flag">🇸🇬</span>
-            <span class="city-name">Singapore</span>
-          </button>
-          <button class="city-btn" data-city="nairobi">
-            <span class="city-flag">🇰🇪</span>
-            <span class="city-name">Nairobi</span>
-          </button>
-        </div>
-      </div>
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  document.body.appendChild(renderer.domElement);
 
-      <div class="panel-section">
-        <h2>SELECT WORKLOAD</h2>
-        <p class="panel-desc">What computation demands the grid</p>
-        <div class="workload-grid">
-          <button class="workload-btn" data-workload="chatbot">
-            <span class="workload-icon">💬</span>
-            <span class="workload-name">AI Chatbot</span>
-            <span class="workload-intensity">LOW</span>
-          </button>
-          <button class="workload-btn" data-workload="realTimeTranslation">
-            <span class="workload-icon">🌐</span>
-            <span class="workload-name">Real-Time Translation</span>
-            <span class="workload-intensity">MEDIUM</span>
-          </button>
-          <button class="workload-btn" data-workload="pdfSummarize">
-            <span class="workload-icon">📄</span>
-            <span class="workload-name">PDF Summarizer</span>
-            <span class="workload-intensity">HIGH</span>
-          </button>
-          <button class="workload-btn" data-workload="backgroundRemoval">
-            <span class="workload-icon">✂️</span>
-            <span class="workload-name">Background Remover</span>
-            <span class="workload-intensity">LOW</span>
-          </button>
-        </div>
-      </div>
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.enablePan = true;
+  controls.minDistance = 30;
+  controls.maxDistance = 180;
+  controls.target.set(0, 6, 0);
+  controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
 
-      <div class="panel-section">
-        <h2>REDIRECT WORKLOAD</h2>
-        <p class="panel-desc">There is no clean option—only tradeoffs</p>
-        <div class="redirect-options">
-          <label class="redirect-option">
-            <input type="radio" name="datacenter" value="amsterdam" checked>
-            <span class="option-content">
-              <span class="option-name">Amsterdam, NL</span>
-              <span class="option-stats">🌬️ Wind + Gas | 💧 Moderate stress</span>
-            </span>
-          </label>
-          <label class="redirect-option">
-            <input type="radio" name="datacenter" value="finland">
-            <span class="option-content">
-              <span class="option-name">Finland</span>
-              <span class="option-stats">❄️ Cool climate | ⚡ Nuclear + Hydro</span>
-            </span>
-          </label>
-          <label class="redirect-option">
-            <input type="radio" name="datacenter" value="singapore_dc">
-            <span class="option-content">
-              <span class="option-name">Singapore</span>
-              <span class="option-stats">🔥 High cooling | 🛢️ Fossil heavy</span>
-            </span>
-          </label>
-          <label class="redirect-option">
-            <input type="radio" name="datacenter" value="frankfurt">
-            <span class="option-content">
-              <span class="option-name">Frankfurt, DE</span>
-              <span class="option-stats">⚡ Coal + Wind | 🏭 Mixed grid</span>
-            </span>
-          </label>
-          <label class="redirect-option">
-            <input type="radio" name="datacenter" value="ireland">
-            <span class="option-content">
-              <span class="option-name">Ireland</span>
-              <span class="option-stats">🍃 Wind power | 💨 Gas heavy</span>
-            </span>
-          </label>
-        </div>
-      </div>
+  const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+  scene.add(ambient);
 
-      <button id="run-simulation" class="run-btn">
-        <span class="btn-icon">▶</span>
-        <span class="btn-text">TRACE ENERGY FLOW</span>
-      </button>
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+  dirLight.position.set(35, 50, 20);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.set(2048, 2048);
+  dirLight.shadow.camera.near = 1;
+  dirLight.shadow.camera.far = 150;
+  dirLight.shadow.camera.left = -60;
+  dirLight.shadow.camera.right = 60;
+  dirLight.shadow.camera.top = 60;
+  dirLight.shadow.camera.bottom = -60;
+  scene.add(dirLight);
 
-      <button id="run-consumption" class="run-btn consumption-btn">
-        <span class="btn-icon">⚡</span>
-        <span class="btn-text">ENERGY CONSUMPTION</span>
-      </button>
-    </aside>
+  const groundMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2f36,
+    roughness: 0.9,
+    metalness: 0.1
+  });
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(180, 120), groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
 
-    <!-- Energy Info Banner (shown during consumption mode) -->
-    <div id="energy-banner" class="hidden">
-      <div class="energy-banner-inner">
-        <span class="energy-banner-icon">⚡</span>
-        <span class="energy-banner-text">Click a scale card to see its energy impact on buildings</span>
-        <div class="energy-banner-legend">
-          <span style="color:var(--electricity)">■</span> Powered
-          <span style="color:#555">■</span> Unpowered
-        </div>
-      </div>
-    </div>
+  const makeBox = (w, h, d, color) => {
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.1 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return mesh;
+  };
 
-    <!-- Impact Dashboard -->
-    <aside id="impact-dashboard" class="hidden">
-      <div class="dashboard-header">
-        <h2>EXTERNALITY REPORT</h2>
-        <button id="close-dashboard" class="close-btn">✕</button>
-      </div>
-      
-      <div class="impact-summary">
-        <div class="impact-route">
-          <span class="route-from" id="route-from">Barcelona</span>
-          <span class="route-arrow">→</span>
-          <span class="route-to" id="route-to">Amsterdam DC</span>
-        </div>
-        <div class="impact-workload" id="impact-workload">AI Chatbot Session</div>
-      </div>
+  const makeCylinder = (rTop, rBot, h, color, radialSeg = 16) => {
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.1 });
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, radialSeg), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return mesh;
+  };
 
-      <div class="impact-grid">
-        <div class="impact-card electricity">
-          <div class="impact-icon">⚡</div>
-          <div class="impact-label">ELECTRICITY</div>
-          <div class="impact-value" id="impact-electricity">0</div>
-          <div class="impact-unit">kWh consumed</div>
-          <div class="impact-source">Grid: 45% fossil, 55% renewable</div>
-        </div>
+  const createResidential = () => {
+    const g = new THREE.Group();
+    const houseColors = [0xa3c1ff, 0xffc4a3, 0xb2f2bb];
+    const roofColors = [0x44546a, 0x6a4444, 0x446a54];
+    const positions = [
+      [-4, 0, -2],
+      [4, 0, 2],
+      [0, 0, 6]
+    ];
+    positions.forEach((p, i) => {
+      const base = makeBox(4, 2.5, 4, houseColors[i]);
+      base.position.set(p[0], 1.25, p[2]);
+      const roof = makeCylinder(0, 3.2, 2.5, roofColors[i], 4);
+      roof.position.set(p[0], 3.1, p[2]);
+      roof.rotation.y = Math.PI / 4;
+      g.add(base, roof);
+    });
+    return g;
+  };
 
-        <div class="impact-card water">
-          <div class="impact-icon">💧</div>
-          <div class="impact-label">WATER</div>
-          <div class="impact-value" id="impact-water">0</div>
-          <div class="impact-unit">liters withdrawn</div>
-          <div class="impact-source">Source: Colorado River Basin</div>
-        </div>
+  const createHospital = () => {
+    const g = new THREE.Group();
+    const base = makeBox(10, 5, 6, 0xf2f2f2);
+    base.position.y = 2.5;
+    g.add(base);
 
-        <div class="impact-card emissions">
-          <div class="impact-icon">🌫️</div>
-          <div class="impact-label">EMISSIONS</div>
-          <div class="impact-value" id="impact-emissions">0</div>
-          <div class="impact-unit">gCO₂eq released</div>
-          <div class="impact-source">Drifts: Downwind 2,400km</div>
-        </div>
+    const top = makeBox(6, 2.5, 4, 0xe6e6e6);
+    top.position.set(0, 5.2, 0);
+    g.add(top);
 
-        <div class="impact-card materials">
-          <div class="impact-icon">⛏️</div>
-          <div class="impact-label">LAND & LABOR</div>
-          <div class="impact-value" id="impact-materials">—</div>
-          <div class="impact-unit">embedded</div>
-          <div class="impact-source">Cobalt: DRC | Silicon: China</div>
-        </div>
-      </div>
+    const crossMat = new THREE.MeshStandardMaterial({ color: 0xd94a4a, roughness: 0.4 });
+    const bar1 = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.4, 0.4), crossMat);
+    const bar2 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 2.6, 0.4), crossMat);
+    bar1.position.set(0, 5.3, 3.1);
+    bar2.position.set(0, 5.3, 3.1);
+    bar1.castShadow = bar2.castShadow = true;
+    g.add(bar1, bar2);
 
-      <div class="impact-narrative">
-        <p id="narrative-text">
-          Your prompt traveled 9,400 km to a server in the Sonoran Desert. 
-          The electricity came from natural gas plants that burned at 4:23 AM local time. 
-          Water was pulled from an aquifer already 40% depleted. 
-          The CO₂ will drift over the Pacific.
-        </p>
-      </div>
+    return g;
+  };
 
-      <div class="stack-view">
-        <h3>THE STACK IN MOTION</h3>
-        <div class="stack-layers">
-          <div class="stack-layer" data-level="body">
-            <span class="layer-icon">🧍</span>
-            <span class="layer-name">BODY</span>
-            <span class="layer-desc">You: the user</span>
-          </div>
-          <div class="stack-layer" data-level="city">
-            <span class="layer-icon">🏙️</span>
-            <span class="layer-name">CITY</span>
-            <span class="layer-desc">Who benefits</span>
-          </div>
-          <div class="stack-layer" data-level="cloud">
-            <span class="layer-icon">☁️</span>
-            <span class="layer-name">CLOUD</span>
-            <span class="layer-desc">Data centers, routing</span>
-          </div>
-          <div class="stack-layer" data-level="earth">
-            <span class="layer-icon">🌍</span>
-            <span class="layer-name">EARTH</span>
-            <span class="layer-desc">Materials, emissions</span>
-          </div>
-        </div>
-      </div>
-    </aside>
+  const createSchool = () => {
+    const g = new THREE.Group();
+    const main = makeBox(10, 4, 6, 0xffe7b3);
+    main.position.y = 2;
+    g.add(main);
 
-    <!-- Info Modal -->
-    <div id="info-modal" class="modal hidden">
-      <div class="modal-content">
-        <button class="modal-close">✕</button>
-        <h1>AI RUNS ON GHOST INFRASTRUCTURE</h1>
-        
-        <div class="theory-section">
-          <h2>What You're Seeing</h2>
-          <p>
-            Every time a city says "smart" or a user says "prompt," an invisible network awakens:
-            A server spins in a faraway desert. A cooling tower pulls from a depleted aquifer. 
-            A gas plant revs to meet GPU demand. CO₂ is dumped—elsewhere.
-          </p>
-          <p><strong>Ghost Network maps these displacements.</strong></p>
-        </div>
+    const wingL = makeBox(5, 3, 6, 0xf7d891);
+    wingL.position.set(-7.5, 1.5, 0);
+    g.add(wingL);
 
-        <div class="theory-section">
-          <h2>The Argument</h2>
-          <blockquote>
-            "Every smart system is connected to unsmart places.<br>
-            Every AI decision draws water in a place you've never heard of.<br>
-            Every promise of 'green AI' hides a network of deferred costs.<br>
-            This isn't about reducing. It's about revealing."
-          </blockquote>
-        </div>
+    const wingR = makeBox(5, 3, 6, 0xf7d891);
+    wingR.position.set(7.5, 1.5, 0);
+    g.add(wingR);
 
-        <div class="theory-section">
-          <h2>Theory Grounding</h2>
-          <ul class="theory-list">
-            <li><strong>Bratton's Stack</strong> — Layered governance of AI across Earth, Cloud, City, Body</li>
-            <li><strong>Hyperobjects</strong> — The nonlocality and viscosity of water and CO₂</li>
-            <li><strong>Planetary Boundaries</strong> — Water stress, carbon overshoot</li>
-            <li><strong>Post-Normal Times</strong> — No stable solution space, only complex entanglement</li>
-          </ul>
-        </div>
+    const tower = makeBox(3, 6, 3, 0xffe0a8);
+    tower.position.set(0, 6, 0);
+    g.add(tower);
 
-        <div class="theory-section">
-          <h2>Sources</h2>
-          <ul class="source-list">
-            <li>Koomey, J. (2020) — Data center energy efficiency</li>
-            <li>Li et al. (2025) — Water consumption of AI systems</li>
-            <li>Siddik et al. (2021) — Data center water footprint</li>
-            <li>IEA / IPCC — Global emissions data</li>
-          </ul>
-        </div>
+    const clock = new THREE.Mesh(
+      new THREE.CircleGeometry(0.8, 16),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
+    );
+    clock.position.set(0, 6.5, 1.6);
+    clock.castShadow = true;
+    g.add(clock);
 
-        <div class="theory-section warning">
-          <h2>⚠️ This Project Does Not Solve</h2>
-          <p>
-            Ghost Network exposes asymmetry. It does not offer absolution.<br>
-            There is no "green" prompt. There are only tradeoffs—and choices about who bears them.
-          </p>
-        </div>
-      </div>
-    </div>
+    return g;
+  };
 
-    <!-- Location Info Popup -->
-    <div id="location-popup" class="hidden">
-      <button class="popup-close">×</button>
-      <div class="popup-header">
-        <span class="popup-type" id="popup-type">CITY</span>
-        <h3 class="popup-title" id="popup-title">Barcelona</h3>
-        <p class="popup-location" id="popup-location">Spain</p>
-      </div>
-      <div class="popup-content">
-        <p class="popup-description" id="popup-description"></p>
-        <div class="popup-stats" id="popup-stats"></div>
-      </div>
-    </div>
+  const createStadium = () => {
+    const g = new THREE.Group();
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xa9b2bf, roughness: 0.6, side: THREE.DoubleSide });
+    const outerWall = new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 2.5, 32, 1, true), wallMat);
+    outerWall.position.y = 1.25;
+    outerWall.castShadow = outerWall.receiveShadow = true;
+    g.add(outerWall);
 
-    <!-- Scale Explorer -->
-    <div id="scale-explorer" class="hidden">
-      <button id="close-scale-explorer" class="scale-close-btn">✕</button>
-      <div class="scale-header">
-        <div class="scale-header-left">
-          <h2>SCALE EXPLORER</h2>
-          <p class="scale-subtitle">One prompt, four scales of impact</p>
-        </div>
-        <div class="scale-header-right">
-          <div class="energy-thread-label">
-            <span class="thread-pulse"></span>
-            <span>Energy thread</span>
-          </div>
-          <button id="close-scale-explorer" class="close-btn">✕</button>
-        </div>
-      </div>
+    const innerWall = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 2.2, 32, 1, true), wallMat);
+    innerWall.position.y = 1.1;
+    innerWall.castShadow = innerWall.receiveShadow = true;
+    g.add(innerWall);
 
-      <div class="scale-thread-container">
-        <div class="energy-thread-line"></div>
+    const field = new THREE.Mesh(
+      new THREE.CylinderGeometry(4.2, 4.2, 0.2, 32),
+      new THREE.MeshStandardMaterial({ color: 0x2b7a4b, roughness: 0.8 })
+    );
+    field.position.y = 0.1;
+    field.receiveShadow = true;
+    g.add(field);
 
-        <div class="scale-cards">
-          <!-- Interior Scale -->
-          <div class="scale-card" data-scale="interior">
-            <div class="scale-card-header">
-              <div class="scale-icon-wrap interior">
-                <span class="scale-icon">🖥️</span>
-              </div>
-              <div class="scale-title-group">
-                <h3>INTERIOR</h3>
-                <p>The desk</p>
-              </div>
-              <button class="scale-expand-btn">﹀</button>
-            </div>
-            <div class="scale-card-summary">
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-device-kwh">—</span>
-                <span class="scale-metric-label">Wh at device</span>
-              </div>
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-server-kwh">—</span>
-                <span class="scale-metric-label">Wh at server</span>
-              </div>
-            </div>
-            <div class="scale-card-detail hidden">
-              <div class="scale-detail-row">
-                <span class="detail-label">Laptop power draw</span>
-                <span class="detail-value" id="detail-laptop-watts">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Wi-Fi / Network</span>
-                <span class="detail-value" id="detail-network-watts">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Session duration</span>
-                <span class="detail-value" id="detail-session-duration">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Remote GPU demand</span>
-                <span class="detail-value" id="detail-gpu-demand">—</span>
-              </div>
-              <p class="scale-insight">Your device barely notices—but a server farm spins up thousands of km away.</p>
-              <div class="consumption-info hidden" id="consumption-info-interior">
-                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
-                <p class="consumption-info-text" id="consumption-text-interior"></p>
-                <div class="consumption-info-stat" id="consumption-stat-interior"></div>
-              </div>
-            </div>
-          </div>
+    return g;
+  };
 
-          <!-- Building Scale -->
-          <div class="scale-card" data-scale="building">
-            <div class="scale-card-header">
-              <div class="scale-icon-wrap building">
-                <span class="scale-icon">🏢</span>
-              </div>
-              <div class="scale-title-group">
-                <h3>BUILDING</h3>
-                <p>The data center</p>
-              </div>
-              <button class="scale-expand-btn">﹀</button>
-            </div>
-            <div class="scale-card-summary">
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-compute-kwh">—</span>
-                <span class="scale-metric-label">Wh compute</span>
-              </div>
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-cooling-kwh">—</span>
-                <span class="scale-metric-label">Wh cooling</span>
-              </div>
-            </div>
-            <div class="scale-card-detail hidden">
-              <div class="scale-detail-row">
-                <span class="detail-label">PUE (efficiency)</span>
-                <span class="detail-value" id="detail-pue">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Cooling overhead</span>
-                <span class="detail-value" id="detail-cooling-pct">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Heat penalty</span>
-                <span class="detail-value" id="detail-heat-penalty">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Water for cooling</span>
-                <span class="detail-value" id="detail-cooling-water">—</span>
-              </div>
-              <p class="scale-insight">For every 1 Wh of compute, the building spends extra energy just to not overheat.</p>
-              <div class="consumption-info hidden" id="consumption-info-building">
-                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
-                <p class="consumption-info-text" id="consumption-text-building"></p>
-                <div class="consumption-info-stat" id="consumption-stat-building"></div>
-              </div>
-            </div>
-          </div>
+  const createAirport = () => {
+    const g = new THREE.Group();
+    const terminal = makeBox(16, 2.5, 6, 0xd6dbe1);
+    terminal.position.y = 1.25;
+    g.add(terminal);
 
-          <!-- City Scale -->
-          <div class="scale-card" data-scale="city">
-            <div class="scale-card-header">
-              <div class="scale-icon-wrap city">
-                <span class="scale-icon">🏙️</span>
-              </div>
-              <div class="scale-title-group">
-                <h3>CITY</h3>
-                <p>The grid</p>
-              </div>
-              <button class="scale-expand-btn">﹀</button>
-            </div>
-            <div class="scale-card-summary">
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-grid-carbon">—</span>
-                <span class="scale-metric-label">gCO₂/kWh</span>
-              </div>
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-water-stress">—</span>
-                <span class="scale-metric-label">water stress</span>
-              </div>
-            </div>
-            <div class="scale-card-detail hidden">
-              <div class="scale-detail-row">
-                <span class="detail-label">Grid fossil %</span>
-                <span class="detail-value" id="detail-fossil-pct">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Water source</span>
-                <span class="detail-value" id="detail-water-source">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Aquifer depletion</span>
-                <span class="detail-value" id="detail-aquifer">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Local air impact</span>
-                <span class="detail-value" id="detail-local-air">—</span>
-              </div>
-              <p class="scale-insight">The grid doesn't care if you asked it to write a poem or surveil a crowd—it just burns fuel.</p>
-              <div class="consumption-info hidden" id="consumption-info-city">
-                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
-                <p class="consumption-info-text" id="consumption-text-city"></p>
-                <div class="consumption-info-stat" id="consumption-stat-city"></div>
-              </div>
-            </div>
-          </div>
+    const tower = makeCylinder(1.2, 1.6, 8, 0xbac3cf);
+    tower.position.set(8.5, 4, -2);
+    g.add(tower);
 
-          <!-- Planetary Scale -->
-          <div class="scale-card" data-scale="planetary">
-            <div class="scale-card-header">
-              <div class="scale-icon-wrap planetary">
-                <span class="scale-icon">🌍</span>
-              </div>
-              <div class="scale-title-group">
-                <h3>PLANETARY</h3>
-                <p>The displacement</p>
-              </div>
-              <button class="scale-expand-btn">﹀</button>
-            </div>
-            <div class="scale-card-summary">
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-displacement-km">—</span>
-                <span class="scale-metric-label">km displaced</span>
-              </div>
-              <div class="scale-metric">
-                <span class="scale-metric-value" id="scale-co2-drift">—</span>
-                <span class="scale-metric-label">CO₂ drift</span>
-              </div>
-            </div>
-            <div class="scale-card-detail hidden">
-              <div class="scale-detail-row">
-                <span class="detail-label">Materials from</span>
-                <span class="detail-value" id="detail-materials-from">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">E-waste to</span>
-                <span class="detail-value" id="detail-ewaste-to">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Emissions drift</span>
-                <span class="detail-value" id="detail-emissions-drift">—</span>
-              </div>
-              <div class="scale-detail-row">
-                <span class="detail-label">Jurisdictions crossed</span>
-                <span class="detail-value" id="detail-jurisdictions">—</span>
-              </div>
-              <p class="scale-insight">The cost of your prompt is borne by places you've never visited and people who'll never use AI.</p>
-              <div class="consumption-info hidden" id="consumption-info-planetary">
-                <div class="consumption-info-header">⚡ ENERGY EQUIVALENCE</div>
-                <p class="consumption-info-text" id="consumption-text-planetary"></p>
-                <div class="consumption-info-stat" id="consumption-stat-planetary"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    const cab = makeBox(3, 1.5, 3, 0xcde7ff);
+    cab.position.set(8.5, 8.2, -2);
+    g.add(cab);
 
-    <!-- Floating Legend -->
-    <div id="legend">
-      <div class="legend-item">
-        <span class="legend-line electricity"></span>
-        <span>Electricity flow</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-line water"></span>
-        <span>Water withdrawal</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-line emissions"></span>
-        <span>CO₂ drift</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-line materials"></span>
-        <span>Materials / E-waste</span>
-      </div>
-    </div>
+    return g;
+  };
 
-    <!-- Time of Day Control -->
-    <div id="time-control">
-      <label for="time-slider">Time of Day (Local)</label>
-      <input type="range" id="time-slider" min="0" max="23" value="14">
-      <span id="time-display">14:00</span>
-      <p class="time-note">Water use spikes during peak heat</p>
-    </div>
-  </div>
+  const createPort = () => {
+    const g = new THREE.Group();
+    const dock = makeBox(18, 1, 8, 0x7a6b5d);
+    dock.position.y = 0.5;
+    g.add(dock);
 
-  <script type="module" src="/src/main.js"></script>
+    const water = new THREE.Mesh(
+      new THREE.PlaneGeometry(18, 8),
+      new THREE.MeshStandardMaterial({ color: 0x1e6aa8, roughness: 0.7, metalness: 0.2 })
+    );
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(0, 0.02, -6);
+    water.receiveShadow = true;
+    g.add(water);
+
+    const containerColors = [0xf26d6d, 0xf2d16d, 0x6df2b7, 0x6da1f2];
+    for (let i = 0; i < 4; i++) {
+      const c = makeBox(3.2, 1.4, 1.6, containerColors[i]);
+      c.position.set(-6 + i * 3.5, 1.2 + (i % 2) * 1.6, 1.5);
+      g.add(c);
+    }
+
+    const craneMast = makeBox(0.6, 6, 0.6, 0x6b7c8a);
+    craneMast.position.set(6.5, 3, 2);
+    g.add(craneMast);
+
+    const craneArm = makeBox(6, 0.4, 0.4, 0x6b7c8a);
+    craneArm.position.set(9.5, 5.5, 2);
+    g.add(craneArm);
+
+    const hook = makeBox(0.3, 1.2, 0.3, 0x3e4a55);
+    hook.position.set(12, 4.8, 2);
+    g.add(hook);
+
+    return g;
+  };
+
+  const createFactory = () => {
+    const g = new THREE.Group();
+    const base = makeBox(12, 3, 8, 0xb68c6b);
+    base.position.y = 1.5;
+    g.add(base);
+
+    const sawToothShape = new THREE.Shape();
+    sawToothShape.moveTo(0, 0);
+    sawToothShape.lineTo(2.2, 0);
+    sawToothShape.lineTo(1.6, 1.2);
+    sawToothShape.lineTo(0, 1.2);
+    const roofGeom = new THREE.ExtrudeGeometry(sawToothShape, { depth: 8, bevelEnabled: false });
+    const roofMat = new THREE.MeshStandardMaterial({ color: 0x9c7760, roughness: 0.8 });
+    for (let i = 0; i < 4; i++) {
+      const roof = new THREE.Mesh(roofGeom, roofMat);
+      roof.position.set(-5 + i * 2.5, 3, -4);
+      roof.rotation.y = Math.PI / 2;
+      roof.castShadow = roof.receiveShadow = true;
+      g.add(roof);
+    }
+
+    const stack1 = makeCylinder(0.7, 0.9, 6, 0x6b6f7a);
+    stack1.position.set(-4.5, 6, 2.5);
+    g.add(stack1);
+
+    const stack2 = makeCylinder(0.7, 0.9, 5.5, 0x6b6f7a);
+    stack2.position.set(-2.5, 5.5, 2.5);
+    g.add(stack2);
+
+    return g;
+  };
+
+  const createOfficeTower = () => {
+    const g = new THREE.Group();
+    const tower = makeBox(6, 18, 6, 0x5aa8ff);
+    tower.position.y = 9;
+    g.add(tower);
+
+    const stripeMat = new THREE.MeshStandardMaterial({ color: 0x84c6ff, roughness: 0.4, metalness: 0.2 });
+    for (let i = -2; i <= 2; i++) {
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 17, 6.2), stripeMat);
+      stripe.position.set(i * 1.1, 9, 0);
+      stripe.castShadow = true;
+      g.add(stripe);
+    }
+
+    return g;
+  };
+
+  const buildings = [
+    { create: createResidential },
+    { create: createHospital },
+    { create: createSchool },
+    { create: createStadium },
+    { create: createAirport },
+    { create: createPort },
+    { create: createFactory },
+    { create: createOfficeTower }
+  ];
+
+  const gridCols = 4;
+  const spacing = 28;
+  const startX = -spacing * (gridCols - 1) * 0.5;
+  const startZ = 18;
+
+  buildings.forEach((b, i) => {
+    const row = Math.floor(i / gridCols);
+    const col = i % gridCols;
+    const group = b.create();
+    group.position.set(startX + col * spacing, 0, startZ - row * spacing);
+    scene.add(group);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
 </body>
 </html>

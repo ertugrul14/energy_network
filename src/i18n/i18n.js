@@ -37,6 +37,16 @@ class I18n {
     return TRANSLATIONS[this.lang]?.[key] ?? TRANSLATIONS.en[key] ?? key;
   }
 
+  /**
+   * Look up an entry inside a map-valued translation key (e.g. workload_names,
+   * building_names). Falls back to the English map, then to the id itself.
+   */
+  tMap(mapKey, id) {
+    const map = TRANSLATIONS[this.lang]?.[mapKey];
+    const enMap = TRANSLATIONS.en[mapKey];
+    return map?.[id] ?? enMap?.[id] ?? id;
+  }
+
   applyToDOM() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;

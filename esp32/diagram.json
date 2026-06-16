@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "author": "Ghost Network",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": { "flashSize": "16" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led0",
+      "top": 200,
+      "left": -120,
+      "attrs": { "color": "cyan", "label": "Residential" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 200,
+      "left": -60,
+      "attrs": { "color": "red", "label": "Hospital" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": 200,
+      "left": 0,
+      "attrs": { "color": "green", "label": "School" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led3",
+      "top": 200,
+      "left": 60,
+      "attrs": { "color": "yellow", "label": "Office" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led4",
+      "top": 300,
+      "left": -120,
+      "attrs": { "color": "white", "label": "Stadium" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led5",
+      "top": 300,
+      "left": -60,
+      "attrs": { "color": "orange", "label": "Airport" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led6",
+      "top": 300,
+      "left": 0,
+      "attrs": { "color": "blue", "label": "Port" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led7",
+      "top": 300,
+      "left": 60,
+      "attrs": { "color": "purple", "label": "Factory" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r0",
+      "top": 160,
+      "left": -120,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 160,
+      "left": -60,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 160,
+      "left": 0,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 160,
+      "left": 60,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r4",
+      "top": 260,
+      "left": -120,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r5",
+      "top": 260,
+      "left": -60,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r6",
+      "top": 260,
+      "left": 0,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r7",
+      "top": 260,
+      "left": 60,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    ["esp:4",  "r0:1", "cyan",    ["v:20"]],
+    ["r0:2",   "led0:A", "",      []],
+    ["led0:C", "esp:GND.1", "black", []],
+
+    ["esp:5",  "r1:1", "red",     ["v:20"]],
+    ["r1:2",   "led1:A", "",      []],
+    ["led1:C", "esp:GND.1", "black", []],
+
+    ["esp:6",  "r2:1", "green",   ["v:20"]],
+    ["r2:2",   "led2:A", "",      []],
+    ["led2:C", "esp:GND.1", "black", []],
+
+    ["esp:7",  "r3:1", "yellow",  ["v:20"]],
+    ["r3:2",   "led3:A", "",      []],
+    ["led3:C", "esp:GND.1", "black", []],
+
+    ["esp:15", "r4:1", "white",   ["v:20"]],
+    ["r4:2",   "led4:A", "",      []],
+    ["led4:C", "esp:GND.2", "black", []],
+
+    ["esp:16", "r5:1", "orange",  ["v:20"]],
+    ["r5:2",   "led5:A", "",      []],
+    ["led5:C", "esp:GND.2", "black", []],
+
+    ["esp:17", "r6:1", "blue",    ["v:20"]],
+    ["r6:2",   "led6:A", "",      []],
+    ["led6:C", "esp:GND.2", "black", []],
+
+    ["esp:18", "r7:1", "purple",  ["v:20"]],
+    ["r7:2",   "led7:A", "",      []],
+    ["led7:C", "esp:GND.2", "black", []]
+  ]
+}
